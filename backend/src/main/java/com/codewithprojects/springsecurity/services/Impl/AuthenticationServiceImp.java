@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -105,5 +106,31 @@ public class AuthenticationServiceImp implements AuthenticationService {
             return jwtAuthenticationResponse;
         }
         return null;
+    }
+
+
+
+    public List<User> getAllStaff() {
+        return userRepository.findAll();
+    }
+
+    public User updateStaff(Long id, SignUpRequest updateRequest){
+        User staff= userRepository.findById(id).orElseThrow(()->new RuntimeException("Staff not found"));
+
+        staff.setFirstname(updateRequest.getFirstname());
+        staff.setMobileNumber(updateRequest.getFirstname());
+        staff.setEmail(updateRequest.getEmail());
+        staff.setPassword(updateRequest.getPassword());
+
+        return userRepository.save(staff);
+
+    }
+
+
+
+    public void deleteStaff(Long id){
+        User staff = userRepository.findById(id).orElseThrow(()-> new RuntimeException("Staff not found"));
+
+        userRepository.delete(staff);
     }
 }
