@@ -14,23 +14,26 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/admin")
-
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
-public class AdminController {
+public class StaffController{
 
     private final AuthenticationService authenticationService;
 
-    @GetMapping
-    public ResponseEntity<String> sayHello(){
-        return ResponseEntity.ok("Hii, Admin this side ");
+    // all the user ( user, admin, staff)
+    @GetMapping("/userList")
+    public ResponseEntity<List<User>> getAllStaff() {
+        return ResponseEntity.ok(authenticationService.getAllStaff());
     }
 
-    @PostMapping("/addStaff")
-    public ResponseEntity<?> addStaff(@RequestBody SignUpRequest signUpRequest){
-//        System.out.println(signUpRequest.getFirstname());
-        return ResponseEntity.ok(authenticationService.signup(signUpRequest, Role.STAFF ));
+    @PutMapping("/updateStaff/{id}")
+    public ResponseEntity<User> updateStaff(@PathVariable Long id,@RequestBody SignUpRequest updateRequest){
+        return ResponseEntity.ok(authenticationService.updateStaff(id,updateRequest));
     }
 
-
+    @DeleteMapping("/deleteStaff/{id}")
+    public ResponseEntity<String> deleteStaff(@PathVariable Long id){
+        authenticationService.deleteStaff(id);
+        return ResponseEntity.ok("Staff deleted Successfully");
+    }
 }

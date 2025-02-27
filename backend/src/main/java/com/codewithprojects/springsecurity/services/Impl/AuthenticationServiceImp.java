@@ -113,4 +113,24 @@ public class AuthenticationServiceImp implements AuthenticationService {
     public List<User> getAllStaff() {
         return userRepository.findAll();
     }
+
+    public User updateStaff(Long id, SignUpRequest updateRequest){
+        User staff= userRepository.findById(id).orElseThrow(()->new RuntimeException("Staff not found"));
+
+        staff.setFirstname(updateRequest.getFirstname());
+        staff.setMobileNumber(updateRequest.getFirstname());
+        staff.setEmail(updateRequest.getEmail());
+        staff.setPassword(updateRequest.getPassword());
+
+        return userRepository.save(staff);
+
+    }
+
+
+
+    public void deleteStaff(Long id){
+        User staff = userRepository.findById(id).orElseThrow(()-> new RuntimeException("Staff not found"));
+
+        userRepository.delete(staff);
+    }
 }

@@ -17,4 +17,8 @@ public interface AuthenticationService {
     JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
     List<User> getAllStaff(); // Added method
 
+
+    void deleteStaff(Long id);
+
+    User updateStaff(Long id, SignUpRequest updateRequest);
 }
