@@ -33,7 +33,7 @@ public class AdminController {
     }
 
     @GetMapping("/staffList")
-    public ResponseEntity<List<User>> getAllStaff(){
+    public ResponseEntity<List<User>> getAllStaff() {
         return ResponseEntity.ok(authenticationService.getAllStaff());
     }
 }

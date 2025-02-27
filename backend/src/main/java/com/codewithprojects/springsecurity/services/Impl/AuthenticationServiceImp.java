@@ -108,8 +108,9 @@ public class AuthenticationServiceImp implements AuthenticationService {
         return null;
     }
 
-    // Added method to fetch all staff members
+
+
     public List<User> getAllStaff() {
-        return userRepository.findAllByRole(Role.STAFF);
+        return userRepository.findAll();
     }
 }
