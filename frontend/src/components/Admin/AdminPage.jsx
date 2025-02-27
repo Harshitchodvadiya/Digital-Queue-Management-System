@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import Navbar from "./Navbar";
+import Navbar from "../Navbar";
 
 function AdminPage() {
   const navigate = useNavigate();
@@ -7,7 +7,7 @@ function AdminPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-900 via-black to-gray-900 text-white">
       {/* Navbar */}
-      <Navbar />
+      {/* <Navbar /> */}
 
       {/* Content Section */}
       <div className="flex flex-col items-center justify-center flex-grow p-6">

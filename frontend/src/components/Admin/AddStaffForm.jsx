@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
-import Navbar from "./Navbar";
+import Navbar from "../Navbar";
 
 function AddStaffForm() {
   const navigate = useNavigate();

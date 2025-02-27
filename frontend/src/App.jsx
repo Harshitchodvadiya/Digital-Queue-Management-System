@@ -5,23 +5,38 @@ import "./App.css";
 import LoginForm from "./components/LoginForm";
 import HomePage from "./components/HomePage";
 import RegistrationForm from "./components/RegistrationForm";
-import AdminPage from "./components/AdminPage";
-import StaffPage from "./components/StaffPage";
-import AddStaffForm from "./components/AddStaffForm";
+
+import AdminPage from "../src/components/Admin/AdminPage"
+import AddStaffForm from "../src/components/Admin/AddStaffForm";
+import StaffPage from "../src/components/Staff/StaffPage";
+import Layout from "./components/LandingPage/Layout";
+import Home from "./components/LandingPage/Home";
+import About from "./components/LandingPage/About";
+import Contact from "./components/LandingPage/ContactUs";
 
 function App() {
   return (
     <Router>
       <Routes>
+
+      <Route path='/' element={<Layout/>}>
+          <Route path='' element={<Home/>}/>
+          <Route path='/about' element={<About/>}/>
+          <Route path='/contact' element={<Contact/>}/>
+      </Route>
+
         {/* Authentication Routes */}
-        <Route path="/" element={<LoginForm />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegistrationForm />} />
 
         {/* Protected Routes */}
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/home-page" element={<HomePage />} />
+
+        {/* Staff Pages */}
         <Route path="/staff" element={<StaffPage />} />
+
+      {/* Admin Pages */}
+        <Route path="/admin" element={<AdminPage />} />
         <Route path="/add-staff" element={<AddStaffForm/>} />
 
         {/* Not Found Route */}

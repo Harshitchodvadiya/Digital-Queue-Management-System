@@ -21,6 +21,8 @@ const Login = () => {
         const token = response.data.token;
         const decodedToken = jwtDecode(token);
         const subValue = decodedToken.sub;
+        console.log(subValue);
+        
         const userRole = subValue.split(":")[1];
 
         if (userRole === "ADMIN") {
