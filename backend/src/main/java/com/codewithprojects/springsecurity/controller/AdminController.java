@@ -10,11 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/admin")
 
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
@@ -29,5 +30,10 @@ public class AdminController {
     public ResponseEntity<?> addStaff(@RequestBody SignUpRequest signUpRequest){
 //        System.out.println(signUpRequest.getFirstname());
         return ResponseEntity.ok(authenticationService.signup(signUpRequest, Role.STAFF ));
+    }
+
+    @GetMapping("/staffList")
+    public ResponseEntity<List<User>> getAllStaff(){
+        return ResponseEntity.ok(authenticationService.getAllStaff());
     }
 }

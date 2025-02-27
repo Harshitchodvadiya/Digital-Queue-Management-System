@@ -7,11 +7,14 @@ import com.codewithprojects.springsecurity.dto.SigninRequest;
 import com.codewithprojects.springsecurity.entities.Role;
 import com.codewithprojects.springsecurity.entities.User;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
-//@CrossOrigin
+
+import java.util.List;
+
 public interface AuthenticationService {
     User signup(SignUpRequest signUpRequest, Role role);
     ResponseEntity<JwtAuthenticationResponse> signin(SigninRequest signinRequest);
     JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
+    List<User> getAllStaff(); // Added method
+
 }

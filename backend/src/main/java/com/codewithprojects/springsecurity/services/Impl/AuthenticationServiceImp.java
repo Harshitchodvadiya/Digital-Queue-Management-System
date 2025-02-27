@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -105,5 +106,10 @@ public class AuthenticationServiceImp implements AuthenticationService {
             return jwtAuthenticationResponse;
         }
         return null;
+    }
+
+    // Added method to fetch all staff members
+    public List<User> getAllStaff() {
+        return userRepository.findAllByRole(Role.STAFF);
     }
 }
