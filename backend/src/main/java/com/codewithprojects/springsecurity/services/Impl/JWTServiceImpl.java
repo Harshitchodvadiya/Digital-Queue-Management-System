@@ -124,6 +124,7 @@ public class JWTServiceImpl implements JWTService {
     }
 
     public String generateToken(UserDetails userDetails) {
+        //no assigned roles, it defaults to "USER"
         String role = userDetails.getAuthorities().isEmpty() ? "USER" :
                 userDetails.getAuthorities().iterator().next().getAuthority(); // Get the first role
         return Jwts.builder()

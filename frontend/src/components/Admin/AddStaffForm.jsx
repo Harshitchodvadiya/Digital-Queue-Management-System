@@ -12,6 +12,7 @@ function AddStaffForm() {
     lastname: "",
     email: "",
     password: "",
+    mobileNumber: ""
   });
 
   const [loading, setLoading] = useState(false);
@@ -95,15 +96,31 @@ function AddStaffForm() {
             />
           </div>
 
-          {/* Last Name */}
+          {/* Services */}
           <div className="mb-4">
             <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Last Name
+              Service
             </label>
             <input
               type="text"
               name="lastname"
               value={formData.lastname}
+              onChange={handleChange}
+              required
+              className="w-full px-3 py-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md"
+            />
+          </div>
+
+          {/* Mobile No. */}
+          <div className="mb-4">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Mobile No.
+            </label>
+            <input
+              type="number"
+              name="mobileNumber"
+              maxLength={10}
+              value={formData.mobileNumber}
               onChange={handleChange}
               required
               className="w-full px-3 py-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md"

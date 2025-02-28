@@ -31,16 +31,23 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserService userService;
     @Bean
+
+
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        //enabling cors
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("api/v1/auth/**").permitAll() // Public endpoints
-                        .requestMatchers("api/v1/admin/**").hasAuthority(Role.ADMIN.name()) // 🔥 FIXED
-                        .requestMatchers("api/v1/user/**").hasAuthority(Role.USER.name())   // 🔥 FIXED
+                        .requestMatchers("api/v1/auth/**").permitAll() // Public endpoints, all can access
+                        .requestMatchers("api/v1/admin/**").hasAuthority(Role.ADMIN.name()) // only admin
+                        .requestMatchers("api/v1/user/**").hasAuthority(Role.USER.name())   // only user
+                        //all other requests require authentication.
                         .anyRequest().authenticated()
                 )
+                //No session is created or stored.
+                //Each request must contain a valid JWT.
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                //DAO-based authentication provider that interacts with the database.  validate users.
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class
                 );
