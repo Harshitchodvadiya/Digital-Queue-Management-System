@@ -31,7 +31,7 @@ function App() {
         <Route path="/register" element={<RegistrationForm />} />
 
         {/* Protected Routes */}
-        <Route path="/home-page" element={<HomePage />} />
+        <Route path="/home" element={<HomePage />} />
 
         {/* Staff Pages */}
         <Route path="/staff" element={<StaffPage />} />

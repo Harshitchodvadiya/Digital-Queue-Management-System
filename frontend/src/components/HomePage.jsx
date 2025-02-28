@@ -5,7 +5,6 @@ function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] text-white">
       {/* Navbar */}
-      <Navbar />
 
       {/* Content */}
       <div className="flex flex-grow justify-center items-center">

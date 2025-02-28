@@ -50,9 +50,8 @@ const StaffList = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold mb-4 text-center">Staff Members</h2>
-
+    <div className="max-w-6xl mx-auto p-6 bg-gray-100 min-h-screen">
+      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Staff Members</h2>
       {loading ? (
         <p className="text-center text-gray-600">Loading...</p>
       ) : error ? (
@@ -60,46 +59,30 @@ const StaffList = () => {
       ) : staff.length === 0 ? (
         <p className="text-center text-gray-500">No staff members found.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="border p-3">ID</th>
-                <th className="border p-3">Name</th>
-                <th className="border p-3">Email</th>
-                <th className="border p-3">Mobile</th>
-                <th className="border p-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {staff.map((member, index) => (
-                <tr key={index} className="hover:bg-gray-100">
-                  <td className="border p-3 text-center">{member.id}</td>
-                  <td className="border p-3 text-center">{member.firstname} {member.lastname}</td>
-                  <td className="border p-3 text-center">{member.email}</td>
-                  <td className="border p-3 text-center">{member.mobileNumber}</td>
-                  <td className="border p-3 text-center">
-                    <button
-                      onClick={() => handleEdit(member)}
-                      className="bg-blue-500 text-white px-3 py-1 rounded mr-2 hover:bg-blue-600"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(member.id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {staff.map((member, index) => (
+            <div key={index} className="bg-white shadow-lg rounded-lg p-5 border border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-700">{member.firstname} {member.lastname}</h3>
+              <p className="text-gray-600">Email: {member.email}</p>
+              <p className="text-gray-600">Mobile: {member.mobileNumber}</p>
+              <div className="mt-4 flex justify-between">
+                <button
+                  onClick={() => handleEdit(member)}
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(member.id)}
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
-
-      {/* Edit Modal */}
       {showEditModal && selectedStaff && (
         <EditStaffModal staff={selectedStaff} onClose={() => setShowEditModal(false)} refreshList={fetchStaff} />
       )}

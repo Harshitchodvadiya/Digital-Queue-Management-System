@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
 import Navbar from "../Navbar";
+import { ArrowLeft } from "lucide-react";
 
 function AddStaffForm() {
   const navigate = useNavigate();
@@ -65,6 +66,12 @@ function AddStaffForm() {
 
       {/* Form Section */}
       <div className="flex flex-col items-center justify-center flex-grow p-4">
+        <button
+          onClick={() => navigate("/admin")}
+          className="w-10 self-start mb-4 bg-gray-700 hover:bg-gray-600 text-white px-2 py-2 rounded-lg shadow-md flex items-center"
+        >
+          <ArrowLeft className="w-8 h-5" />
+        </button>
         <h3 className="text-3xl font-bold mb-4 text-center text-white shadow-md">
           Add New Staff
         </h3>
