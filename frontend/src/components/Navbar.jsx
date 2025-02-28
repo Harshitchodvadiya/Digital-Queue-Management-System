@@ -10,7 +10,7 @@ const Navbar = () => {
   useEffect(() => {
     const storedUserName = Cookies.get("firstname");
     setUserName(storedUserName || "Admin");
-    console.log(storedUserName);
+    //console.log(storedUserName);
     
   }, []);
 

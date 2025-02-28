@@ -20,6 +20,13 @@ function AdminPage() {
         >
           Add Staff
         </button>
+
+        <button
+          onClick={() => navigate("/staff-list")}
+          className="bg-purple-600 hover:bg-purple-500 text-white px-6 py-3 rounded-lg font-semibold shadow-lg transition-transform transform hover:scale-105"
+        >
+          Staff List
+        </button>
       </div>
     </div>
   );

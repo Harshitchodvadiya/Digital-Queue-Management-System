@@ -49,7 +49,7 @@ function AddStaffForm() {
       );
 
       alert("Staff added successfully!");
-      navigate("/admin"); // Redirect to Admin Page
+      navigate("/staff-list"); // Redirect to Admin Page
     } catch (error) {
       console.error("Error:", error.response?.data || error.message);
       alert(`Signup failed: ${error.response?.data?.message || "Please try again."}`);

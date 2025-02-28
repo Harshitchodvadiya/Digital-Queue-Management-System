@@ -159,6 +159,8 @@ public class JWTServiceImpl implements JWTService {
         String subject = extractClaim(token, Claims::getSubject);
         return subject.contains(":") ? subject.split(":")[1] : "USER"; // Extract role
     }
+
+    //to extract username ,we need this claim here means data
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -172,6 +174,7 @@ public class JWTServiceImpl implements JWTService {
                 .getBody();
     }
 
+    //token validity
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUserName(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));

@@ -29,6 +29,7 @@ public class User implements UserDetails {
     private String mobileNumber;
     private Role role;
 
+    //list of roles
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
@@ -63,3 +64,5 @@ public class User implements UserDetails {
         return true;
     }
 }
+
+//as lombok is present no need of getpassword

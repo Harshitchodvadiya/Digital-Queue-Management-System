@@ -33,23 +33,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String userEmail;
 
+        // allows the request to pass through without authentication if below is true
         if(StringUtils.isEmpty(authHeader)|| !org.apache.commons.lang3.StringUtils.startsWith(authHeader,"Bearer")){
+
+            //hands over the request processing to the next filter.
             filterChain.doFilter(request,response);
             return;
         }
 
+        //get token starts after Bearer
         jwt = authHeader.substring(7);
         userEmail = jwtService.extractUserName(jwt);
 
+
+        //Checks if the user is already authenticated or if the token contains a valid username.
         if(io.micrometer.common.util.StringUtils.isNotEmpty(userEmail) || SecurityContextHolder.getContext().getAuthentication()==null){
+            // if either condition is true, it proceeds to validate the user.
+
+            //fetch the user details based on username
             UserDetails userDetails = userService.userDetailsService().loadUserByUsername(userEmail);
+
             if(jwtService.isTokenValid(jwt,userDetails)){
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
                 UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                         userDetails,null,userDetails.getAuthorities()
                 );
 
+                //This associates the request's IP address, session ID, etc. with the authentication object.
                 token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                //The authenticated user is now stored in SecurityContextHolder,
+                // which Spring Security uses for authorization.
                 securityContext.setAuthentication(token);
                 SecurityContextHolder.setContext(securityContext);
             }

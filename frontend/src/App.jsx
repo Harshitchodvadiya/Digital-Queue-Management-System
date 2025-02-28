@@ -13,6 +13,7 @@ import Layout from "./components/LandingPage/Layout";
 import Home from "./components/LandingPage/Home";
 import About from "./components/LandingPage/About";
 import Contact from "./components/LandingPage/ContactUs";
+import StaffList from "./components/Staff/StaffList";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
       {/* Admin Pages */}
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/add-staff" element={<AddStaffForm/>} />
+        <Route path="/staff-list" element={<StaffList />} />
 
         {/* Not Found Route */}
         <Route path="*" element={<h1 className="text-center text-3xl text-red-600 font-bold">404 - Page Not Found</h1>} />
