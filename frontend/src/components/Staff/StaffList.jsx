@@ -60,33 +60,33 @@ const StaffList = () => {
         <p className="text-center text-gray-500">No staff members found.</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="py-3 px-6 text-left">First Name</th>
-                <th className="py-3 px-6 text-left">Last Name</th>
-                <th className="py-3 px-6 text-left">Email</th>
-                <th className="py-3 px-6 text-left">Mobile Number</th>
-                <th className="py-3 px-6 text-center">Actions</th>
+          <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg">
+            <thead>
+              <tr className="bg-gray-200 text-gray-700 border">
+                <th className="py-2 px-4 border">First Name</th>  
+                <th className="py-2 px-4 border">Last Name</th>
+                <th className="py-2 px-4 border">Email</th>
+                <th className="py-2 px-4 border">Mobile</th>
+                <th className="py-2 px-4 border">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {staff.map((member, index) => (
-                <tr key={index} className="border-b hover:bg-gray-100">
-                  <td className="py-3 px-6">{member.firstname}</td>
-                  <td className="py-3 px-6">{member.lastname}</td>
-                  <td className="py-3 px-6">{member.email}</td>
-                  <td className="py-3 px-6">{member.mobileNumber}</td>
-                  <td className="py-3 px-6 text-center flex justify-center space-x-2">
+              {staff.map((member) => (
+                <tr key={member.id} className="text-center border">
+                  <td className="py-2 px-4 border">{member.firstname}</td>
+                  <td className="py-2 px-4 border">{member.lastname}</td>
+                  <td className="py-2 px-4 border">{member.email}</td>
+                  <td className="py-2 px-4 border">{member.mobileNumber}</td>
+                  <td className="py-2 px-4  flex justify-center space-x-2">
                     <button
                       onClick={() => handleEdit(member)}
-                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                      className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-700 border"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDelete(member.id)}
-                      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                      className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-700 border"
                     >
                       Delete
                     </button>
@@ -100,6 +100,88 @@ const StaffList = () => {
       {showEditModal && selectedStaff && (
         <EditStaffModal staff={selectedStaff} onClose={() => setShowEditModal(false)} refreshList={fetchStaff} />
       )}
+    </div>
+  );
+};
+
+const EditStaffModal = ({ staff, onClose, refreshList }) => {
+  const [formData, setFormData] = useState({ ...staff });
+  const adminToken = Cookies.get("jwtToken");
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(`http://localhost:8081/api/v1/admin/updateStaff/${staff.id}`, formData, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${adminToken}`, "Content-Type": "application/json" },
+      });
+      alert("Staff updated successfully!");
+      refreshList();
+      onClose();
+    } catch (error) {
+      alert("Failed to update staff. Please try again.");
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+        <h2 className="text-lg font-bold mb-4">Edit Staff</h2>
+        <form onSubmit={handleUpdate}>
+          <label className="block mb-2">First Name</label>
+          <input
+            type="text"
+            name="firstname"
+            value={formData.firstname}
+            onChange={handleChange}
+            className="w-full p-2 border rounded mb-2"
+            required
+          />
+
+          <label className="block mb-2">Last Name</label>
+          <input
+            type="text"
+            name="lastname"
+            value={formData.lastname}
+            onChange={handleChange}
+            className="w-full p-2 border rounded mb-2"
+            required
+          />
+
+          <label className="block mb-2">Email</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full p-2 border rounded mb-2"
+            required
+          />
+
+          <label className="block mb-2">Mobile Number</label>
+          <input
+            type="text"
+            name="mobileNumber"
+            value={formData.mobileNumber}
+            onChange={handleChange}
+            className="w-full p-2 border rounded mb-4"
+            required
+          />
+
+          <div className="flex justify-end space-x-2">
+            <button type="button" onClick={onClose} className="bg-gray-400 text-white px-4 py-2 rounded">
+              Cancel
+            </button>
+            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

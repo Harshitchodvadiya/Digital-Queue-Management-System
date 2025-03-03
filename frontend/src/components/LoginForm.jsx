@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
@@ -39,61 +39,69 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 px-4">
-      <div className="w-full max-w-md bg-white shadow-xl rounded-xl p-8">
-        <h2 className="text-4xl font-extrabold text-gray-900 text-center mb-6">
-          Welcome
-        </h2>
-        <p className="text-gray-500 text-center mb-8">
-          Please enter your credentials to access your account.
-        </p>
+    <div className="bg-gray-100 flex h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
+      {/* Left Side - Full Width Image */}
+      <div className="w-1/2">
+        <img
+          src="https://images.unsplash.com/photo-1535957998253-26ae1ef29506?q=80&w=1472&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Workspace"
+          className="h-full w-full object-cover"
+        />
+      </div>
 
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label className="block text-gray-700 font-semibold mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-3 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none transition"
-            />
-          </div>
+      {/* Right Side - Sign-In Card */}
+      <div className="w-1/2 flex justify-center items-center p-6">
+        <div className="w-full max-w-sm bg-white p-6 rounded-lg shadow-xl">
+          <h2 className="text-2xl font-extrabold text-gray-900 text-center mb-4">
+            Sign In
+          </h2>
+          <p className="text-gray-500 text-center mb-6">
+            Please enter your credentials to access your account.
+          </p>
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-4 py-3 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none transition"
-            />
-          </div>
+          {/* Form */}
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div>
+              <label className="block text-gray-700 font-medium">Email:</label>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                
+                className="w-full mt-1 p-2 border rounded-md bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none transition"
+              />
+            </div>
 
-          <button
-            type="submit"
-            className="w-full bg-gray-900 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition duration-300 transform hover:scale-105"
-          >
-            Login
-          </button>
-        </form>
+            <div>
+              <label className="block text-gray-700 font-medium">Password:</label>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full mt-1 p-2 border rounded-md bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none transition  "
+              />
+            </div>
 
-        <p className="mt-6 text-center text-gray-600">
-          Don't have an account?{" "}
-          <a
-            href="/register"
-            className="text-gray-900 font-semibold hover:underline"
-          >
-            Sign Up
-          </a>
-        </p>
+            <button
+              type="submit"
+              className="w-full bg-gray-900 text-white py-2 rounded-lg font-semibold hover:bg-gray-700 transition duration-300"
+            >
+              Login
+            </button>
+          </form>
+
+          {/* Register Link */}
+          <p className="mt-4 text-center text-sm text-gray-600">
+            Don't have an account?{" "}
+            <Link to="/register" className="text-gray-900 font-semibold hover:underline">
+              Register here
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
