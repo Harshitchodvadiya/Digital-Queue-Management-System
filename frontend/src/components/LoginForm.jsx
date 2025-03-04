@@ -30,7 +30,7 @@ const Login = () => {
         } else if (userRole === "STAFF") {
           navigate("/staff");
         } else {
-          navigate("/home");
+          navigate("/user");
         }
       })
       .catch((error) => {

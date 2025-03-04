@@ -28,6 +28,10 @@ public class User implements UserDetails {
     private String password;
     private String mobileNumber;
     private Role role;
+    @ManyToOne
+    @JoinColumn(name = "service_id")
+    private StaffServices service;
+
 
     //list of roles
     @Override

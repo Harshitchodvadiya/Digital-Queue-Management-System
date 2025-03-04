@@ -63,8 +63,9 @@ const StaffList = () => {
           <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg">
             <thead>
               <tr className="bg-gray-200 text-gray-700 border">
-                <th className="py-2 px-4 border">First Name</th>  
-                <th className="py-2 px-4 border">Last Name</th>
+                <th className="py-2 px-4 border">Full Name</th>
+                <th className="py-2 px-4 border">Service ID</th>
+                <th className="py-2 px-4 border">Service Name</th>
                 <th className="py-2 px-4 border">Email</th>
                 <th className="py-2 px-4 border">Mobile</th>
                 <th className="py-2 px-4 border">Actions</th>
@@ -74,10 +75,11 @@ const StaffList = () => {
               {staff.map((member) => (
                 <tr key={member.id} className="text-center border">
                   <td className="py-2 px-4 border">{member.firstname}</td>
-                  <td className="py-2 px-4 border">{member.lastname}</td>
+                  <td className="py-2 px-4 border">{member.service?.serviceId}</td>
+                  <td className="py-2 px-4 border">{member.service?.serviceName}</td>
                   <td className="py-2 px-4 border">{member.email}</td>
                   <td className="py-2 px-4 border">{member.mobileNumber}</td>
-                  <td className="py-2 px-4  flex justify-center space-x-2">
+                  <td className="py-2 px-4 flex justify-center space-x-2">
                     <button
                       onClick={() => handleEdit(member)}
                       className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-700 border"
@@ -105,20 +107,62 @@ const StaffList = () => {
 };
 
 const EditStaffModal = ({ staff, onClose, refreshList }) => {
-  const [formData, setFormData] = useState({ ...staff });
+  const [formData, setFormData] = useState({
+    firstname: staff.firstname || "",
+    email: staff.email || "",
+    mobileNumber: staff.mobileNumber || "",
+    serviceId: staff.service?.serviceId || "", // Ensure serviceId is initialized
+  });
+
+  const [services, setServices] = useState([]);
   const adminToken = Cookies.get("jwtToken");
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/api/v1/admin/getAllService", {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+      setServices(response.data);
+    } catch (error) {
+      alert("Failed to load services. Please try again.");
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleServiceChange = (e) => {
+    const selectedService = services.find((s) => s.serviceId === parseInt(e.target.value));
+    if (selectedService) {
+      setFormData({
+        ...formData,
+        serviceId: selectedService.serviceId, // Ensure correct serviceId is set
+      });
+    }
+  };
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:8081/api/v1/admin/updateStaff/${staff.id}`, formData, {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${adminToken}`, "Content-Type": "application/json" },
-      });
+      await axios.put(
+        `http://localhost:8081/api/v1/admin/updateStaff/${staff.id}`,
+        {
+          firstname: formData.firstname,
+          email: formData.email,
+          mobileNumber: formData.mobileNumber,
+          service_id: formData.serviceId, // Ensure service_id is sent correctly
+        },
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${adminToken}`, "Content-Type": "application/json" },
+        }
+      );
       alert("Staff updated successfully!");
       refreshList();
       onClose();
@@ -132,45 +176,24 @@ const EditStaffModal = ({ staff, onClose, refreshList }) => {
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-lg font-bold mb-4">Edit Staff</h2>
         <form onSubmit={handleUpdate}>
-          <label className="block mb-2">First Name</label>
-          <input
-            type="text"
-            name="firstname"
-            value={formData.firstname}
-            onChange={handleChange}
-            className="w-full p-2 border rounded mb-2"
-            required
-          />
+          <label className="block mb-2">Full Name</label>
+          <input type="text" name="firstname" value={formData.firstname} onChange={handleChange} className="w-full p-2 border rounded mb-2" required />
 
-          <label className="block mb-2">Last Name</label>
-          <input
-            type="text"
-            name="lastname"
-            value={formData.lastname}
-            onChange={handleChange}
-            className="w-full p-2 border rounded mb-2"
-            required
-          />
+          <label className="block mb-2">Service</label>
+          <select name="serviceId" value={formData.serviceId} onChange={handleServiceChange} className="w-full p-2 border rounded mb-2" required>
+            <option value="">Select Service</option>
+            {services.map((service) => (
+              <option key={service.serviceId} value={service.serviceId}>
+                {service.serviceName}
+              </option>
+            ))}
+          </select>
 
           <label className="block mb-2">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full p-2 border rounded mb-2"
-            required
-          />
+          <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full p-2 border rounded mb-2" required />
 
           <label className="block mb-2">Mobile Number</label>
-          <input
-            type="text"
-            name="mobileNumber"
-            value={formData.mobileNumber}
-            onChange={handleChange}
-            className="w-full p-2 border rounded mb-4"
-            required
-          />
+          <input type="text" name="mobileNumber" value={formData.mobileNumber} onChange={handleChange} className="w-full p-2 border rounded mb-4" required />
 
           <div className="flex justify-end space-x-2">
             <button type="button" onClick={onClose} className="bg-gray-400 text-white px-4 py-2 rounded">
@@ -185,5 +208,4 @@ const EditStaffModal = ({ staff, onClose, refreshList }) => {
     </div>
   );
 };
-
 export default StaffList;
