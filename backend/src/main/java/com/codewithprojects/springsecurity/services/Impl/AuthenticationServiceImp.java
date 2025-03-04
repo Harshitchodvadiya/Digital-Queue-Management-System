@@ -5,7 +5,9 @@ import com.codewithprojects.springsecurity.dto.RefreshTokenRequest;
 import com.codewithprojects.springsecurity.dto.SignUpRequest;
 import com.codewithprojects.springsecurity.dto.SigninRequest;
 import com.codewithprojects.springsecurity.entities.Role;
+import com.codewithprojects.springsecurity.entities.StaffServices;
 import com.codewithprojects.springsecurity.entities.User;
+import com.codewithprojects.springsecurity.repository.StaffServicesRepository;
 import com.codewithprojects.springsecurity.repository.UserRepository;
 import com.codewithprojects.springsecurity.services.AuthenticationService;
 import com.codewithprojects.springsecurity.services.JWTService;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,19 +34,28 @@ public class AuthenticationServiceImp implements AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final StaffServicesRepository staffServicesRepository;
     private final JWTService jwtService;
 
     @Autowired
     HttpServletResponse httpServletResponse;
 
-    public User signup(SignUpRequest signUpRequest, Role role) {
+    public User signup(SignUpRequest signUpRequest, Role role,Integer service_id) {
         User user = new User();
         user.setEmail(signUpRequest.getEmail());
         user.setFirstname(signUpRequest.getFirstname());
         user.setSecondname(signUpRequest.getLastname());
+
         user.setMobileNumber(signUpRequest.getMobileNumber()); // Added mobileNumber
         user.setRole(role);
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+
+        // If service_id is 0, set `null`, else fetch the service entity
+        StaffServices service = (service_id == 0) ? null :
+                staffServicesRepository.findById(Long.valueOf(service_id))
+                        .orElseThrow(() -> new IllegalArgumentException("Service not found"));
+
+        user.setService(service);
 
         return userRepository.save(user);
     }
@@ -114,16 +126,29 @@ public class AuthenticationServiceImp implements AuthenticationService {
         return userRepository.findAll();
     }
 
-    public User updateStaff(Long id, SignUpRequest updateRequest){
-        User staff= userRepository.findById(id).orElseThrow(()->new RuntimeException("Staff not found"));
+    public User updateStaff(Long id, SignUpRequest updateRequest) {
+
+
+        User staff = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Staff not found"));
+
 
         staff.setFirstname(updateRequest.getFirstname());
-        staff.setMobileNumber(updateRequest.getFirstname());
+        staff.setMobileNumber(updateRequest.getMobileNumber());
         staff.setEmail(updateRequest.getEmail());
         staff.setPassword(updateRequest.getPassword());
 
-        return userRepository.save(staff);
 
+        if (updateRequest.getService_id() != null) {
+            Optional<StaffServices> optionalService = staffServicesRepository.findById(Long.valueOf(updateRequest.getService_id()));
+            if (optionalService.isPresent()) {
+                StaffServices service = optionalService.get();
+                staff.setService(service);
+            } else {
+                throw new RuntimeException("Service not found for ID: " + updateRequest.getService_id());
+            }
+        }
+
+        return userRepository.save(staff);
     }
 
 

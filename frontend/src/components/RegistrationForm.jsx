@@ -86,7 +86,6 @@ function RegistrationForm() {
                   <input
                     type="number"
                     placeholder="Enter your phone no."
-                    max={10}
                     maxLength={10}
                     value={mobileNumber}
                     onChange={(e) => setMobileNumber(e.target.value)} 

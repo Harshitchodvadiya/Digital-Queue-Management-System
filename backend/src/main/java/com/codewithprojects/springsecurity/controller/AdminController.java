@@ -29,7 +29,7 @@ public class AdminController {
     @PostMapping("/addStaff")
     public ResponseEntity<?> addStaff(@RequestBody SignUpRequest signUpRequest){
 //        System.out.println(signUpRequest.getFirstname());
-        return ResponseEntity.ok(authenticationService.signup(signUpRequest, Role.STAFF ));
+        return ResponseEntity.ok(authenticationService.signup(signUpRequest, Role.STAFF,signUpRequest.getService_id() ));
     }
 
 

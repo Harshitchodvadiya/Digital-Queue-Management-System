@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -9,22 +10,38 @@ function AddStaffForm() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstname: "",
-    lastname: "",
+    service_id: "",
     email: "",
     password: "",
-    mobileNumber: ""
+    mobileNumber: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [adminToken, setAdminToken] = useState(null);
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
     const token = Cookies.get("jwtToken");
     setAdminToken(token || null);
+
+    axios
+      .get("http://localhost:8081/api/v1/admin/getAllService", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        console.log("API Response:", response.data); // Check the data format
+        if (Array.isArray(response.data)) {
+          setServices(response.data);
+        } else {
+          console.error("Unexpected response format:", response.data);
+        }
+      })
+      .catch((error) => console.error("Error fetching services:", error));
   }, []);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -51,10 +68,12 @@ function AddStaffForm() {
       );
 
       alert("Staff added successfully!");
-      navigate("/staff-list"); // Redirect to Admin Page
+      navigate("/staff-list");
     } catch (error) {
       console.error("Error:", error.response?.data || error.message);
-      alert(`Signup failed: ${error.response?.data?.message || "Please try again."}`);
+      alert(
+        `Signup failed: ${error.response?.data?.message || "Please try again."}`
+      );
     } finally {
       setLoading(false);
     }
@@ -62,10 +81,8 @@ function AddStaffForm() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] text-white">
-      {/* Navbar */}
       <Navbar />
 
-      {/* Form Section */}
       <div className="flex flex-col items-center justify-center flex-grow p-4">
         <button
           onClick={() => navigate("/admin")}
@@ -96,28 +113,42 @@ function AddStaffForm() {
             />
           </div>
 
-          {/* Services */}
+          
+
+          {/* Service Selection */}
           <div className="mb-4">
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Service
             </label>
-            <input
-              type="text"
-              name="lastname"
-              value={formData.lastname}
+            <select
+              name="service_id"
+              value={formData.service_id}
               onChange={handleChange}
               required
               className="w-full px-3 py-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md"
-            />
+            >
+              <option value="" disabled>
+                Select a service
+              </option>
+              {services.length > 0 ? (
+                services.map((service) => (
+                  <option key={service.serviceId} value={service.serviceId}>
+                    {service.serviceName}
+                  </option>
+                ))
+              ) : (
+                <option disabled>Loading services...</option>
+              )}
+            </select>
           </div>
 
           {/* Mobile No. */}
           <div className="mb-4">
             <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Mobile No.
+              Mobile No.
             </label>
             <input
-              type="number"
+              type="text"
               name="mobileNumber"
               maxLength={10}
               value={formData.mobileNumber}

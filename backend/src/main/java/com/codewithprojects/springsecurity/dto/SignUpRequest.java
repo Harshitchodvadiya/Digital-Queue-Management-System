@@ -11,6 +11,7 @@ public class SignUpRequest {
 
     private String firstname;
     private String lastname;
+    private Integer service_id;
     private String mobileNumber;
     private String email;
     private String password;

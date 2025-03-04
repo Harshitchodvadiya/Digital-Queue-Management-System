@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 
 import LoginForm from "./components/LoginForm";
-import HomePage from "./components/HomePage";
+import UserPage from "./components/User/UserPage";
 import RegistrationForm from "./components/RegistrationForm";
 
 import AdminPage from "../src/components/Admin/AdminPage"
@@ -31,7 +31,7 @@ function App() {
         <Route path="/register" element={<RegistrationForm />} />
 
         {/* Protected Routes */}
-        <Route path="/home" element={<HomePage />} />
+        <Route path="/user" element={<UserPage />} />
 
         {/* Staff Pages */}
         <Route path="/staff" element={<StaffPage />} />

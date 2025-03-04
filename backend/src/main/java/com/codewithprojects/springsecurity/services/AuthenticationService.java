@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface AuthenticationService {
-    User signup(SignUpRequest signUpRequest, Role role);
+    User signup(SignUpRequest signUpRequest, Role role,Integer service_id);
     ResponseEntity<JwtAuthenticationResponse> signin(SigninRequest signinRequest);
     JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
     List<User> getAllStaff(); // Added method
