@@ -1,7 +1,6 @@
 package com.codewithprojects.springsecurity.services.Impl;
 
 import com.codewithprojects.springsecurity.entities.StaffServices;
-import com.codewithprojects.springsecurity.entities.User;
 import com.codewithprojects.springsecurity.repository.StaffServicesRepository;
 import com.codewithprojects.springsecurity.repository.UserRepository;
 import com.codewithprojects.springsecurity.services.StaffService;
@@ -9,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,4 +35,11 @@ public class StaffServiceImpl implements StaffService {
     public List<StaffServices> getAllService() {
         return staffServicesRepository.findAll();
     }
+
+    @Override
+    public StaffServices getStaffServiceById(Long id) {
+        return staffServicesRepository.findById(id).get();
+    }
+
+
 }

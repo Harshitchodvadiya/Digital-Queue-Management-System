@@ -1,4 +1,8 @@
 package com.codewithprojects.springsecurity.entities;
 
-public class TokenStatus {
+public enum TokenStatus {
+    PENDING,
+    ACTIVE,
+    COMPLETED,
+    SKIPPED
 }

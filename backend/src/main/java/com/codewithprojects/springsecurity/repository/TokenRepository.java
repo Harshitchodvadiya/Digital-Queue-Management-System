@@ -1,4 +1,7 @@
 package com.codewithprojects.springsecurity.repository;
 
-public interface TokenRepository {
+import com.codewithprojects.springsecurity.entities.Token;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TokenRepository extends JpaRepository<Token,Long> {
 }

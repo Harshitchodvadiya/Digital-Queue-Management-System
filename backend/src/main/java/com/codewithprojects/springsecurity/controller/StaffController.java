@@ -3,8 +3,10 @@ package com.codewithprojects.springsecurity.controller;
 
 import com.codewithprojects.springsecurity.dto.SignUpRequest;
 import com.codewithprojects.springsecurity.entities.Role;
+import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.entities.User;
 import com.codewithprojects.springsecurity.services.AuthenticationService;
+import com.codewithprojects.springsecurity.services.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +21,6 @@ import java.util.List;
 public class StaffController{
 
     private final AuthenticationService authenticationService;
-
     // all the user ( user, admin, staff)
     @GetMapping("/userList")
     public ResponseEntity<List<User>> getAllStaff() {
@@ -36,4 +37,6 @@ public class StaffController{
         authenticationService.deleteStaff(id);
         return ResponseEntity.ok("Staff deleted Successfully");
     }
+
+
 }
