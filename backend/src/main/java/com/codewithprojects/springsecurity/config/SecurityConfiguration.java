@@ -42,6 +42,7 @@ public class SecurityConfiguration {
                         .requestMatchers("api/v1/admin/**").hasAuthority(Role.ADMIN.name()) // only admin
                         .requestMatchers("api/v1/user/**").hasAuthority(Role.USER.name())   // only user
                         //all other requests require authentication.
+                        .requestMatchers("api/v1/token/**").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name(),Role.STAFF.name())
                         .anyRequest().authenticated()
                 )
                 //No session is created or stored.
