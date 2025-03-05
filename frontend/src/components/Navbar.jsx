@@ -2,16 +2,27 @@ import { useState, useEffect } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { AiOutlineLogout } from "react-icons/ai";
 import Cookies from "js-cookie";
+import Sidebar from "./Admin/Sidebar";
+import { Menu } from "lucide-react";
 
-const Navbar = () => {
+const Navbar = ({ title = "Digital Queue Management System" }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userName, setUserName] = useState("Admin");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
-    const storedUserName = Cookies.get("firstname");
-    setUserName(storedUserName || "Admin");
-    //console.log(storedUserName);
-    
+    const fetchUserName = () => {
+      const storedUserName = Cookies.get("firstname");
+      if (storedUserName) {
+        setUserName(storedUserName);
+      }
+    };
+
+    fetchUserName();
+
+    // Listen for changes
+    const interval = setInterval(fetchUserName, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleLogout = () => {
@@ -21,9 +32,27 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="flex justify-between items-center p-4 bg-gray-900 text-white shadow-lg">
-      <h1 className="text-xl font-bold">Digital Queue Management System</h1>
-      <div className="relative">
+    <nav className="flex items-center justify-between p-4 bg-gray-900 text-white shadow-lg text-center">
+      {/* Sidebar */}
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+
+      {/* Sidebar Toggle Button (Hidden when sidebar is open) */}
+      {!isSidebarOpen && (
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="absolute top-4 left-4 bg-gray-700 p-2 rounded-md shadow-md hover:bg-gray-600 text-white"
+        >
+          <Menu size={24} />
+        </button>
+      )}
+
+      {/* Centered Title */}
+      <h1 className="text-xl font-bold text-center flex-grow pl-70" >
+       {title}
+      </h1>
+
+      {/* User Dropdown */}
+      <div className="relative w-1/4 flex justify-end">
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
           className="flex items-center space-x-2 bg-gray-800 px-4 py-2 rounded-lg hover:bg-gray-700 transition"

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import Navbar from "../Navbar";
 
 const UserHomePage = () => {
   const [staffList, setStaffList] = useState([]);
@@ -29,7 +30,9 @@ const UserHomePage = () => {
   };
 
   return (
+    
     <div className="max-w-5xl mx-auto p-6 bg-gray-100 min-h-screen">
+      {/* <Navbar/> */}
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Available Staff</h2>
       {loading ? (
         <p className="text-center text-gray-600">Loading...</p>
