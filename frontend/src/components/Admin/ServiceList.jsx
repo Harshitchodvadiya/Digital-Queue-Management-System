@@ -69,7 +69,7 @@ const ServiceList = () => {
         <div className="p-6">
           <button
             className="bg-gradient-to-br from-[#16213e] to-[#0f3460] text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-500 transition duration-300 mb-4 ml-290"
-            onClick={() => navigate("/add-service") }
+            onClick={() => navigate("/add-service")}
           >
             + Add Service
           </button>
@@ -105,7 +105,7 @@ const ServiceList = () => {
                           >
                             Edit
                           </button>
-                          
+                        
                         </div>
                       </td>
                     </tr>
@@ -115,31 +115,32 @@ const ServiceList = () => {
             </div>
           )}
 
-          {/* Edit Form (Appears when editing) */}
+          {/* Edit Service Form */}
           {editService && (
-            <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                <h2 className="text-lg font-bold mb-4">Edit Service</h2>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Service Name:
-                  <input
-                    type="text"
-                    name="serviceName"
-                    value={formData.serviceName}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded mt-1"
-                  />
-                </label>
-                <label className="block mb-4 text-sm font-medium text-gray-700">
-                  Service Description:
-                  <textarea
-                    name="serviceDescription"
-                    value={formData.serviceDescription}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded mt-1"
-                  ></textarea>
-                </label>
-                <div className="flex justify-end space-x-2">
+            <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] bg-opacity-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-[400px] text-white">
+                <h2 className="text-2xl font-bold text-center mb-4 text-gray-800">Edit Service</h2>
+
+                <label className="block mb-2 text-md text-gray-800 font-medium">Service Name:</label>
+                <input
+                  type="text"
+                  name="serviceName"
+                  value={formData.serviceName}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded mt-1 text-black"
+                />
+
+                <label className="block mb-2 mt-4  font-medium text-md text-gray-800">Service Description:</label>
+                <textarea
+                  name="serviceDescription"
+                  value={formData.serviceDescription}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded mt-1 text-black"
+                  rows={5}
+                  cols={5}
+                ></textarea>
+
+                <div className="flex justify-center space-x-2 mt-6">
                   <button
                     className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700"
                     onClick={() => setEditService(null)}
@@ -147,7 +148,7 @@ const ServiceList = () => {
                     Cancel
                   </button>
                   <button
-                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700"
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
                     onClick={handleUpdate}
                   >
                     Save
@@ -156,6 +157,7 @@ const ServiceList = () => {
               </div>
             </div>
           )}
+
         </div>
       </div>
     </div>

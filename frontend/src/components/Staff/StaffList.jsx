@@ -102,6 +102,7 @@ const StaffList = () => {
 
   return (
     <div className="h-full w-full flex">
+      
       <div className="flex-1 flex flex-col">
         <Navbar title="Staff Members" />
         <div className="p-6">
@@ -192,61 +193,85 @@ const StaffList = () => {
       </div>
 
       {/* Edit Staff Modal */}
-      {editStaff && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-xl font-bold mb-4">Edit Staff</h2>
-            <form onSubmit={handleUpdateStaff}>
-              <label>First Name:</label>
-              <input
-                type="text"
-                value={editStaff.firstname}
-                onChange={(e) => setEditStaff({ ...editStaff, firstname: e.target.value })}
-                className="w-full border p-2 mb-2"
-              />
 
-<label>Service:</label>
-              <select
-                value={editStaff.service_id}
-                onChange={(e) => setEditStaff({ ...editStaff, service_id: e.target.value })}
-                className="w-full border p-2 mb-2"
-              >
-                <option value="">Select Service</option>
-                {services.map((service) => (
-                  <option key={service.serviceId} value={service.serviceId}>
-                    {service.serviceName}
-                  </option>
-                ))}
-              </select>
-
-              <label>Email:</label>
-              <input
-                type="email"
-                value={editStaff.email}
-                onChange={(e) => setEditStaff({ ...editStaff, email: e.target.value })}
-                className="w-full border p-2 mb-2"
-              />
-
-              <label>Mobile:</label>
-              <input
-                type="text"
-                value={editStaff.mobileNumber}
-                onChange={(e) => setEditStaff({ ...editStaff, mobileNumber: e.target.value })}
-                className="w-full border p-2 mb-2"
-              />
-
-              
-
-              <button className="bg-green-500 text-white px-4 py-2 rounded" type="submit">
-                Save
-              </button>
-              <button className="ml-2 bg-gray-400 text-white px-4 py-2 rounded" onClick={() => setEditStaff(null)}>
-                Cancel
-              </button>
-            </form>
-          </div>
+{editStaff && (
+  <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] bg-opacity-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+      <h2 className="text-2xl font-semibold text-center mb-4">Edit Staff</h2>
+      <form onSubmit={handleUpdateStaff} className="space-y-4">
+        
+        {/* First Name */}
+        <div>
+          <label className="block text-gray-700 font-medium mb-1">First Name:</label>
+          <input
+            type="text"
+            value={editStaff.firstname}
+            onChange={(e) => setEditStaff({ ...editStaff, firstname: e.target.value })}
+            className="w-full border border-gray-600 p-2 rounded-md focus:ring focus:ring-blue-200"
+          />
         </div>
-      )}
+
+        {/* Email */}
+        <div>
+          <label className="block text-gray-700 font-medium mb-1">Email:</label>
+          <input
+            type="email"
+            value={editStaff.email}
+            onChange={(e) => setEditStaff({ ...editStaff, email: e.target.value })}
+            className="w-full border border-gray-600 p-2 rounded-md focus:ring focus:ring-blue-200"
+          />
+        </div>
+
+        {/* Service Dropdown */}
+        <div>
+          <label className="block text-gray-700 font-medium mb-1">Service:</label>
+          <select
+            value={editStaff.service_id}
+            onChange={(e) => setEditStaff({ ...editStaff, service_id: e.target.value })}
+            className="w-full border border-gray-600 p-2 rounded-md focus:ring focus:ring-blue-200"
+          >
+            <option value="">Select Service</option>
+            {services.map((service) => (
+              <option key={service.serviceId} value={service.serviceId}>
+                {service.serviceName}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Mobile Number */}
+        <div>
+          <label className="block text-gray-700 font-medium mb-1">Mobile No:</label>
+          <input
+            type="text"
+            value={editStaff.mobileNumber}
+            onChange={(e) => setEditStaff({ ...editStaff, mobileNumber: e.target.value })}
+            className="w-full border border-gray-600 p-2 rounded-md focus:ring focus:ring-blue-200"
+          />
+        </div>
+
+        {/* Buttons */}
+        <div className="flex justify-end space-x-2">
+          <button
+            type="button"
+            className="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500"
+            onClick={() => setEditStaff(null)}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+          >
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 };
