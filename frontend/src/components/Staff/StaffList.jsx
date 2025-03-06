@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+  import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
@@ -106,7 +106,7 @@ const StaffList = () => {
         <Navbar title="Staff Members" />
         <div className="p-6">
           <button
-            className="bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-500 transition duration-300 mb-4"
+            className="bg-gradient-to-br from-[#16213e] to-[#0f3460] text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-500 transition duration-300 mb-4 ml-300"
             onClick={() => navigate("/add-staff")}
           >
             + Add Staff

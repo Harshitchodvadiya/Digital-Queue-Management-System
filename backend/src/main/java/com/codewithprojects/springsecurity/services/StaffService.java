@@ -1,5 +1,6 @@
 package com.codewithprojects.springsecurity.services;
 
+import com.codewithprojects.springsecurity.dto.UpdateServiceRequest;
 import com.codewithprojects.springsecurity.entities.StaffServices;
 
 import java.util.List;
@@ -11,4 +12,6 @@ public interface StaffService {
     List<StaffServices> getAllService();
 
     StaffServices getStaffServiceById(Long id);
-}
+
+    StaffServices updateServiceById(Long id, UpdateServiceRequest updateServiceRequest);
+    }

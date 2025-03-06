@@ -1,8 +1,11 @@
 package com.codewithprojects.springsecurity.controller;
 
 
+import com.codewithprojects.springsecurity.dto.SignUpRequest;
+import com.codewithprojects.springsecurity.dto.UpdateServiceRequest;
 import com.codewithprojects.springsecurity.entities.StaffServices;
 import com.codewithprojects.springsecurity.entities.Token;
+import com.codewithprojects.springsecurity.entities.User;
 import com.codewithprojects.springsecurity.services.StaffService;
 import com.codewithprojects.springsecurity.services.TokenService;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +20,6 @@ import java.util.List;
 public class StaffServiceController {
 
     private final StaffService staffService;
-
-
     @PostMapping("/addStaffService")
     public ResponseEntity<StaffServices> addStaffService(@RequestBody StaffServices staffServiceRequest) {
         StaffServices createdService = staffService.addStaffService(staffServiceRequest);
@@ -29,5 +30,11 @@ public class StaffServiceController {
     public ResponseEntity<List<StaffServices>> getAllServices() {
         return ResponseEntity.ok(staffService.getAllService());
     }
+
+    @PutMapping("/updateService/{id}")
+    public ResponseEntity<StaffServices> updateService(@PathVariable Long id, @RequestBody UpdateServiceRequest updateServiceRequest){
+        return ResponseEntity.ok(staffService.updateServiceById(id,updateServiceRequest));
+    }
+
 }
 

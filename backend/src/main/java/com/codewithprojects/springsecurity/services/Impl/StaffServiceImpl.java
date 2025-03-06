@@ -1,6 +1,9 @@
 package com.codewithprojects.springsecurity.services.Impl;
 
+import com.codewithprojects.springsecurity.dto.SignUpRequest;
+import com.codewithprojects.springsecurity.dto.UpdateServiceRequest;
 import com.codewithprojects.springsecurity.entities.StaffServices;
+import com.codewithprojects.springsecurity.entities.User;
 import com.codewithprojects.springsecurity.repository.StaffServicesRepository;
 import com.codewithprojects.springsecurity.repository.UserRepository;
 import com.codewithprojects.springsecurity.services.StaffService;
@@ -33,12 +36,24 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public List<StaffServices> getAllService() {
+
         return staffServicesRepository.findAll();
     }
 
     @Override
     public StaffServices getStaffServiceById(Long id) {
+
         return staffServicesRepository.findById(id).get();
+    }
+
+
+    public StaffServices updateServiceById(Long id, UpdateServiceRequest updateServiceRequest) {
+        StaffServices services = staffServicesRepository.findById(id).orElseThrow(() -> new RuntimeException("Service not found"));
+        services.setServiceName(updateServiceRequest.getServiceName());
+        services.setServiceDescription(updateServiceRequest.getServiceDescription());
+
+
+        return staffServicesRepository.save(services);
     }
 
 
