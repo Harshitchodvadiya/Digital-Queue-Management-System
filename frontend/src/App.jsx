@@ -16,6 +16,7 @@ import Contact from "./components/LandingPage/ContactUs";
 import StaffList from "./components/Staff/StaffList";
 import ServiceList from "./components/Admin/ServiceList";
 import AddServiceForm from "./components/Admin/AddServiceForm";
+// import EditStaff from "./components/Staff/EditStaff";
 
 function App() {
   return (
@@ -38,7 +39,7 @@ function App() {
         {/* Staff Pages */}
         <Route path="/staff" element={<StaffPage />} />
         <Route path="/staff-list" element={<StaffList />} />
-
+       
       {/* Admin Pages */}
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/add-staff" element={<AddStaffForm/>} />
