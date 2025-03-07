@@ -9,6 +9,7 @@ import com.codewithprojects.springsecurity.services.StaffService;
 import com.codewithprojects.springsecurity.services.TokenService;
 import com.codewithprojects.springsecurity.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class TokenController {
     private final UserService userService;
 
     @PostMapping("/requestToken")
-    public Token requestToken(@RequestBody Token token){
+    public ResponseEntity<?> requestToken(@RequestBody Token token){
 
         System.out.println(token);
         System.out.println(token.getService().getServiceId());
@@ -32,6 +33,9 @@ public class TokenController {
 
         StaffServices staffServices=  staffService.getStaffServiceById(token.getService().getServiceId());
         User user = userService.findUserById(Long.valueOf(token.getUser().getId()));
+        System.out.println(staffServices);
+        System.out.println(user);
+
         token.setService(staffServices);
         token.setUser(user);
         return tokenService.addToken(token);

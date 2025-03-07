@@ -59,16 +59,6 @@ public class StaffServiceImpl implements StaffService {
         return staffServicesRepository.save(services);
     }
 
-//    @Override
-//    public List<Token> getRequestedToken(Long staff_id) {
-//        List<Token> tokens = tokenServiceImpl.getAllRequestedToken();
-//
-//        // Filter tokens based on the provided service_id
-//        return tokens.stream()
-//                .filter(token -> token.getService() != null && token.getService().getServiceId().equals(staff_id))
-//                .toList(); // Converts the stream back to a list
-//    }
-
     @Override
     public List<Token> getRequestedToken(Integer user_id) {
         List<Token> tokens = tokenServiceImpl.getAllRequestedToken();

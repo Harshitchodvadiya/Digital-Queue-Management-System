@@ -4,6 +4,8 @@ import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.repository.TokenRepository;
 import com.codewithprojects.springsecurity.services.TokenService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,13 +14,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TokenServiceImpl implements TokenService {
     private final TokenRepository tokenRepository;
-    @Override
-    public Token addToken(Token token) {
-        return tokenRepository.save(token);
-    }
 
     @Override
     public List<Token> getAllRequestedToken() {
         return tokenRepository.findAll();
+    }
+
+    public ResponseEntity<?> addToken(Token token) {
+        // Fetch all tokens for the given service
+        List<Token> existingTokens = tokenRepository.findAll();
+
+        // Check if any existing token has the same service and estimated time
+        boolean isSlotTaken = existingTokens.stream()
+                .anyMatch(existingToken -> existingToken.getService().getServiceId().equals(token.getService().getServiceId())
+                        && existingToken.getEstimatedTime().equals(token.getEstimatedTime()));
+
+        if (isSlotTaken) {
+            return ResponseEntity.badRequest().body("Error: The selected time slot is already booked.");
+//            throw new RuntimeException();
+        }
+
+        // Save the token if the slot is available
+        return  ResponseEntity.ok(tokenRepository.save(token)) ;
     }
 }
