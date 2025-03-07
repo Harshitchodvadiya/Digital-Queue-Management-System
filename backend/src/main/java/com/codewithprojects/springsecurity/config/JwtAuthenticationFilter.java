@@ -43,17 +43,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         //get token starts after Bearer
         jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUserName(jwt);
+//        userEmail = jwtService.extractUserName(jwt);
 
+        userEmail = jwtService.extractUserName(jwt).split("/")[0];
 
         //Checks if the user is already authenticated or if the token contains a valid username.
         if(io.micrometer.common.util.StringUtils.isNotEmpty(userEmail) || SecurityContextHolder.getContext().getAuthentication()==null){
             // if either condition is true, it proceeds to validate the user.
 
+
             //fetch the user details based on username
             UserDetails userDetails = userService.userDetailsService().loadUserByUsername(userEmail);
 
             if(jwtService.isTokenValid(jwt,userDetails)){
+
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
                 UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                         userDetails,null,userDetails.getAuthorities()

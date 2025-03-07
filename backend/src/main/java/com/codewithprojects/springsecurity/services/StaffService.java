@@ -2,9 +2,10 @@ package com.codewithprojects.springsecurity.services;
 
 import com.codewithprojects.springsecurity.dto.UpdateServiceRequest;
 import com.codewithprojects.springsecurity.entities.StaffServices;
+import com.codewithprojects.springsecurity.entities.Token;
 
 import java.util.List;
-import java.util.Optional;
+
 
 public interface StaffService {
     StaffServices addStaffService(StaffServices staffService);
@@ -14,4 +15,6 @@ public interface StaffService {
     StaffServices getStaffServiceById(Long id);
 
     StaffServices updateServiceById(Long id, UpdateServiceRequest updateServiceRequest);
-    }
+
+    List<Token> getRequestedToken(Integer id);
+}

@@ -69,12 +69,15 @@
 
 package com.codewithprojects.springsecurity.services.Impl;
 
+import com.codewithprojects.springsecurity.entities.User;
+import com.codewithprojects.springsecurity.repository.UserRepository;
 import com.codewithprojects.springsecurity.services.JWTService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -85,6 +88,7 @@ import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Service
@@ -92,7 +96,8 @@ public class JWTServiceImpl implements JWTService {
 
     @Value("${jwt.secret:}") // Load secret key from properties, fallback to empty if not set
     private String secretKey;
-
+    @Autowired
+    private  UserRepository userRepository;
     private Key signingKey;
 
     public JWTServiceImpl() {
@@ -124,11 +129,13 @@ public class JWTServiceImpl implements JWTService {
     }
 
     public String generateToken(UserDetails userDetails) {
+        Optional<User> user = userRepository.findByEmail(userDetails.getUsername());
+        System.out.println(user);
         //no assigned roles, it defaults to "USER"
         String role = userDetails.getAuthorities().isEmpty() ? "USER" :
                 userDetails.getAuthorities().iterator().next().getAuthority(); // Get the first role
         return Jwts.builder()
-                .setSubject(userDetails.getUsername() + ":" + role) // Username:Role
+                .setSubject(userDetails.getUsername() +"/" + user.get().getId() + ":" + role) // Username:Role
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 hours expiry
                 .signWith(signingKey, SignatureAlgorithm.HS256)
@@ -177,9 +184,11 @@ public class JWTServiceImpl implements JWTService {
 
     //token validity
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUserName(token);
+        final String username = extractUserName(token).split("/")[0]; // Extract only the email
+
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
+
 
     private boolean isTokenExpired(String token) {
         return extractClaim(token, Claims::getExpiration).before(new Date());

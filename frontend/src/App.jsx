@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
 import "./App.css";
 
 import LoginForm from "./components/LoginForm";
@@ -19,7 +20,12 @@ import AddServiceForm from "./components/Admin/AddServiceForm";
 
 
 function App() {
-  
+  // const { isAuthenticated, role } = useAuthentication(); // Get auth status and role
+
+  // if (isAuthenticated === null) {
+  //   return <div>Loading...</div>; // Prevent flickering
+  // }
+
   return (
     <Router>
       <Routes>
@@ -35,20 +41,19 @@ function App() {
         <Route path="/register" element={<RegistrationForm />} />
 
         {/* Protected Routes */}
-        <Route path="/user" element={<UserPage />} />
+        <Route path="/user" element={<UserPage /> }/>
 
-        {/* Staff Pages */}
+        {/* Staff Routes */}
         <Route path="/staff" element={<StaffPage />} />
-        <Route path="/staff-list" element={<StaffList />} />
-       
-      {/* Admin Pages */}
-        <Route path="/admin" element={<AdminPage />} />
-        <Route path="/add-staff" element={<AddStaffForm/>} />
-        <Route path="/service-list" element={<ServiceList/>} />
-        <Route path="/add-service" element={<AddServiceForm/>} />
-        
+        <Route path="/staff-list"  element={<StaffList />}  />
 
-        {/* Not Found Route */}
+        {/* Admin Routes */}
+        <Route path="/admin" element={<AdminPage />}  />
+        <Route path="/add-staff" element={<AddStaffForm />}  />
+        <Route path="/service-list" element={<ServiceList />}  />
+        <Route path="/add-service" element={<AddServiceForm /> } />
+
+        {/* 404 Not Found */}
         <Route path="*" element={<h1 className="text-center text-3xl text-red-600 font-bold">404 - Page Not Found</h1>} />
       </Routes>
     </Router>
