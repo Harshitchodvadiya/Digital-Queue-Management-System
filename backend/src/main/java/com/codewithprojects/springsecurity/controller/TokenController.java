@@ -41,4 +41,11 @@ public class TokenController {
     public List<Token> getAllRequestedToken(){
         return tokenService.getAllRequestedToken();
     }
+
+
+    @GetMapping("/getRequestedTokenByStaffId/{id}")
+    public List<Token> getRequestedTokenByStaffId(@PathVariable Integer id){
+        System.out.println(id);
+        return staffService.getRequestedToken(id);
+    }
 }

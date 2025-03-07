@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import useAuthentication from "./hooks/useAuthentication"
 
 import "./App.css";
 
@@ -20,11 +19,11 @@ import ServiceList from "./components/Admin/ServiceList";
 import AddServiceForm from "./components/Admin/AddServiceForm";
 
 function App() {
-  const { isAuthenticated, role } = useAuthentication(); // Get auth status and role
+  // const { isAuthenticated, role } = useAuthentication(); // Get auth status and role
 
-  if (isAuthenticated === null) {
-    return <div>Loading...</div>; // Prevent flickering
-  }
+  // if (isAuthenticated === null) {
+  //   return <div>Loading...</div>; // Prevent flickering
+  // }
 
   return (
     <Router>
@@ -41,17 +40,17 @@ function App() {
         <Route path="/register" element={<RegistrationForm />} />
 
         {/* Protected Routes */}
-        <Route path="/user" element={isAuthenticated && role === "user" ? <UserPage /> : <Navigate to="/login" />} />
+        <Route path="/user" element={<UserPage /> }/>
 
         {/* Staff Routes */}
-        <Route path="/staff" element={isAuthenticated && role === "staff" ? <StaffPage /> : <Navigate to="/login" />} />
-        <Route path="/staff-list" element={isAuthenticated && role === "staff" ? <StaffList /> : <Navigate to="/login" />} />
+        <Route path="/staff" element={<StaffPage />} />
+        <Route path="/staff-list"  element={<StaffList />}  />
 
         {/* Admin Routes */}
-        <Route path="/admin" element={isAuthenticated && role === "admin" ? <AdminPage /> : <Navigate to="/login" />} />
-        <Route path="/add-staff" element={isAuthenticated && role === "admin" ? <AddStaffForm /> : <Navigate to="/login" />} />
-        <Route path="/service-list" element={isAuthenticated && role === "admin" ? <ServiceList /> : <Navigate to="/login" />} />
-        <Route path="/add-service" element={isAuthenticated && role === "admin" ? <AddServiceForm /> : <Navigate to="/login" />} />
+        <Route path="/admin" element={<AdminPage />}  />
+        <Route path="/add-staff" element={<AddStaffForm />}  />
+        <Route path="/service-list" element={<ServiceList />}  />
+        <Route path="/add-service" element={<AddServiceForm /> } />
 
         {/* 404 Not Found */}
         <Route path="*" element={<h1 className="text-center text-3xl text-red-600 font-bold">404 - Page Not Found</h1>} />

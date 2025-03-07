@@ -3,8 +3,10 @@ package com.codewithprojects.springsecurity.services.Impl;
 import com.codewithprojects.springsecurity.dto.SignUpRequest;
 import com.codewithprojects.springsecurity.dto.UpdateServiceRequest;
 import com.codewithprojects.springsecurity.entities.StaffServices;
+import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.entities.User;
 import com.codewithprojects.springsecurity.repository.StaffServicesRepository;
+import com.codewithprojects.springsecurity.repository.TokenRepository;
 import com.codewithprojects.springsecurity.repository.UserRepository;
 import com.codewithprojects.springsecurity.services.StaffService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import java.util.Optional;
 public class StaffServiceImpl implements StaffService {
     private final StaffServicesRepository staffServicesRepository;
     private final UserRepository userRepository;
+    private final TokenServiceImpl tokenServiceImpl;
 
 //    @Override
 //    public StaffServices addStaffService(StaffServices staffService, Long userId) {
@@ -55,6 +58,27 @@ public class StaffServiceImpl implements StaffService {
 
         return staffServicesRepository.save(services);
     }
+
+//    @Override
+//    public List<Token> getRequestedToken(Long staff_id) {
+//        List<Token> tokens = tokenServiceImpl.getAllRequestedToken();
+//
+//        // Filter tokens based on the provided service_id
+//        return tokens.stream()
+//                .filter(token -> token.getService() != null && token.getService().getServiceId().equals(staff_id))
+//                .toList(); // Converts the stream back to a list
+//    }
+
+    @Override
+    public List<Token> getRequestedToken(Integer user_id) {
+        List<Token> tokens = tokenServiceImpl.getAllRequestedToken();
+        System.out.println(tokens);
+        // Filter tokens based on the provided user_id
+        return tokens.stream()
+                .filter(token -> token.getUser().getId() == user_id)
+                .toList(); // Converts the stream back to a list
+    }
+
 
 
 }
