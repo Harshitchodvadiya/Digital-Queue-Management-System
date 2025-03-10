@@ -19,19 +19,20 @@ public class Token {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
+
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "staff_id")
     private User staffId;
 
     @Enumerated(EnumType.STRING)
     private TokenStatus status = TokenStatus.PENDING;
 
-    private LocalDateTime issuedTime = LocalDateTime.now();
-    private LocalDateTime estimatedTime;
+    private LocalDateTime issuedTime;
+    private LocalDateTime appointedTime;
     private LocalDateTime completedTime;
 }
 

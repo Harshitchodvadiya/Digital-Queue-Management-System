@@ -11,5 +11,7 @@ public class UpdateServiceRequest {
 
     private String serviceName;
     private String serviceDescription;
+    private int estimatedTime;
+    private boolean isActive;
 
 }

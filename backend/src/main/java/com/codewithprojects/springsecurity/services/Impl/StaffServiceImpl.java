@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,20 +21,12 @@ public class StaffServiceImpl implements StaffService {
     private final UserRepository userRepository;
     private final TokenServiceImpl tokenServiceImpl;
 
-//    @Override
-//    public StaffServices addStaffService(StaffServices staffService, Long userId) {
+
 
     @Override
     public StaffServices addStaffService(StaffServices staffService) {
        return staffServicesRepository.save(staffService);
     }
-
-    ////        User user = userRepository.findById(userId)
-////                .orElseThrow(() -> new RuntimeException("User not found"));
-////
-////        staffService.setUser(user); // Assign the user to the service
-////        return staffServicesRepository.save(staffService);
-//    }
 
     @Override
     public List<StaffServices> getAllService() {
@@ -54,6 +45,8 @@ public class StaffServiceImpl implements StaffService {
         StaffServices services = staffServicesRepository.findById(id).orElseThrow(() -> new RuntimeException("Service not found"));
         services.setServiceName(updateServiceRequest.getServiceName());
         services.setServiceDescription(updateServiceRequest.getServiceDescription());
+        services.setEstimatedTime(updateServiceRequest.getEstimatedTime());
+        services.setActive(updateServiceRequest.isActive());
 
 
         return staffServicesRepository.save(services);

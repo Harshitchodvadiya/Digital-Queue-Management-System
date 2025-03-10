@@ -8,8 +8,13 @@ const ServiceList = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [editService, setEditService] = useState(null); // Store service being edited
-  const [formData, setFormData] = useState({ serviceName: "", serviceDescription: "" });
+  const [editService, setEditService] = useState(null);
+  const [formData, setFormData] = useState({
+    serviceName: "",
+    serviceDescription: "",
+    estimatedTime: "",
+    active: false,
+  });
 
   const adminToken = Cookies.get("jwtToken");
   const navigate = useNavigate();
@@ -39,7 +44,12 @@ const ServiceList = () => {
   // Handle Edit Click
   const handleEditClick = (service) => {
     setEditService(service);
-    setFormData({ serviceName: service.serviceName, serviceDescription: service.serviceDescription });
+    setFormData({
+      serviceName: service.serviceName,
+      serviceDescription: service.serviceDescription,
+      estimatedTime: service.estimatedTime || "",
+      active: service.active,
+    });
   };
 
   // Handle Form Input Change
@@ -47,12 +57,21 @@ const ServiceList = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Handle Toggle Active Status
+  const handleToggleActive = () => {
+    setFormData({ ...formData, active: !formData.active });
+  };
+
   // Handle Update Service
   const handleUpdate = async () => {
     try {
-      await axios.put(`http://localhost:8081/api/v1/admin/updateService/${editService.serviceId}`, formData, {
-        headers: { Authorization: `Bearer ${adminToken}` },
-      });
+      await axios.put(
+        `http://localhost:8081/api/v1/admin/updateService/${editService.serviceId}`,
+        formData,
+        {
+          headers: { Authorization: `Bearer ${adminToken}` },
+        }
+      );
 
       setEditService(null); // Close the form
       fetchService(); // Refresh the list
@@ -68,7 +87,7 @@ const ServiceList = () => {
         <Navbar title="Service List" />
         <div className="p-6">
           <button
-            className="bg-gradient-to-br from-[#16213e] to-[#0f3460] text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-500 transition duration-300 mb-4 ml-290"
+            className="bg-gradient-to-br from-[#16213e] to-[#0f3460] text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-500 transition duration-300 mb-4"
             onClick={() => navigate("/add-service")}
           >
             + Add Service
@@ -88,6 +107,8 @@ const ServiceList = () => {
                     <th className="py-2 px-4 border">Service ID</th>
                     <th className="py-2 px-4 border">Service Name</th>
                     <th className="py-2 px-4 border">Service Description</th>
+                    <th className="py-2 px-4 border">Estimated Time (min)</th>
+                    <th className="py-2 px-4 border">Active</th>
                     <th className="py-2 px-4 border">Actions</th>
                   </tr>
                 </thead>
@@ -97,6 +118,10 @@ const ServiceList = () => {
                       <td className="py-2 px-4 border">{service.serviceId || "N/A"}</td>
                       <td className="py-2 px-4 border">{service.serviceName || "N/A"}</td>
                       <td className="py-2 px-4 border">{service.serviceDescription || "N/A"}</td>
+                      <td className="py-2 px-4 border">{service.estimatedTime || "N/A"}</td>
+                      <td className="py-2 px-4 border">
+                        {service.active ? "Yes" : "No"}
+                      </td>
                       <td className="py-2 px-4 border">
                         <div className="flex justify-center space-x-2">
                           <button
@@ -105,7 +130,6 @@ const ServiceList = () => {
                           >
                             Edit
                           </button>
-                        
                         </div>
                       </td>
                     </tr>
@@ -117,8 +141,8 @@ const ServiceList = () => {
 
           {/* Edit Service Form */}
           {editService && (
-            <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] bg-opacity-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg w-[400px] text-white">
+            <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-[400px] text-black">
                 <h2 className="text-2xl font-bold text-center mb-4 text-gray-800">Edit Service</h2>
 
                 <label className="block mb-2 text-md text-gray-800 font-medium">Service Name:</label>
@@ -127,18 +151,36 @@ const ServiceList = () => {
                   name="serviceName"
                   value={formData.serviceName}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded mt-1 text-black"
+                  className="w-full p-2 border rounded mt-1"
                 />
 
-                <label className="block mb-2 mt-4  font-medium text-md text-gray-800">Service Description:</label>
+                <label className="block mb-2 mt-4 font-medium text-md text-gray-800">Service Description:</label>
                 <textarea
                   name="serviceDescription"
                   value={formData.serviceDescription}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded mt-1 text-black"
+                  className="w-full p-2 border rounded mt-1"
                   rows={5}
-                  cols={5}
                 ></textarea>
+
+                <label className="block mb-2 mt-4 font-medium text-md text-gray-800">Estimated Time (min):</label>
+                <input
+                  type="number"
+                  name="estimatedTime"
+                  value={formData.estimatedTime}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded mt-1"
+                />
+
+                <div className="flex items-center mt-4">
+                  <input
+                    type="checkbox"
+                    checked={formData.active}
+                    onChange={handleToggleActive}
+                    className="mr-2"
+                  />
+                  <span className="text-gray-800">Active</span>
+                </div>
 
                 <div className="flex justify-center space-x-2 mt-6">
                   <button

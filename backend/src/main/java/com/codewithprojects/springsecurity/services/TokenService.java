@@ -9,5 +9,5 @@ public interface TokenService {
 
     ResponseEntity<?> addToken(Token token);
     List<Token> getAllRequestedToken();
-
+    Token updateToken(Long id,Token token);
 }
