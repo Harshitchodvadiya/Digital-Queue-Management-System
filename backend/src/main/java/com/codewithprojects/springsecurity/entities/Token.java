@@ -24,8 +24,8 @@ public class Token {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "service_id")
-    private StaffServices service;
+    @JoinColumn(name = "staff_id")
+    private User staffId;
 
     @Enumerated(EnumType.STRING)
     private TokenStatus status = TokenStatus.PENDING;

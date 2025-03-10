@@ -28,15 +28,14 @@ public class TokenController {
     public ResponseEntity<?> requestToken(@RequestBody Token token){
 
         System.out.println(token);
-        System.out.println(token.getService().getServiceId());
         System.out.println(token.getUser().getId());
 
-        StaffServices staffServices=  staffService.getStaffServiceById(token.getService().getServiceId());
+        User staffServices=  userService.findUserById(Long.valueOf(token.getStaffId().getId()));
         User user = userService.findUserById(Long.valueOf(token.getUser().getId()));
         System.out.println(staffServices);
         System.out.println(user);
 
-        token.setService(staffServices);
+        token.setStaffId(staffServices);
         token.setUser(user);
         return tokenService.addToken(token);
     }
@@ -49,7 +48,8 @@ public class TokenController {
 
     @GetMapping("/getRequestedTokenByStaffId/{id}")
     public List<Token> getRequestedTokenByStaffId(@PathVariable Integer id){
-        System.out.println(id);
+        System.out.println("Received Staff ID: " + id);
+//        System.out.println(id);
         return staffService.getRequestedToken(id);
     }
 }

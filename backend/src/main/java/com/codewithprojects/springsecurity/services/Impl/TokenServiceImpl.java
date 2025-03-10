@@ -26,7 +26,7 @@ public class TokenServiceImpl implements TokenService {
 
         // Check if any existing token has the same service and estimated time
         boolean isSlotTaken = existingTokens.stream()
-                .anyMatch(existingToken -> existingToken.getService().getServiceId().equals(token.getService().getServiceId())
+                .anyMatch(existingToken -> existingToken.getStaffId().getId().equals(token.getStaffId().getId())
                         && existingToken.getEstimatedTime().equals(token.getEstimatedTime()));
 
         if (isSlotTaken) {

@@ -65,7 +65,9 @@ public class StaffServiceImpl implements StaffService {
         System.out.println(tokens);
         // Filter tokens based on the provided user_id
         return tokens.stream()
-                .filter(token -> token.getUser().getId() == user_id)
+//                .filter(token -> token.getStaffId().getId() == user_id)
+
+                .filter(token -> token.getStaffId().getId().equals( user_id))
                 .toList(); // Converts the stream back to a list
     }
 
