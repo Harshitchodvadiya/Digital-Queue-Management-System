@@ -45,8 +45,11 @@ const StaffTokenTable = () => {
     }
   }, []);
 
+  //admin@gmail.com/1:ADMIN
+
   /**
    * Fetches the list of tokens assigned to the logged-in staff member.
+   * Runs when staffId changes (dependency [staffId]).
    */
   useEffect(() => {
     if (!staffId) return;

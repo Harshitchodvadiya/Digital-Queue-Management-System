@@ -53,7 +53,10 @@ function StaffPage() {
           <p className="text-gray-700 mt-2">Here are the token requests assigned to your service.</p>
         </div>
 
-        
+        {/* Token Table Section */}
+        {/* <div className="mt-6 w-full max-w-5xl">
+          <StaffTokenTable staffId={staffId} />
+        </div> */}
       </div>
     </div>
   );

@@ -20,6 +20,12 @@ function RegistrationForm() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    // Validate mobile number length
+  if (mobileNumber.length !== 10) {
+    alert("Mobile number must be exactly 10 digits.");
+    return; // Stop the function execution
+  }
+    
     const user = {
       firstname: firstname,
       lastname: lastname,
@@ -32,7 +38,7 @@ function RegistrationForm() {
       .post("http://localhost:8081/api/v1/auth/signup", user)
       .then((response) => {
         console.log("Registration successful:", response.data);
-        navigate("/");
+        navigate("/login");
       })
       .catch((error) => {
         console.error("Registration failed:", error);
@@ -89,6 +95,7 @@ function RegistrationForm() {
               <input
                 type="number"
                 placeholder="Enter your phone no."
+                minLength={10}
                 maxLength={10}
                 value={mobileNumber}
                 onChange={(e) => setMobileNumber(e.target.value)} 

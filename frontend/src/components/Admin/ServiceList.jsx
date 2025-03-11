@@ -100,7 +100,7 @@ const ServiceList = () => {
         <Navbar title="Service List" />
         <div className="p-6">
           <button
-            className="bg-gradient-to-br from-[#16213e] to-[#0f3460] text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-500 transition duration-300 mb-4"
+            className="bg-gradient-to-br from-[#16213e] to-[#0f3460] text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-500 transition duration-300 mb-4 ml-295"
             onClick={() => navigate("/add-service")}
           >
             + Add Service
@@ -114,28 +114,28 @@ const ServiceList = () => {
             <p className="text-center text-gray-500">No services found.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg">
-                <thead>
-                  <tr className="bg-gray-200 text-gray-700 border">
-                    <th className="py-2 px-4 border">Service ID</th>
-                    <th className="py-2 px-4 border">Service Name</th>
-                    <th className="py-2 px-4 border">Service Description</th>
-                    <th className="py-2 px-4 border">Estimated Time (min)</th>
-                    <th className="py-2 px-4 border">Active</th>
-                    <th className="py-2 px-4 border">Actions</th>
+              <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+              <thead className="bg-gray-800 text-white">
+                  <tr>
+                    <th className="py-2 px-4 ">Service ID</th>
+                    <th className="py-2 px-4 ">Service Name</th>
+                    <th className="py-2 px-4 ">Service Description</th>
+                    <th className="py-2 px-4 ">Estimated Time (min)</th>
+                    <th className="py-2 px-4 ">Active</th>
+                    <th className="py-2 px-4 ">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {services.map((service) => (
-                    <tr key={service.serviceId} className="text-center border">
-                      <td className="py-2 px-4 border">{service.serviceId || "N/A"}</td>
-                      <td className="py-2 px-4 border">{service.serviceName || "N/A"}</td>
-                      <td className="py-2 px-4 border">{service.serviceDescription || "N/A"}</td>
-                      <td className="py-2 px-4 border">{service.estimatedTime || "N/A"}</td>
-                      <td className="py-2 px-4 border">
+                    <tr key={service.serviceId} className="border-b hover:bg-gray-100 text-gray-700 text-center">
+                      <td className="py-2 px-4 ">{service.serviceId || "N/A"}</td>
+                      <td className="py-2 px-4 ">{service.serviceName || "N/A"}</td>
+                      <td className="py-2 px-4 ">{service.serviceDescription || "N/A"}</td>
+                      <td className="py-2 px-4 ">{service.estimatedTime || "N/A"}</td>
+                      <td className="py-2 px-4 ">
                         {service.active ? "Yes" : "No"}
                       </td>
-                      <td className="py-2 px-4 border">
+                      <td className="py-2 px-4 ">
                         <div className="flex justify-center space-x-2">
                           <button
                             className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-700"
@@ -154,7 +154,7 @@ const ServiceList = () => {
 
           {/* Edit Service Form */}
           {editService && (
-            <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+            <div className="fixed inset-0 flex items-center justify-center bg-gray-300 opacity-90">
               <div className="bg-white p-6 rounded-lg shadow-lg w-[400px] text-black">
                 <h2 className="text-2xl font-bold text-center mb-4 text-gray-800">Edit Service</h2>
 
