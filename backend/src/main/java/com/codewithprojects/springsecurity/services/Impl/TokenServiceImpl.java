@@ -43,24 +43,72 @@ public class TokenServiceImpl implements TokenService {
      * @return The updated token entity.
      * @throws RuntimeException if the token is not found.
      */
+//    @Override
+//    public Token updateToken(Long id, Token token) {
+//        Optional<Token> existingToken = tokenRepository.findById(id);
+//        if (existingToken.isPresent()) {
+//            Token updatedToken = existingToken.get();
+//            updatedToken.setStatus(token.getStatus());
+//            updatedToken.setAppointedTime(token.getAppointedTime());
+//            updatedToken.setCompletedTime(token.getCompletedTime());
+//            return tokenRepository.save(updatedToken);
+//        } else {
+//            throw new RuntimeException("Token not found with ID: " + token.getId());
+//        }
+//    }
+
+
     @Override
     public Token updateToken(Long id, Token token) {
         Optional<Token> existingToken = tokenRepository.findById(id);
+
         if (existingToken.isPresent()) {
             Token updatedToken = existingToken.get();
+
+            // Track previous appointed time and estimated completion time
+            LocalDateTime previousAppointedTime = updatedToken.getAppointedTime();
+            int estimatedDuration = updatedToken.getStaffId().getService().getEstimatedTime(); // Estimated service time
+
             updatedToken.setStatus(token.getStatus());
             updatedToken.setAppointedTime(token.getAppointedTime());
             updatedToken.setCompletedTime(token.getCompletedTime());
-            return tokenRepository.save(updatedToken);
+            tokenRepository.save(updatedToken);
+
+            // Check if completed early and ensure both tokens are for the same day
+            if (token.getCompletedTime().toLocalDate().isEqual(LocalDate.now()) &&
+                    token.getCompletedTime().isBefore(previousAppointedTime.plusMinutes(estimatedDuration))) {
+
+                List<Token> nextTokens = tokenRepository.findByStaffId_IdAndStatusOrderByAppointedTimeAsc(
+                        Long.valueOf(updatedToken.getStaffId().getId()), TokenStatus.PENDING
+                );
+
+                if (!nextTokens.isEmpty()) {
+                    Token nextToken = nextTokens.get(0);
+
+                    // Ensure the next token's appointed time is set for today
+                    LocalDateTime newAppointedTime = token.getCompletedTime().plusMinutes(1);
+                    if (newAppointedTime.toLocalDate().isEqual(LocalDate.now())) {
+                        nextToken.setAppointedTime(newAppointedTime);
+                        tokenRepository.save(nextToken);
+                    } else {
+                        System.out.println("Skipping token adjustment as it's for another day.");
+                    }
+                }
+            }
+
+            return updatedToken;
         } else {
             throw new RuntimeException("Token not found with ID: " + token.getId());
         }
     }
 
+
+
     /**
      * Updates the estimated wait times for pending tokens based on the current time.
      * If the appointed time of a token has passed, it increases the wait time for the subsequent tokens.
      */
+
     @Override
     @Transactional
     public void updateWaitTimes() {
@@ -76,6 +124,12 @@ public class TokenServiceImpl implements TokenService {
         for (int i = 0; i < pendingTokens.size(); i++) {
             Token currentToken = pendingTokens.get(i);
 
+            // Null check for appointed time
+            if (currentToken.getAppointedTime() == null) {
+                System.out.println("⚠️ Warning: Token ID " + currentToken.getId() + " has null appointed time. Skipping...");
+                continue; // Skip this token to prevent NullPointerException
+            }
+
             // Calculate the expected end time (appointed time + additional wait time).
             LocalDateTime expectedEndTime = currentToken.getAppointedTime()
                     .plusMinutes(currentToken.getAdditionalWaitTime());
@@ -90,6 +144,7 @@ public class TokenServiceImpl implements TokenService {
             }
         }
     }
+
 
     /**
      * Adds a new token to the system, ensuring that the selected time slot is available.

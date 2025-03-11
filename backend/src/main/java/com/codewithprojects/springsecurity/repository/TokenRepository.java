@@ -26,4 +26,9 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
     List<Token> findAllByIssuedTimeBetweenAndStatusNotOrderByIssuedTimeAsc(
             LocalDateTime startOfDay, LocalDateTime endOfDay, TokenStatus status
     );
+
+    List<Token> findByStaffId_IdAndStatusOrderByAppointedTimeAsc(Long aLong, TokenStatus tokenStatus);
+
+//    List<Token> findByStaffIdAndStatusOrderByAppointedTimeAsc(Long staffId, TokenStatus status);
+
 }
