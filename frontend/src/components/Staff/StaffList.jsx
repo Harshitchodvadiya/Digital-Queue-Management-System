@@ -1,4 +1,4 @@
-  import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +13,9 @@ const StaffList = () => {
   const adminToken = Cookies.get("jwtToken");
   const navigate = useNavigate();
 
-  // Fetch staff list
+  /**
+   * Fetches the list of staff members from the backend and filters only those with the role "STAFF".
+   */
   const fetchStaff = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -22,7 +24,6 @@ const StaffList = () => {
         withCredentials: true,
         headers: { Authorization: `Bearer ${adminToken}` },
       });
-
       setStaff(response.data.filter((member) => member.role === "STAFF"));
     } catch (err) {
       setError(err.response?.data?.message || "Failed to fetch staff members.");
@@ -35,13 +36,18 @@ const StaffList = () => {
     fetchStaff();
   }, [fetchStaff]);
 
+  /**
+   * Groups staff members by service to display staff count per service.
+   */
   const staffByService = staff.reduce((acc, member) => {
-        const serviceName = member.service?.serviceName || "N/A";
-        acc[serviceName] = (acc[serviceName] || 0) + 1;
-        return acc;
-      }, {});
+    const serviceName = member.service?.serviceName || "N/A";
+    acc[serviceName] = (acc[serviceName] || 0) + 1;
+    return acc;
+  }, {});
 
-  // Fetch available services
+  /**
+   * Fetches available services from the backend.
+   */
   const fetchServices = useCallback(async () => {
     try {
       const response = await axios.get("http://localhost:8081/api/v1/admin/getAllService", {
@@ -57,15 +63,19 @@ const StaffList = () => {
     fetchServices();
   }, [fetchServices]);
 
-  // Open edit modal with staff data
+  /**
+   * Opens the edit modal with the selected staff member's data.
+   */
   const handleEditClick = (staffMember) => {
     setEditStaff({
       ...staffMember,
-      service_id: staffMember.service?.serviceId || "", // Ensure service ID is set
+      service_id: staffMember.service?.serviceId || "",
     });
   };
 
-  // Handle staff update
+  /**
+   * Updates staff details in the backend.
+   */
   const handleUpdateStaff = async (e) => {
     e.preventDefault();
     try {
@@ -75,20 +85,21 @@ const StaffList = () => {
           firstname: editStaff.firstname,
           email: editStaff.email,
           mobileNumber: editStaff.mobileNumber,
-          password: editStaff.password || "", // Send password only if changed
-          service_id: editStaff.service_id, // Ensure service is updated
+          password: editStaff.password || "",
+          service_id: editStaff.service_id,
         },
         { headers: { Authorization: `Bearer ${adminToken}` } }
       );
-
       setEditStaff(null);
-      fetchStaff(); // Refresh the staff list after update
+      fetchStaff(); // Refresh list after update
     } catch (err) {
       console.error("Update failed", err);
     }
   };
 
-  // Delete staff member
+  /**
+   * Deletes a staff member from the backend.
+   */
   const handleDeleteStaff = async (id) => {
     try {
       await axios.delete(`http://localhost:8081/api/v1/admin/deleteStaff/${id}`, {
@@ -102,7 +113,6 @@ const StaffList = () => {
 
   return (
     <div className="h-full w-full flex">
-      
       <div className="flex-1 flex flex-col">
         <Navbar title="Staff Members" />
         <div className="p-6">
@@ -113,9 +123,7 @@ const StaffList = () => {
             + Add Staff
           </button>
 
-          
-
-          {/* Staff Count Table */}
+          {/* Display staff count per service */}
           <div className="mb-6 overflow-x-auto">
             <h3 className="text-lg font-semibold mb-2">Staff Count by Service</h3>
             <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg">
@@ -136,7 +144,7 @@ const StaffList = () => {
             </table>
           </div>
 
-
+          {/* Staff List Table */}
           {loading ? (
             <p className="text-center text-gray-600">Loading...</p>
           ) : error ? (
@@ -144,11 +152,6 @@ const StaffList = () => {
           ) : staff.length === 0 ? (
             <p className="text-center text-gray-500">No staff members found.</p>
           ) : (
-
-            
-
-
-            
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg">
                 <thead>
@@ -160,118 +163,11 @@ const StaffList = () => {
                     <th className="py-2 px-4 border">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {staff.map((member) => (
-                    <tr key={member.id} className="text-center border">
-                      <td className="py-2 px-4 border">{member.firstname}</td>
-                      <td className="py-2 px-4 border">{member.service?.serviceName || "N/A"}</td>
-                      <td className="py-2 px-4 border">{member.email}</td>
-                      <td className="py-2 px-4 border">{member.mobileNumber}</td>
-                      <td className="py-2 px-4 border">
-                        <div className="flex justify-center space-x-2">
-                          <button
-                            className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-700"
-                            onClick={() => handleEditClick(member)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-700"
-                            onClick={() => handleDeleteStaff(member.id)}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
               </table>
             </div>
           )}
         </div>
       </div>
-
-      {/* Edit Staff Modal */}
-
-{editStaff && (
-  <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] bg-opacity-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-      <h2 className="text-2xl font-semibold text-center mb-4">Edit Staff</h2>
-      <form onSubmit={handleUpdateStaff} className="space-y-4">
-        
-        {/* First Name */}
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">First Name:</label>
-          <input
-            type="text"
-            value={editStaff.firstname}
-            onChange={(e) => setEditStaff({ ...editStaff, firstname: e.target.value })}
-            className="w-full border border-gray-600 p-2 rounded-md focus:ring focus:ring-blue-200"
-          />
-        </div>
-
-        {/* Email */}
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">Email:</label>
-          <input
-            type="email"
-            value={editStaff.email}
-            onChange={(e) => setEditStaff({ ...editStaff, email: e.target.value })}
-            className="w-full border border-gray-600 p-2 rounded-md focus:ring focus:ring-blue-200"
-          />
-        </div>
-
-        {/* Service Dropdown */}
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">Service:</label>
-          <select
-            value={editStaff.service_id}
-            onChange={(e) => setEditStaff({ ...editStaff, service_id: e.target.value })}
-            className="w-full border border-gray-600 p-2 rounded-md focus:ring focus:ring-blue-200"
-          >
-            <option value="">Select Service</option>
-            {services.map((service) => (
-              <option key={service.serviceId} value={service.serviceId}>
-                {service.serviceName}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Mobile Number */}
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">Mobile No:</label>
-          <input
-            type="text"
-            value={editStaff.mobileNumber}
-            onChange={(e) => setEditStaff({ ...editStaff, mobileNumber: e.target.value })}
-            className="w-full border border-gray-600 p-2 rounded-md focus:ring focus:ring-blue-200"
-          />
-        </div>
-
-        {/* Buttons */}
-        <div className="flex justify-end space-x-2">
-          <button
-            type="button"
-            className="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500"
-            onClick={() => setEditStaff(null)}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-          >
-            Save
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
-
-
     </div>
   );
 };

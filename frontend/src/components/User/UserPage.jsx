@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import Cookies from "js-cookie";
-import Navbar from "../Navbar";
+import Cookies from "js-cookie"; 
 
 const UserHomePage = () => {
   const [staffList, setStaffList] = useState([]);
@@ -9,10 +8,17 @@ const UserHomePage = () => {
   const [error, setError] = useState("");
   const token = Cookies.get("jwtToken");
 
+  /**
+   * Fetches the list of staff members when the component mounts.
+   */
   useEffect(() => {
     fetchStaff();
   }, []);
 
+  /**
+   * Fetches the list of staff members from the API and filters out only those with the role "STAFF".
+   * Handles loading and error states appropriately.
+   */
   const fetchStaff = async () => {
     setLoading(true);
     try {
@@ -30,10 +36,11 @@ const UserHomePage = () => {
   };
 
   return (
-    
     <div className="max-w-5xl mx-auto p-6 bg-gray-100 min-h-screen">
-      {/* <Navbar/> */}
+      {/* Page Title */}
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Available Staff</h2>
+      
+      {/* Loading, Error, or Staff List Display */}
       {loading ? (
         <p className="text-center text-gray-600">Loading...</p>
       ) : error ? (

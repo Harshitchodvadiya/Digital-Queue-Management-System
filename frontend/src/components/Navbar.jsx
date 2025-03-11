@@ -10,6 +10,10 @@ const Navbar = ({ title = "Digital Queue Management System" }) => {
   const [userName, setUserName] = useState("Admin");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  /**
+   * Fetches the username from cookies and updates the state.
+   * Runs on component mount and updates every second to listen for changes.
+   */
   useEffect(() => {
     const fetchUserName = () => {
       const storedUserName = Cookies.get("firstname");
@@ -22,9 +26,13 @@ const Navbar = ({ title = "Digital Queue Management System" }) => {
 
     // Listen for changes
     const interval = setInterval(fetchUserName, 1000);
-    return () => clearInterval(interval);
+    return () => clearInterval(interval);   // Cleanup function to clear interval on unmount
   }, []);
 
+  /**
+   * Handles user logout by removing authentication-related cookies
+   * and redirecting to the login page.
+   */
   const handleLogout = () => {
     Cookies.remove("jwtToken");
     Cookies.remove("firstname");

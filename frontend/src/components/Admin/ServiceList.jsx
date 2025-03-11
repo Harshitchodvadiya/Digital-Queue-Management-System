@@ -14,6 +14,10 @@ const ServiceList = () => {
   const adminToken = Cookies.get("jwtToken");
   const navigate = useNavigate();
 
+  /**
+   * Fetches all services from the backend when the component mounts.
+   * Uses useCallback to prevent unnecessary re-renders.
+   */
   const fetchService = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -32,22 +36,31 @@ const ServiceList = () => {
     }
   }, [adminToken]);
 
+  /**
+   * Calls fetchService when the component mounts.
+   */
   useEffect(() => {
     fetchService();
   }, [fetchService]);
 
-  // Handle Edit Click
+  /**
+   * Handles clicking the edit button by setting the selected service's data.
+   */
   const handleEditClick = (service) => {
     setEditService(service);
     setFormData({ serviceName: service.serviceName, serviceDescription: service.serviceDescription });
   };
 
-  // Handle Form Input Change
+  /**
+   * Handles form input changes and updates the state accordingly.
+   */
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle Update Service
+  /**
+   * Handles updating the service details by sending a PUT request to the backend.
+   */
   const handleUpdate = async () => {
     try {
       await axios.put(`http://localhost:8081/api/v1/admin/updateService/${editService.serviceId}`, formData, {
@@ -105,7 +118,6 @@ const ServiceList = () => {
                           >
                             Edit
                           </button>
-                        
                         </div>
                       </td>
                     </tr>
@@ -130,7 +142,7 @@ const ServiceList = () => {
                   className="w-full p-2 border rounded mt-1 text-black"
                 />
 
-                <label className="block mb-2 mt-4  font-medium text-md text-gray-800">Service Description:</label>
+                <label className="block mb-2 mt-4 font-medium text-md text-gray-800">Service Description:</label>
                 <textarea
                   name="serviceDescription"
                   value={formData.serviceDescription}
@@ -157,7 +169,6 @@ const ServiceList = () => {
               </div>
             </div>
           )}
-
         </div>
       </div>
     </div>

@@ -10,6 +10,10 @@ const StaffNavbar = ({ title = "Digital Queue Management System" }) => {
   const [userName, setUserName] = useState("Admin");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  /**
+   * Fetches the stored username from cookies and updates the state.
+   * This effect runs on component mount and sets up an interval to check for changes.
+   */
   useEffect(() => {
     const fetchUserName = () => {
       const storedUserName = Cookies.get("firstname");
@@ -25,6 +29,9 @@ const StaffNavbar = ({ title = "Digital Queue Management System" }) => {
     return () => clearInterval(interval);
   }, []);
 
+  /**
+   * Handles user logout by removing authentication cookies and redirecting to the login page.
+   */
   const handleLogout = () => {
     Cookies.remove("jwtToken");
     Cookies.remove("firstname");
@@ -47,8 +54,8 @@ const StaffNavbar = ({ title = "Digital Queue Management System" }) => {
       )}
 
       {/* Centered Title */}
-      <h1 className="text-xl font-bold text-center flex-grow pl-70" >
-       {title}
+      <h1 className="text-xl font-bold text-center flex-grow pl-70">
+        {title}
       </h1>
 
       {/* User Dropdown */}

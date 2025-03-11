@@ -1,14 +1,21 @@
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; // Extracting and analyzing the info contained in JWT
 import Cookies from "js-cookie"; // Import Cookies
 
 const Login = () => {
+  // State variables for managing input fields
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  /**
+   * Handles form submission.
+   * Prevents default form behavior, sends a login request to the backend,
+   * processes the response, extracts user details, stores authentication info in cookies,
+   * and redirects the user based on their role.
+   */
   const handleSubmit = (event) => {
     event.preventDefault();
     const user = { email, password };
@@ -57,7 +64,7 @@ const Login = () => {
       <div className="w-1/2">
         <img
           src="https://images.unsplash.com/photo-1535957998253-26ae1ef29506?q=80&w=1472&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-          alt="Workspace"
+          alt="login"
           className="h-full w-full object-cover"
         />
       </div>
@@ -65,12 +72,8 @@ const Login = () => {
       {/* Right Side - Sign-In Card */}
       <div className="w-1/2 flex justify-center items-center p-6">
         <div className="w-full max-w-sm bg-white p-6 rounded-lg shadow-xl">
-          <h2 className="text-2xl font-extrabold text-gray-900 text-center mb-4">
-            Sign In
-          </h2>
-          <p className="text-gray-500 text-center mb-6">
-            Please enter your credentials to access your account.
-          </p>
+          <h2 className="text-2xl font-extrabold text-gray-900 text-center mb-4">Sign In</h2>
+          <p className="text-gray-500 text-center mb-6">Please enter your credentials to access your account.</p>
 
           {/* Form */}
           <form className="space-y-4" onSubmit={handleSubmit}>
@@ -120,4 +123,3 @@ const Login = () => {
 };
 
 export default Login;
-

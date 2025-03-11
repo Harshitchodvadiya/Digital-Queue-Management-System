@@ -1,12 +1,12 @@
 import React from 'react'
-import {Link,NavLink} from 'react-router-dom';
-
+import {Link, NavLink} from 'react-router-dom';
 
 export default function Header() {
     return (
         <header className="shadow sticky z-50 h-14">
-            <nav className=" border-gray-200 px-4 lg:px-6 py-1.5 " >
+            <nav className="border-gray-200 px-4 lg:px-6 py-1.5">
                 <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
+                    {/* Logo Section */}
                     <Link to="/" className="flex items-center">
                         <img
                             src="https://alexharkness.com/wp-content/uploads/2020/06/logo-2.png"
@@ -14,6 +14,8 @@ export default function Header() {
                             alt="Logo"
                         />
                     </Link>
+                    
+                    {/* Sign In & Sign Up Buttons */}
                     <div className="flex items-center lg:order-2">
                         <Link
                             to="/login"
@@ -28,11 +30,14 @@ export default function Header() {
                             Sign Up
                         </Link>
                     </div>
+                    
+                    {/* Navigation Links */}
                     <div
                         className="hidden justify-between items-center w-full lg:flex lg:w-auto lg:order-1"
                         id="mobile-menu-2"
                     >
                         <ul className="flex flex-col mt-2 font-medium lg:flex-row lg:space-x-6">
+                            {/* Home Link */}
                             <li>
                                 <NavLink
                                     to="/"
@@ -45,6 +50,8 @@ export default function Header() {
                                     Home
                                 </NavLink>
                             </li>
+                            
+                            {/* About Link */}
                             <li>
                                 <NavLink
                                     to="/about"
@@ -57,6 +64,8 @@ export default function Header() {
                                     About
                                 </NavLink>
                             </li>
+                            
+                            {/* Contact Us Link */}
                             <li>
                                 <NavLink
                                     to="/contact"

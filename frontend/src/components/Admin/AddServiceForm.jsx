@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -8,7 +7,6 @@ import Navbar from "../Navbar";
 function AddServiceForm() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    
     serviceName: "",
     serviceDescription: "",
   });
@@ -16,6 +14,10 @@ function AddServiceForm() {
   const [loading, setLoading] = useState(false);
   const [adminToken, setAdminToken] = useState(null);
 
+  /**
+   * Fetches the admin token from cookies and retrieves the list of services.
+   * Runs once when the component mounts.//component is first added to the DOM.
+   */
   useEffect(() => {
     const token = Cookies.get("jwtToken");
     setAdminToken(token || null);
@@ -35,11 +37,18 @@ function AddServiceForm() {
       .catch((error) => console.error("Error fetching services:", error));
   }, []);
 
+  /**
+   * Handles input field changes and updates the form state.
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  /**
+   * Handles form submission by sending a POST request to add a new service.
+   * Prevents submission if adminToken is not available.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -81,13 +90,12 @@ function AddServiceForm() {
     }
   };
   
-
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] text-white overflow-hidden">
       <Navbar />
 
       <div className="flex flex-col items-center justify-center flex-grow p-4">
-      
+        
         <h3 className="text-3xl font-bold mb-4 text-center text-white shadow-md">
           Add Service
         </h3>
@@ -96,7 +104,6 @@ function AddServiceForm() {
           className="bg-white shadow-md rounded-xl p-6 w-full max-w-md text-black border border-gray-300"
           onSubmit={handleSubmit}
         > 
-
           <div className="mb-4">
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Service Name
@@ -125,7 +132,6 @@ function AddServiceForm() {
             />
           </div>
 
-        
           {/* Submit Button */}
           <button
             type="submit"

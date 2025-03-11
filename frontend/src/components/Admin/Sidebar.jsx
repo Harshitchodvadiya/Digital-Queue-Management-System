@@ -5,6 +5,9 @@ import Cookies from "js-cookie";
 function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
 
+  /**
+   * Handles user logout by removing the authentication token and navigating to the login page.
+   */
   const handleLogout = () => {
     Cookies.remove("jwtToken");
     onClose(); // Close sidebar
@@ -27,6 +30,7 @@ function Sidebar({ isOpen, onClose }) {
 
       {/* Navigation Buttons */}
       <nav className="flex flex-col space-y-4 flex-grow">
+        {/* Navigates to the Admin Dashboard */}
         <button
           onClick={() => {
             navigate("/admin");
@@ -36,6 +40,8 @@ function Sidebar({ isOpen, onClose }) {
         >
           Dashboard
         </button>
+        
+        {/* Navigates to the Staff List */}
         <button
           onClick={() => {
             navigate("/staff-list");
@@ -45,6 +51,8 @@ function Sidebar({ isOpen, onClose }) {
         >
           Staff List
         </button>
+        
+        {/* Navigates to the Service List */}
         <button
           onClick={() => {
             navigate("/service-list ");
@@ -54,6 +62,8 @@ function Sidebar({ isOpen, onClose }) {
         >
           Service List
         </button>
+        
+        {/* Logout Button */}
         <button
           onClick={handleLogout}
           className="text-white text-lg font-medium hover:text-purple-400 transition-all duration-200"

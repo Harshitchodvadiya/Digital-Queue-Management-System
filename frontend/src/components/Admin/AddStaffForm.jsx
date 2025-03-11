@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -19,6 +18,10 @@ function AddStaffForm() {
   const [adminToken, setAdminToken] = useState(null);
   const [services, setServices] = useState([]);
 
+  /**
+   * Fetches the admin token from cookies and retrieves the list of services.
+   * Runs once when the component mounts.
+   */
   useEffect(() => {
     const token = Cookies.get("jwtToken");
     setAdminToken(token || null);
@@ -38,11 +41,18 @@ function AddStaffForm() {
       .catch((error) => console.error("Error fetching services:", error));
   }, []);
 
+  /**
+   * Handles input field changes and updates the form state.
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  /**
+   * Handles form submission by sending a POST request to add a new staff member.
+   * Prevents submission if adminToken is not available.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -83,7 +93,6 @@ function AddStaffForm() {
       <Navbar />
 
       <div className="flex flex-col items-center justify-center flex-grow p-4">
-      
         <h3 className="text-3xl font-bold mb-4 text-center text-white shadow-md">
           Add New Staff
         </h3>
@@ -106,8 +115,6 @@ function AddStaffForm() {
               className="w-full px-3 py-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md"
             />
           </div>
-
-          
 
           {/* Service Selection */}
           <div className="mb-4">
@@ -134,52 +141,6 @@ function AddStaffForm() {
                 <option disabled>Loading services...</option>
               )}
             </select>
-          </div>
-
-          {/* Mobile No. */}
-          <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Mobile No.
-            </label>
-            <input
-              type="text"
-              name="mobileNumber"
-              maxLength={10}
-              value={formData.mobileNumber}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md"
-            />
-          </div>
-
-          {/* Email Address */}
-          <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Email Address
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md"
-            />
-          </div>
-
-          {/* Password */}
-          <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md"
-            />
           </div>
 
           {/* Submit Button */}
