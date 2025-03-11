@@ -40,13 +40,19 @@ public class AuthenticationServiceImp implements AuthenticationService {
     @Autowired
     HttpServletResponse httpServletResponse;
 
-    public User signup(SignUpRequest signUpRequest, Role role,Integer service_id) {
+    /**
+     * Registers a new user with the given role and associated service.
+     * @param signUpRequest The signup request containing user details.
+     * @param role The role assigned to the user.
+     * @param service_id The service ID assigned to the user (nullable for non-staff users).
+     * @return The saved user entity.
+     */
+    public User signup(SignUpRequest signUpRequest, Role role, Integer service_id) {
         User user = new User();
         user.setEmail(signUpRequest.getEmail());
         user.setFirstname(signUpRequest.getFirstname());
         user.setSecondname(signUpRequest.getLastname());
-
-        user.setMobileNumber(signUpRequest.getMobileNumber()); // Added mobileNumber
+        user.setMobileNumber(signUpRequest.getMobileNumber());
         user.setRole(role);
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
 
@@ -60,6 +66,11 @@ public class AuthenticationServiceImp implements AuthenticationService {
         return userRepository.save(user);
     }
 
+    /**
+     * Authenticates a user and generates JWT and refresh tokens.
+     * @param signinRequest The sign-in request containing user credentials.
+     * @return ResponseEntity containing JWT authentication response with tokens.
+     */
     public ResponseEntity<JwtAuthenticationResponse> signin(SigninRequest signinRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(signinRequest.getEmail(), signinRequest.getPassword())
@@ -105,6 +116,11 @@ public class AuthenticationServiceImp implements AuthenticationService {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
+    /**
+     * Refreshes an expired JWT token using a valid refresh token.
+     * @param refreshTokenRequest The refresh token request containing the old token.
+     * @return A new JWT authentication response with a refreshed token.
+     */
     public JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
         String userEmail = jwtService.extractUserName(refreshTokenRequest.getToken());
         User user = userRepository.findByEmail(userEmail).orElseThrow();
@@ -120,23 +136,27 @@ public class AuthenticationServiceImp implements AuthenticationService {
         return null;
     }
 
-
-
+    /**
+     * Retrieves a list of all staff members.
+     * @return List of all staff users.
+     */
     public List<User> getAllStaff() {
         return userRepository.findAll();
     }
 
+    /**
+     * Updates staff details, including assigned service if provided.
+     * @param id The ID of the staff member to update.
+     * @param updateRequest The request containing updated details.
+     * @return The updated staff user.
+     */
     public User updateStaff(Long id, SignUpRequest updateRequest) {
-
-
         User staff = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Staff not found"));
-
 
         staff.setFirstname(updateRequest.getFirstname());
         staff.setMobileNumber(updateRequest.getMobileNumber());
         staff.setEmail(updateRequest.getEmail());
         staff.setPassword(updateRequest.getPassword());
-
 
         if (updateRequest.getService_id() != null) {
             Optional<StaffServices> optionalService = staffServicesRepository.findById(Long.valueOf(updateRequest.getService_id()));
@@ -151,14 +171,12 @@ public class AuthenticationServiceImp implements AuthenticationService {
         return userRepository.save(staff);
     }
 
-
-
-    public void deleteStaff(Long id){
-        User staff = userRepository.findById(id).orElseThrow(()-> new RuntimeException("Staff not found"));
-
+    /**
+     * Deletes a staff member by ID.
+     * @param id The ID of the staff member to delete.
+     */
+    public void deleteStaff(Long id) {
+        User staff = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Staff not found"));
         userRepository.delete(staff);
     }
-
-
-
 }

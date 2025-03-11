@@ -8,11 +8,42 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository interface for managing User entities.
+ * Extends JpaRepository to provide CRUD operations.
+ */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    /**
+     * Finds a user by their email.
+     *
+     * @param email The email of the user.
+     * @return An Optional containing the user if found, otherwise empty.
+     */
     Optional<User> findByEmail(String email);
+
+    /**
+     * Finds a single user by their role.
+     *
+     * @param role The role of the user.
+     * @return The user with the specified role.
+     */
     User findByRole(Role role);
+
+    /**
+     * Retrieves all users with a specific role.
+     *
+     * @param role The role to filter users by.
+     * @return A list of users with the given role.
+     */
     List<User> findAllByRole(Role role);
 
-    Optional<User> findByMobileNumber(String mobileNumber); // Added method to fetch user by mobile number
+    /**
+     * Finds a user by their mobile number.
+     *
+     * @param mobileNumber The mobile number of the user.
+     * @return An Optional containing the user if found, otherwise empty.
+     */
+    Optional<User> findByMobileNumber(String mobileNumber);
 }
