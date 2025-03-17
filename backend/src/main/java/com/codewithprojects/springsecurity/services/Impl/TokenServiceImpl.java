@@ -169,22 +169,22 @@ public class TokenServiceImpl implements TokenService {
         Token currentToken = currentTokenOpt.get();
 
         // Fetch the next token in order
-        List<Token> pendingTokens = tokenRepository.findByStaffId_IdAndStatusOrderByAppointedTimeAsc(
-                Long.valueOf(currentToken.getStaffId().getId()), TokenStatus.PENDING
-        );
-
-        if (pendingTokens.isEmpty()) {
-            throw new RuntimeException("No pending tokens available.");
-        }
-
-        Token nextToken = pendingTokens.get(0); // Get the next token in order
+//        List<Token> pendingTokens = tokenRepository.findByStaffId_IdAndStatusOrderByAppointedTimeAsc(
+//                Long.valueOf(currentToken.getStaffId().getId()), TokenStatus.PENDING
+//        );
+//
+//        if (pendingTokens.isEmpty()) {
+//            throw new RuntimeException("No pending tokens available.");
+//        }
+//
+//        Token nextToken = pendingTokens.get(0); // Get the next token in order
 
         // Activate the next token and assign appointed time
-        nextToken.setStatus(TokenStatus.ACTIVE);
-        nextToken.setAppointedTime(LocalDateTime.now());
+        currentToken.setStatus(TokenStatus.ACTIVE);
+        currentToken.setAppointedTime(LocalDateTime.now());
 
-        tokenRepository.save(nextToken);
-        return nextToken;
+        tokenRepository.save(currentToken);
+        return currentToken;
     }
 
 
@@ -305,21 +305,21 @@ public void updateWaitTimes() {
     LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
 
     // Fetch all non-completed tokens for the day
-    List<Token> allTokens = tokenRepository.findAllByIssuedTimeBetweenAndStatusNotOrderByIssuedTimeAsc(
-            startOfDay, endOfDay, TokenStatus.PENDING
-    );
+//    List<Token> allTokens = tokenRepository.findAllByIssuedTimeBetweenAndStatusNotOrderByIssuedTimeAsc(
+//            startOfDay, endOfDay, TokenStatus.PENDING
+//    );
 //    System.out.println(pendingTokens);
-    if (allTokens.isEmpty()) return; // No pending tokens, nothing to update
+//    if (allTokens.isEmpty()) return; // No pending tokens, nothing to update
 
     // Fetch all tokens of the day to find the last completed one
-    List<Token> pendingTokens = tokenRepository.findAllByIssuedTimeBetweenAndStatusNotOrderByIssuedTimeAsc(
-            startOfDay, endOfDay, TokenStatus.COMPLETED
+    List<Token> pendingTokens = tokenRepository.findAllByIssuedTimeBetweenOrderByIssuedTimeAsc(
+            startOfDay, endOfDay
     );
     // Find the last completed token (latest by issuedTime)
-    Token lastCompletedToken = null;
-    if (!allTokens.isEmpty()) {
-        lastCompletedToken = allTokens.get(allTokens.size() - 1);
-    }
+//    Token lastCompletedToken = null;
+//    if (!allTokens.isEmpty()) {
+//        lastCompletedToken = allTokens.get(allTokens.size() - 1);
+//    }
 
     LocalDateTime currentTime = LocalDateTime.now();
 
@@ -328,8 +328,10 @@ public void updateWaitTimes() {
         System.out.println(currentToken);
         // If this is the first pending token and there was a completed token before it
 //        if (i == 0 ) {
-            currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
-            tokenRepository.save(currentToken);
+            if(currentToken.getStatus() == TokenStatus.PENDING) {
+                currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
+                tokenRepository.save(currentToken);
+            }
 //        }
 
         // If there is a previous pending token, check if it's completed
