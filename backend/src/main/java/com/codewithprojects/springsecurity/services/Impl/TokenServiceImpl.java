@@ -146,18 +146,47 @@ public class TokenServiceImpl implements TokenService {
 
 
 
-    public Token activateNextToken(Long tokenId) {
+//    public Token activateNextToken(Long tokenId) {
+//
+//            Token nextToken = tokenRepository.findById(tokenId).get();
+//
+//            // Assign next token with correct appointed time
+//            nextToken.setStatus(TokenStatus.ACTIVE);
+//
+//            nextToken.setAppointedTime(LocalDateTime.now()); // Set to current time
+//            tokenRepository.save(nextToken);
+//
+//            return nextToken;
+//    }
 
-            Token nextToken = tokenRepository.findById(tokenId).get();
+    public Token activateNextToken(Long currentTokenId) {
+        // Fetch the current token
+        Optional<Token> currentTokenOpt = tokenRepository.findById(currentTokenId);
+        if (currentTokenOpt.isEmpty()) {
+            throw new RuntimeException("Current token not found.");
+        }
 
-            // Assign next token with correct appointed time
-            nextToken.setStatus(TokenStatus.ACTIVE);
+        Token currentToken = currentTokenOpt.get();
 
-            nextToken.setAppointedTime(LocalDateTime.now()); // Set to current time
-            tokenRepository.save(nextToken);
+        // Fetch the next token in order
+        List<Token> pendingTokens = tokenRepository.findByStaffId_IdAndStatusOrderByAppointedTimeAsc(
+                Long.valueOf(currentToken.getStaffId().getId()), TokenStatus.PENDING
+        );
 
-            return nextToken;
+        if (pendingTokens.isEmpty()) {
+            throw new RuntimeException("No pending tokens available.");
+        }
+
+        Token nextToken = pendingTokens.get(0); // Get the next token in order
+
+        // Activate the next token and assign appointed time
+        nextToken.setStatus(TokenStatus.ACTIVE);
+        nextToken.setAppointedTime(LocalDateTime.now());
+
+        tokenRepository.save(nextToken);
+        return nextToken;
     }
+
 
     public Token completeToken(Long tokenId) {
         Optional<Token> tokenOptional = tokenRepository.findById(tokenId);

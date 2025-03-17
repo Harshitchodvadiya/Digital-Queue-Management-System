@@ -97,17 +97,23 @@ public class TokenController {
         return tokenService.updateToken(id, token);
     }
 
-    @PutMapping("/nextToken/{staffId}")
-    public ResponseEntity<?> activateNextToken(@PathVariable Long staffId) {
-        return ResponseEntity.ok(tokenService.activateNextToken(staffId));
+//    @PutMapping("/nextToken/{tokenId}")
+//    public ResponseEntity<?> activateNextToken(@PathVariable Long tokenId) {
+//        return ResponseEntity.ok(tokenService.activateNextToken(tokenId));
+//    }
+    @PutMapping("/nextToken/{tokenId}")
+    public ResponseEntity<?> activateNextToken(@PathVariable Long tokenId) {
+        Token nextToken = tokenService.activateNextToken(tokenId);
+        return ResponseEntity.ok(nextToken);
     }
+
 
     @PutMapping("/completeToken/{tokenId}")
     public ResponseEntity<?> completeToken(@PathVariable Long tokenId) {
         return ResponseEntity.ok(tokenService.completeToken(tokenId));
     }
 
-        @PutMapping("/skipToken/{tokenId}")
+    @PutMapping("/skipToken/{tokenId}")
     public ResponseEntity<?> skipToken(@PathVariable Long tokenId) {
         return ResponseEntity.ok(tokenService.skipToken(tokenId));
     }
