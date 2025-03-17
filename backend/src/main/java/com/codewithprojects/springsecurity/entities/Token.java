@@ -25,6 +25,7 @@ public class Token {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user; // The user (customer) who owns the token
+//    private User userId;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "staff_id")

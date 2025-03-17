@@ -85,6 +85,12 @@ public class TokenController {
         return staffService.getRequestedToken(id);
     }
 
+    @GetMapping("/getRequestedTokenByUserId/{id}")
+    public List<Token> getRequestedTokenByUserId(@PathVariable Integer id) {
+        System.out.println("Received User ID: " + id);
+        return userService.getRequestedToken(id);
+    }
+
     /**
      * Updates the details of an existing token.
      *
