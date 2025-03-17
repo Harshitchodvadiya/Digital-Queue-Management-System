@@ -416,13 +416,63 @@ const UserHomePage = () => {
           <div className="absolute top-0 left-0 w-full h-full bg-gray-300 bg-opacity-90 flex justify-center items-center">
             <div className="bg-white p-6 rounded-lg shadow-lg w-96">
               <h2 className="text-lg font-bold text-gray-800 mb-4">Select a Service & Time</h2>
-              <p className="text-red-500">{error}</p>
-              <input type="date" className="w-full border p-2 rounded-md" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
-              <input type="time" className="w-full border p-2 rounded-md mt-2" value={selectedTime} onChange={(e) => setSelectedTime(e.target.value)} />
-              <button className="bg-blue-500 px-4 py-2 text-white rounded-md mt-4" onClick={requestToken}>Request</button>
+
+              {loading ? (
+                <p>Loading services...</p>
+              ) : error ? (
+                <p className="text-red-500">{error}</p>
+              ) : (
+                <>
+                  <select
+                    className="w-full border p-2 rounded-md text-gray-900"
+                    onChange={(e) => setSelectedStaff(staffList.find(staff => staff.id == e.target.value))}
+                  >
+                    <option value="">-- Select Service --</option>
+                    {staffList.map((staff) => (
+                      <option key={staff.id} value={staff.id}>
+                        {staff.service?.serviceName || "N/A"} - {staff.firstname}
+                      </option>
+                    ))}
+                  </select>
+
+                  {/* Date Input */}
+                  <label className="block text-gray-800 mt-4">Select Date:</label>
+                  <input
+                    type="date"
+                    className="w-full border p-2 rounded-md text-gray-900"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                  />
+
+                  {/* Time Input */}
+                  <label className="block text-gray-800 mt-4">Select Time:</label>
+                  <input
+                    type="time"
+                    className="w-full border p-2 rounded-md text-gray-900"
+                    value={selectedTime}
+                    onChange={(e) => setSelectedTime(e.target.value)}
+                  />
+                </>
+              )}
+
+              <div className="flex justify-end mt-4">
+                <button
+                  className="bg-gray-400 px-4 py-2 rounded-md mr-2"
+                  onClick={() => setTokenModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="bg-blue-500 px-4 py-2 text-white rounded-md"
+                  onClick={requestToken}
+                >
+                  Request
+                </button>
+              </div>
             </div>
           </div>
         )}
+        
       </div>
     </div>
   );
