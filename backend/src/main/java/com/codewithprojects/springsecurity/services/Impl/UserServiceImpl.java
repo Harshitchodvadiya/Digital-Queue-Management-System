@@ -1,5 +1,6 @@
 package com.codewithprojects.springsecurity.services.Impl;
 
+import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.entities.User;
 import com.codewithprojects.springsecurity.repository.UserRepository;
 import com.codewithprojects.springsecurity.services.UserService;
@@ -8,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -18,6 +20,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final TokenServiceImpl tokenServiceImpl;
 
     /**
      * Loads user details by username (email) for authentication.
@@ -52,5 +55,17 @@ public class UserServiceImpl implements UserService {
     public User findByName(String name) {
         return userRepository.findByEmail(name) // Assuming "findByEmail" was meant instead of recursive call
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with name: " + name));
+    }
+
+    @Override
+    public List<Token> getRequestedToken(Integer user_id) {
+        List<Token> tokens = tokenServiceImpl.getAllRequestedToken();
+        System.out.println(tokens);
+
+        // Filter tokens for the given user ID
+        return tokens.stream()
+                //.filter(token -> token.getUserId().getId().equals(user_id))
+                .filter(token -> token.getUser().getId().equals(user_id))
+                .toList();
     }
 }

@@ -1,7 +1,10 @@
 package com.codewithprojects.springsecurity.services;
 
+import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.entities.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+
+import java.util.List;
 
 /**
  * Service interface for handling user-related operations.
@@ -30,4 +33,6 @@ public interface UserService {
      * @return The User entity if found.
      */
     User findByName(String name);
+
+    List<Token> getRequestedToken(Integer id);
 }
