@@ -58,25 +58,72 @@ public class TokenServiceImpl implements TokenService {
 //    }
 
 
+//    @Override
+//    public Token updateToken(Long id, Token token) {
+//        Optional<Token> existingToken = tokenRepository.findById(id);
+//
+//        if (existingToken.isPresent()) {
+//            Token updatedToken = existingToken.get();
+//
+//            // Track previous appointed time and estimated completion time
+//            LocalDateTime previousAppointedTime = updatedToken.getAppointedTime();
+//            int estimatedDuration = updatedToken.getStaffId().getService().getEstimatedTime(); // Estimated service time
+//
+//            updatedToken.setStatus(token.getStatus());
+//            updatedToken.setAppointedTime(token.getAppointedTime());
+//            updatedToken.setCompletedTime(token.getCompletedTime());
+//            tokenRepository.save(updatedToken);
+//
+//            // Check if completed early and ensure both tokens are for the same day
+//            if (token.getCompletedTime().toLocalDate().isEqual(LocalDate.now()) &&
+//                    token.getCompletedTime().isBefore(previousAppointedTime.plusMinutes(estimatedDuration))) {
+//
+//                List<Token> nextTokens = tokenRepository.findByStaffId_IdAndStatusOrderByAppointedTimeAsc(
+//                        Long.valueOf(updatedToken.getStaffId().getId()), TokenStatus.PENDING
+//                );
+//
+//                if (!nextTokens.isEmpty()) {
+//                    Token nextToken = nextTokens.get(0);
+//
+//                    // Ensure the next token's appointed time is set for today
+//                    LocalDateTime newAppointedTime = token.getCompletedTime().plusMinutes(1);
+//                    if (newAppointedTime.toLocalDate().isEqual(LocalDate.now())) {
+//                        nextToken.setAppointedTime(newAppointedTime);
+//                        tokenRepository.save(nextToken);
+//                    } else {
+//                        System.out.println("Skipping token adjustment as it's for another day.");
+//                    }
+//                }
+//            }
+//
+//            return updatedToken;
+//        } else {
+//            throw new RuntimeException("Token not found with ID: " + token.getId());
+//        }
+//    }
+
+
     @Override
     public Token updateToken(Long id, Token token) {
         Optional<Token> existingToken = tokenRepository.findById(id);
 
         if (existingToken.isPresent()) {
             Token updatedToken = existingToken.get();
-
-            // Track previous appointed time and estimated completion time
             LocalDateTime previousAppointedTime = updatedToken.getAppointedTime();
-            int estimatedDuration = updatedToken.getStaffId().getService().getEstimatedTime(); // Estimated service time
+            int estimatedDuration = updatedToken.getStaffId().getService().getEstimatedTime();
 
             updatedToken.setStatus(token.getStatus());
             updatedToken.setAppointedTime(token.getAppointedTime());
-            updatedToken.setCompletedTime(token.getCompletedTime());
+
+            if (token.getStatus() == TokenStatus.COMPLETED || token.getStatus() == TokenStatus.SKIPPED) {
+                updatedToken.setCompletedTime(LocalDateTime.now());
+            }
+
             tokenRepository.save(updatedToken);
 
-            // Check if completed early and ensure both tokens are for the same day
-            if (token.getCompletedTime().toLocalDate().isEqual(LocalDate.now()) &&
-                    token.getCompletedTime().isBefore(previousAppointedTime.plusMinutes(estimatedDuration))) {
+            // Activate the next token if applicable
+            if ((token.getStatus() == TokenStatus.COMPLETED || token.getStatus() == TokenStatus.SKIPPED) &&
+                    updatedToken.getCompletedTime().toLocalDate().isEqual(LocalDate.now())) {
 
                 List<Token> nextTokens = tokenRepository.findByStaffId_IdAndStatusOrderByAppointedTimeAsc(
                         Long.valueOf(updatedToken.getStaffId().getId()), TokenStatus.PENDING
@@ -84,23 +131,63 @@ public class TokenServiceImpl implements TokenService {
 
                 if (!nextTokens.isEmpty()) {
                     Token nextToken = nextTokens.get(0);
-
-                    // Ensure the next token's appointed time is set for today
-                    LocalDateTime newAppointedTime = token.getCompletedTime().plusMinutes(1);
-                    if (newAppointedTime.toLocalDate().isEqual(LocalDate.now())) {
-                        nextToken.setAppointedTime(newAppointedTime);
-                        tokenRepository.save(nextToken);
-                    } else {
-                        System.out.println("Skipping token adjustment as it's for another day.");
-                    }
+                    LocalDateTime newAppointedTime = updatedToken.getCompletedTime().plusMinutes(1);
+                    nextToken.setAppointedTime(newAppointedTime);
+                    nextToken.setStatus(TokenStatus.ACTIVE);
+                    tokenRepository.save(nextToken);
                 }
             }
 
             return updatedToken;
         } else {
-            throw new RuntimeException("Token not found with ID: " + token.getId());
+            throw new RuntimeException("Token not found with ID: " + id);
         }
     }
+
+
+
+    public Token activateNextToken(Long tokenId) {
+
+            Token nextToken = tokenRepository.findById(tokenId).get();
+
+            // Assign next token with correct appointed time
+            nextToken.setStatus(TokenStatus.ACTIVE);
+
+            nextToken.setAppointedTime(LocalDateTime.now()); // Set to current time
+            tokenRepository.save(nextToken);
+
+            return nextToken;
+    }
+
+    public Token completeToken(Long tokenId) {
+        Optional<Token> tokenOptional = tokenRepository.findById(tokenId);
+
+        if (tokenOptional.isPresent()) {
+            Token token = tokenOptional.get();
+            token.setStatus(TokenStatus.COMPLETED);
+            token.setCompletedTime(LocalDateTime.now());
+            tokenRepository.save(token);
+            return token;
+        } else {
+            throw new RuntimeException("Token not found.");
+        }
+    }
+
+
+    public Token skipToken(Long tokenId) {
+        Optional<Token> tokenOptional = tokenRepository.findById(tokenId);
+
+        if (tokenOptional.isPresent()) {
+            Token token = tokenOptional.get();
+            token.setStatus(TokenStatus.SKIPPED);
+            token.setCompletedTime(LocalDateTime.now());
+            tokenRepository.save(token);
+            return token;
+        } else {
+            throw new RuntimeException("Token not found.");
+        }
+    }
+
 
 
 
@@ -109,41 +196,136 @@ public class TokenServiceImpl implements TokenService {
      * If the appointed time of a token has passed, it increases the wait time for the subsequent tokens.
      */
 
-    @Override
-    @Transactional
-    public void updateWaitTimes() {
-        LocalDate today = LocalDate.now();
-        LocalDateTime startOfDay = today.atStartOfDay(); // 00:00
-        LocalDateTime endOfDay = today.atTime(LocalTime.MAX); // 23:59:59
+//    @Override
+//    @Transactional
+//    public void updateWaitTimes() {
+//        LocalDate today = LocalDate.now();
+//        LocalDateTime startOfDay = today.atStartOfDay(); // 00:00
+//        LocalDateTime endOfDay = today.atTime(LocalTime.MAX); // 23:59:59
+//
+//        // Fetch pending tokens for today, sorted by issued time.
+//        List<Token> pendingTokens = tokenRepository.findAllByIssuedTimeBetweenAndStatusNotOrderByIssuedTimeAsc(
+//                startOfDay, endOfDay, TokenStatus.COMPLETED
+//        );
+//
+//        for (int i = 0; i < pendingTokens.size(); i++) {
+//            Token currentToken = pendingTokens.get(i);
+//
+//            // Null check for appointed time
+//            if (currentToken.getAppointedTime() == null) {
+//                System.out.println("⚠️ Warning: Token ID " + currentToken.getId() + " has null appointed time. Skipping...");
+//                continue; // Skip this token to prevent NullPointerException
+//            }
+//
+//            // Calculate the expected end time (appointed time + additional wait time).
+//            LocalDateTime expectedEndTime = currentToken.getAppointedTime()
+//                    .plusMinutes(currentToken.getAdditionalWaitTime());
+//
+//            // If the expected end time has passed, increase the wait time for subsequent tokens.
+//            if (LocalDateTime.now().isAfter(expectedEndTime)) {
+//                for (int j = i + 1; j < pendingTokens.size(); j++) {
+//                    Token nextToken = pendingTokens.get(j);
+//                    nextToken.setAdditionalWaitTime(nextToken.getAdditionalWaitTime() + 5);
+//                    tokenRepository.save(nextToken);
+//                }
+//            }
+//        }
+//    }
 
-        // Fetch pending tokens for today, sorted by issued time.
-        List<Token> pendingTokens = tokenRepository.findAllByIssuedTimeBetweenAndStatusNotOrderByIssuedTimeAsc(
-                startOfDay, endOfDay, TokenStatus.COMPLETED
-        );
+//    @Override
+//    @Transactional
+//    public void updateWaitTimes() {
+//        LocalDate today = LocalDate.now();
+//        LocalDateTime startOfDay = today.atStartOfDay();
+//        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+//
+//        List<Token> pendingTokens = tokenRepository.findAllByIssuedTimeBetweenAndStatusNotOrderByIssuedTimeAsc(
+//                startOfDay, endOfDay, TokenStatus.PENDING
+//        );
+//
+//        LocalDateTime currentTime = LocalDateTime.now();
+//        System.out.println(pendingTokens.size());
+//        for (int i = 0; i < pendingTokens.size(); i++) {
+//            Token currentToken = pendingTokens.get(i);
+//            System.out.println(currentToken.toString());
+////            if (currentToken.getAppointedTime() == null) {
+////                System.out.println("⚠️ Warning: Token ID " + currentToken.getId() + " has null appointed time. Skipping...");
+////                continue;
+////            }
+//
+//            LocalDateTime expectedEndTime = currentToken.getAppointedTime()
+//                    .plusMinutes(currentToken.getAdditionalWaitTime());
+//
+//            if (currentTime.isBefore(expectedEndTime)) {
+//                for (int j = i + 1; j < pendingTokens.size(); j++) {
+//                    Token nextToken = pendingTokens.get(j);
+//                    if (nextToken.getAdditionalWaitTime() < 60) { // Prevent excessive delays
+//                        nextToken.setAdditionalWaitTime(nextToken.getAdditionalWaitTime() + 5);
+//                        tokenRepository.save(nextToken);
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+@Override
+@Transactional
+public void updateWaitTimes() {
+    LocalDate today = LocalDate.now();
+    LocalDateTime startOfDay = today.atStartOfDay();
+    LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
 
-        for (int i = 0; i < pendingTokens.size(); i++) {
-            Token currentToken = pendingTokens.get(i);
+    // Fetch all non-completed tokens for the day
+    List<Token> allTokens = tokenRepository.findAllByIssuedTimeBetweenAndStatusNotOrderByIssuedTimeAsc(
+            startOfDay, endOfDay, TokenStatus.PENDING
+    );
+//    System.out.println(pendingTokens);
+    if (allTokens.isEmpty()) return; // No pending tokens, nothing to update
 
-            // Null check for appointed time
-            if (currentToken.getAppointedTime() == null) {
-                System.out.println("⚠️ Warning: Token ID " + currentToken.getId() + " has null appointed time. Skipping...");
-                continue; // Skip this token to prevent NullPointerException
-            }
-
-            // Calculate the expected end time (appointed time + additional wait time).
-            LocalDateTime expectedEndTime = currentToken.getAppointedTime()
-                    .plusMinutes(currentToken.getAdditionalWaitTime());
-
-            // If the expected end time has passed, increase the wait time for subsequent tokens.
-            if (LocalDateTime.now().isAfter(expectedEndTime)) {
-                for (int j = i + 1; j < pendingTokens.size(); j++) {
-                    Token nextToken = pendingTokens.get(j);
-                    nextToken.setAdditionalWaitTime(nextToken.getAdditionalWaitTime() + 5);
-                    tokenRepository.save(nextToken);
-                }
-            }
-        }
+    // Fetch all tokens of the day to find the last completed one
+    List<Token> pendingTokens = tokenRepository.findAllByIssuedTimeBetweenAndStatusNotOrderByIssuedTimeAsc(
+            startOfDay, endOfDay, TokenStatus.COMPLETED
+    );
+    // Find the last completed token (latest by issuedTime)
+    Token lastCompletedToken = null;
+    if (!allTokens.isEmpty()) {
+        lastCompletedToken = allTokens.get(allTokens.size() - 1);
     }
+
+    LocalDateTime currentTime = LocalDateTime.now();
+
+    for (int i = 0; i < pendingTokens.size(); i++) {
+        Token currentToken = pendingTokens.get(i);
+        System.out.println(currentToken);
+        // If this is the first pending token and there was a completed token before it
+//        if (i == 0 ) {
+            currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
+            tokenRepository.save(currentToken);
+//        }
+
+        // If there is a previous pending token, check if it's completed
+//        if (i > 0) {
+//            Token previousToken = pendingTokens.get(i - 1);
+//            if (previousToken.getStatus() == TokenStatus.COMPLETED) {
+//                currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
+//                tokenRepository.save(currentToken);
+//            }
+//        }
+
+        // If the current token has an appointed time and is still running, increase wait time
+//        if (currentToken.getAppointedTime() != null) {
+//            LocalDateTime expectedEndTime = currentToken.getAppointedTime()
+//                    .plusMinutes(currentToken.getAdditionalWaitTime());
+//
+//            if (currentTime.isBefore(expectedEndTime)) {
+//                currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
+//                tokenRepository.save(currentToken);
+//            }
+//        }
+    }
+}
+
+
 
 
     /**

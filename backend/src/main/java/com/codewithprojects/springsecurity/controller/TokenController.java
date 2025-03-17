@@ -97,6 +97,22 @@ public class TokenController {
         return tokenService.updateToken(id, token);
     }
 
+    @PutMapping("/nextToken/{staffId}")
+    public ResponseEntity<?> activateNextToken(@PathVariable Long staffId) {
+        return ResponseEntity.ok(tokenService.activateNextToken(staffId));
+    }
+
+    @PutMapping("/completeToken/{tokenId}")
+    public ResponseEntity<?> completeToken(@PathVariable Long tokenId) {
+        return ResponseEntity.ok(tokenService.completeToken(tokenId));
+    }
+
+        @PutMapping("/skipToken/{tokenId}")
+    public ResponseEntity<?> skipToken(@PathVariable Long tokenId) {
+        return ResponseEntity.ok(tokenService.skipToken(tokenId));
+    }
+
+
     /**
      * Retrieves a list of all tokens that are still in the waiting queue for today.
      * This excludes completed tokens and sorts them by issued time in ascending order.

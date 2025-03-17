@@ -34,6 +34,11 @@ public interface TokenService {
      */
     Token updateToken(Long id, Token token);
 
+    Token skipToken(Long tokenId);
+
+    Token completeToken(Long tokenId);
+
+    Token activateNextToken(Long staffId);
     /**
      * Updates the estimated wait times for all active tokens dynamically.
      */
