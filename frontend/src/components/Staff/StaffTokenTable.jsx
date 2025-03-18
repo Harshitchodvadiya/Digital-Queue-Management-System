@@ -12,6 +12,8 @@ const StaffTokenTable = () => {
   const [disabledStatus, setDisabledStatus] = useState({}); // Tracks disabled state for all buttons
   const [startClicked, setStartClicked] = useState({}); // Tracks if START was clicked
   const token = Cookies.get("jwtToken");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
 
   useEffect(() => {
     const token = Cookies.get("jwtToken");
@@ -38,8 +40,27 @@ const StaffTokenTable = () => {
     }
   }, []);
 
+    /**
+   * Format date and time for better readability.
+   */
+  const formatDateTime = (isoString) => {
+    if (!isoString) return "N/A";
+    const date = new Date(isoString);
+    return date.toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+  };
+
   useEffect(() => {
     if (!staffId) return;
+
+    const issuedTime = `${selectedDate}T${selectedTime}:00`;
 
     axios
       .get(`http://localhost:8081/api/v1/token/getRequestedTokenByStaffId/${staffId}`, {
@@ -138,13 +159,14 @@ const StaffTokenTable = () => {
             <thead className="bg-gray-800 text-white">
               <tr>
                 <th className="py-2 px-4">Token ID</th>
-                <th className="py-2 px-4">User ID</th>
-                <th className="py-2 px-4">User Name</th>
-                <th className="py-2 px-4">Staff ID</th>
-                <th className="py-2 px-4">Staff Name</th>
                 <th className="py-2 px-4">Service</th>
                 <th className="py-2 px-4">Status</th>
+                <th className="py-2 px-4">Issued Date and Time</th>
                 <th className="py-2 px-4">Actions</th>
+                {/* <th className="py-2 px-4">User ID</th>
+                <th className="py-2 px-4">User Name</th>
+                <th className="py-2 px-4">Staff ID</th>
+                <th className="py-2 px-4">Staff Name</th> */}
               </tr>
             </thead>
             <tbody>
@@ -152,12 +174,14 @@ const StaffTokenTable = () => {
                 tokens.map((token) => (
                   <tr key={token.id} className="border-b hover:bg-gray-100 text-gray-700">
                     <td className="py-2 px-4 text-center">{token?.id || "N/A"}</td>
+                    <td className="py-2 px-4 text-center">{token.staffId?.service?.serviceName || "N/A"}</td>
+                    <td className="py-2 px-4 text-center font-bold">{token.status}</td>
+                    <td className="py-2 px-4 text-center font-bold">{formatDateTime(token.issuedTime)}</td>
+{/* 
                     <td className="py-2 px-4 text-center">{token.user?.id || "N/A"}</td>
                     <td className="py-2 px-4 text-center">{token.user?.firstname || "N/A"}</td>
                     <td className="py-2 px-4 text-center">{token.staffId?.id || "N/A"}</td>
-                    <td className="py-2 px-4 text-center">{token.staffId?.firstname || "N/A"}</td>
-                    <td className="py-2 px-4 text-center">{token.staffId?.service?.serviceName || "N/A"}</td>
-                    <td className="py-2 px-4 text-center font-bold">{token.status}</td>
+                    <td className="py-2 px-4 text-center">{token.staffId?.firstname || "N/A"}</td> */}
                     <div className="flex justify-center space-x-2 mt-1.5">
                       <button
                         className="bg-gray-500 text-white px-4 py-1 rounded hover:bg-gray-700"

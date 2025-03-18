@@ -382,10 +382,11 @@ const UserHomePage = () => {
               <thead className="bg-gray-800 text-white">
                 <tr>
                   <th className="py-2 px-4">Token ID</th>
-                  <th className="py-2 px-4">User Name</th>
+                  {/* <th className="py-2 px-4">User Name</th> */}
                   <th className="py-2 px-4">Service</th>
                   <th className="py-2 px-4">Status</th>
                   <th className="py-2 px-4">Issued Date and Time</th>
+                  <th className="py-2 px-4">Waiting Time</th>
                 </tr>
               </thead>
               <tbody>
@@ -393,10 +394,11 @@ const UserHomePage = () => {
                   tokens.map((token) => (
                     <tr key={token.id} className="border-b hover:bg-gray-100 text-gray-700">
                       <td className="py-2 px-4 text-center">{token?.id || "N/A"}</td>
-                      <td className="py-2 px-4 text-center">{token.user?.firstname || "N/A"}</td>
+                      {/* <td className="py-2 px-4 text-center">{token.user?.firstname || "N/A"}</td> */}
                       <td className="py-2 px-4 text-center">{token.staffId?.service?.serviceName || "N/A"}</td>
                       <td className="py-2 px-4 text-center font-bold">{token.status}</td>
                       <td className="py-2 px-4 text-center font-bold">{formatDateTime(token.issuedTime)}</td>
+                      <td className="py-2 px-4 text-center font-bold">{token.additionalWaitTime}</td>
                     </tr>
                   ))
                 ) : (
