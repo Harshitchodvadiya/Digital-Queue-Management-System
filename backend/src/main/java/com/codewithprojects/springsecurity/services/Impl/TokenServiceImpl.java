@@ -1,8 +1,11 @@
 package com.codewithprojects.springsecurity.services.Impl;
 
+import com.codewithprojects.springsecurity.entities.StaffServices;
 import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.entities.TokenStatus;
+import com.codewithprojects.springsecurity.repository.StaffServicesRepository;
 import com.codewithprojects.springsecurity.repository.TokenRepository;
+import com.codewithprojects.springsecurity.services.StaffService;
 import com.codewithprojects.springsecurity.services.TokenService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
 public class TokenServiceImpl implements TokenService {
     private final TokenRepository tokenRepository;
 
+    private  final StaffServicesRepository staffServicesRepository;
     /**
      * Retrieves all tokens requested in the system.
      *
@@ -168,16 +172,8 @@ public class TokenServiceImpl implements TokenService {
 
         Token currentToken = currentTokenOpt.get();
 
-        // Fetch the next token in order
-//        List<Token> pendingTokens = tokenRepository.findByStaffId_IdAndStatusOrderByAppointedTimeAsc(
-//                Long.valueOf(currentToken.getStaffId().getId()), TokenStatus.PENDING
-//        );
-//
-//        if (pendingTokens.isEmpty()) {
-//            throw new RuntimeException("No pending tokens available.");
-//        }
-//
-//        Token nextToken = pendingTokens.get(0); // Get the next token in order
+        StaffServices staffServices = staffServicesRepository.findById(currentToken.getStaffId().getService().getServiceId()).get();
+        System.out.println(staffServices.getEstimatedTime());
 
         // Activate the next token and assign appointed time
         currentToken.setStatus(TokenStatus.ACTIVE);
@@ -304,31 +300,26 @@ public void updateWaitTimes() {
     LocalDateTime startOfDay = today.atStartOfDay();
     LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
 
-    // Fetch all non-completed tokens for the day
-//    List<Token> allTokens = tokenRepository.findAllByIssuedTimeBetweenAndStatusNotOrderByIssuedTimeAsc(
-//            startOfDay, endOfDay, TokenStatus.PENDING
-//    );
-//    System.out.println(pendingTokens);
-//    if (allTokens.isEmpty()) return; // No pending tokens, nothing to update
 
     // Fetch all tokens of the day to find the last completed one
     List<Token> pendingTokens = tokenRepository.findAllByIssuedTimeBetweenOrderByIssuedTimeAsc(
             startOfDay, endOfDay
     );
-    // Find the last completed token (latest by issuedTime)
-//    Token lastCompletedToken = null;
-//    if (!allTokens.isEmpty()) {
-//        lastCompletedToken = allTokens.get(allTokens.size() - 1);
-//    }
+
 
     LocalDateTime currentTime = LocalDateTime.now();
+
 
     for (int i = 0; i < pendingTokens.size(); i++) {
         Token currentToken = pendingTokens.get(i);
         System.out.println(currentToken);
         // If this is the first pending token and there was a completed token before it
 //        if (i == 0 ) {
-            if(currentToken.getStatus() == TokenStatus.PENDING) {
+
+//        StaffServices staffServices = staffServicesRepository.findById(currentToken.getStaffId().getService().getServiceId()).get();
+//        System.out.println(staffServices.getEstimatedTime());
+            if(currentToken.getStatus() == TokenStatus.PENDING && currentToken.getIssuedTime().isBefore(LocalDateTime.now())) {
+
                 currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
                 tokenRepository.save(currentToken);
             }
