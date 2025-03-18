@@ -11,6 +11,8 @@ const UserHomePage = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [tokens, setTokens] = useState([]);
+  const [activeToken, setActiveToken] = useState(null);
+  const [pendingToken, setPendingToken] = useState(null);
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -68,7 +70,14 @@ const UserHomePage = () => {
       const filteredTokens = response.data.filter(
         (token) => token.status !== "COMPLETED"
       );
+
+      // Identify the active and pending tokens
+      const activeTokenData = filteredTokens.find((token) => token.status === "ACTIVE");
+      const pendingTokenData = filteredTokens.find((token) => token.status === "PENDING");
+
       setTokens(filteredTokens);
+      setActiveToken(activeTokenData);
+      setPendingToken(pendingTokenData);
     } catch (err) {
       setError("Failed to fetch tokens. Please try again.");
     } finally {
@@ -127,7 +136,6 @@ const UserHomePage = () => {
     return "bg-white";
   };
 
-
   return (
     <div className="min-h-screen flex flex-col bg-white text-black">
       <Navbar />
@@ -149,17 +157,6 @@ const UserHomePage = () => {
               </option>
             ))}
           </select>
-
-          {selectedStaff && (
-            <div className="bg-gray-100 p-3 rounded-md mt-3">
-              <p className="text-sm">
-                <strong>Service Details:</strong> {selectedStaff.service?.serviceDescription || "N/A"}
-              </p>
-              <p className="text-sm">
-                <strong>Estimated time per customer:</strong> <span className="font-bold">{selectedStaff.service?.estimatedTime || "N/A"} minutes</span>
-              </p>
-            </div>
-          )}
 
           <input
             type="date"
@@ -190,9 +187,17 @@ const UserHomePage = () => {
           </button>
         </div>
 
-        {/* Right Side: Display Today's Tokens */}
+        {/* Right Side: Display Tokens */}
         <div className="w-2/3">
           <h2 className="text-2xl font-bold mb-4">Your Active Tokens</h2>
+
+          {activeToken && pendingToken && (
+            <div className="p-4 bg-yellow-200 shadow-md rounded-md">
+              <p className="font-bold">
+                Your token is after Token #{activeToken.id}
+              </p>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             {tokens.map((token) => (

@@ -312,42 +312,39 @@ public void updateWaitTimes() {
 
     for (int i = 0; i < pendingTokens.size(); i++) {
         Token currentToken = pendingTokens.get(i);
-        System.out.println(currentToken);
-        // If this is the first pending token and there was a completed token before it
-//        if (i == 0 ) {
 
-//        StaffServices staffServices = staffServicesRepository.findById(currentToken.getStaffId().getService().getServiceId()).get();
-//        System.out.println(staffServices.getEstimatedTime());
-            if(currentToken.getStatus() == TokenStatus.PENDING && currentToken.getIssuedTime().isBefore(LocalDateTime.now())) {
+        if(currentToken.getStatus() == TokenStatus.PENDING && currentToken.getIssuedTime().isBefore(LocalDateTime.now())) {
 
-                currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
-                tokenRepository.save(currentToken);
-            }
-//        }
-
-        // If there is a previous pending token, check if it's completed
-//        if (i > 0) {
-//            Token previousToken = pendingTokens.get(i - 1);
-//            if (previousToken.getStatus() == TokenStatus.COMPLETED) {
-//                currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
-//                tokenRepository.save(currentToken);
-//            }
-//        }
-
-        // If the current token has an appointed time and is still running, increase wait time
-//        if (currentToken.getAppointedTime() != null) {
-//            LocalDateTime expectedEndTime = currentToken.getAppointedTime()
-//                    .plusMinutes(currentToken.getAdditionalWaitTime());
-//
-//            if (currentTime.isBefore(expectedEndTime)) {
-//                currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
-//                tokenRepository.save(currentToken);
-//            }
-//        }
+            currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
+            tokenRepository.save(currentToken);
+        }
     }
 }
 
+    @Override
+    public Token currentTokenNumber() {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
 
+
+        // Fetch all tokens of the day to find the last completed one
+        List<Token> pendingTokens = tokenRepository.findAllByIssuedTimeBetweenOrderByIssuedTimeAsc(
+                startOfDay, endOfDay
+        );
+
+        LocalDateTime currentTime = LocalDateTime.now();
+
+
+        for (int i = 0; i < pendingTokens.size(); i++) {
+            Token currentToken = pendingTokens.get(i);
+
+            if (currentToken.getStatus() == TokenStatus.ACTIVE) {
+                return currentToken;
+            }
+        }
+            return null;
+    }
 
 
     /**

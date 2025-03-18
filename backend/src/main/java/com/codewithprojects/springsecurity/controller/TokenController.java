@@ -91,6 +91,7 @@ public class TokenController {
         return userService.getRequestedToken(id);
     }
 
+    // only today's data
     @GetMapping("/getTodayTokensByStaffId/{id}")
     public List<Token> getTodayTokensByStaffId(@PathVariable Long id) {
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
@@ -152,5 +153,10 @@ public class TokenController {
         return tokenRepository.findAllByIssuedTimeBetweenAndStatusNotOrderByIssuedTimeAsc(
                 startOfDay, endOfDay, TokenStatus.COMPLETED
         );
+    }
+
+    @GetMapping("/currentToken")
+    public Token currentToken(){
+        return tokenService.currentTokenNumber();
     }
 }

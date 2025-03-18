@@ -43,4 +43,6 @@ public interface TokenService {
      * Updates the estimated wait times for all active tokens dynamically.
      */
     void updateWaitTimes();
+
+    Token currentTokenNumber();
 }
