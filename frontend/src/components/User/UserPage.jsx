@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie"; 
 import { jwtDecode } from "jwt-decode"; 
-import { useNavigate } from "react-router-dom"; // For navigation
+import { useNavigate } from "react-router-dom"; 
 import Navbar from "../Navbar";
 
 const UserHomePage = () => {
@@ -65,7 +65,10 @@ const UserHomePage = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setTokens(response.data);
+      const filteredTokens = response.data.filter(
+        (token) => token.status !== "COMPLETED"
+      );
+      setTokens(filteredTokens);
     } catch (err) {
       setError("Failed to fetch tokens. Please try again.");
     } finally {
@@ -113,10 +116,17 @@ const UserHomePage = () => {
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-      // second: "2-digit",
+      second: "2-digit",
       hour12: false,
     });
   };
+
+  const getBoxColor = (status) => {
+    if (status === "PENDING") return "bg-yellow-100";
+    if (status === "ACTIVE") return "bg-green-300";
+    return "bg-white";
+  };
+
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-black">
@@ -174,7 +184,7 @@ const UserHomePage = () => {
 
           <button
             className="bg-gray-500 px-4 py-2 mt-2 w-full text-white rounded-md font-bold"
-            onClick={() => navigate("/token-history")} 
+            onClick={() => navigate("/token-history")}
           >
             View History
           </button>
@@ -182,11 +192,14 @@ const UserHomePage = () => {
 
         {/* Right Side: Display Today's Tokens */}
         <div className="w-2/3">
-          <h2 className="text-2xl font-bold mb-4">Today's Tokens</h2>
+          <h2 className="text-2xl font-bold mb-4">Your Active Tokens</h2>
 
           <div className="grid grid-cols-2 gap-4">
             {tokens.map((token) => (
-              <div key={token.id} className={`p-4 shadow-md rounded-md ${token.status === 'IN_SERVICE' ? 'bg-green-100' : 'bg-yellow-100'}`}>
+              <div
+                key={token.id}
+                className={`p-4 shadow-md rounded-md ${getBoxColor(token.status)}`}
+              >
                 <h3 className="font-bold">Token #{token.id}</h3>
                 <p>{token.staffId?.service?.serviceName}</p>
                 <p>
