@@ -57,26 +57,6 @@ const StaffTokenTable = () => {
     });
   };
 
-  // useEffect(() => {
-  //   if (!staffId) return;
-
-  //   const issuedTime = `${selectedDate}T${selectedTime}:00`;
-
-  //   axios
-  //     .get(`http://localhost:8081/api/v1/token/getRequestedTokenByStaffId/${staffId}`, {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //       withCredentials: true,
-  //     })
-  //     .then((response) => {
-  //       setTokens(response.data);
-  //       setLoading(false);
-  //     })
-  //     .catch(() => {
-  //       setError("Failed to load token data. Please check permissions.");
-  //       setLoading(false);
-  //     });
-  // }, [staffId]);
-
   useEffect(() => {
     if (!staffId) return;
   
