@@ -91,6 +91,18 @@ public class TokenController {
         return userService.getRequestedToken(id);
     }
 
+    @GetMapping("/getTodayTokensByStaffId/{id}")
+    public List<Token> getTodayTokensByStaffId(@PathVariable Long id) {
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
+
+        return tokenRepository.findAllByStaffIdIdAndIssuedTimeBetweenOrderByIssuedTimeAsc(
+                id, startOfDay, endOfDay
+        );
+    }
+
+
+
     /**
      * Updates the details of an existing token.
      *
