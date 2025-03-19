@@ -31,8 +31,6 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
 
     List<Token> findTopByStaffId_IdAndStatusInOrderByCompletedTimeDesc(Long staffId, List<TokenStatus> statuses);
 
-//    List<Token> findByStaffIdAndStatusOrderByAppointedTimeAsc(Long staffId, TokenStatus status);
-
     List<Token> findAllByIssuedTimeBetweenOrderByIssuedTimeAsc(
             LocalDateTime start,
             LocalDateTime end

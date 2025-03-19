@@ -68,12 +68,17 @@ const UserHomePage = () => {
       });
 
       const filteredTokens = response.data.filter(
-        (token) => token.status !== "COMPLETED"
+        (token) =>token.status !== "COMPLETED"
       );
+
 
       // Identify the active and pending tokens
       const activeTokenData = filteredTokens.find((token) => token.status === "ACTIVE");
+      console.log(activeToken);
       const pendingTokenData = filteredTokens.find((token) => token.status === "PENDING");
+
+      console.log(pendingToken);
+
 
       setTokens(filteredTokens);
       setActiveToken(activeTokenData);
