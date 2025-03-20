@@ -11,9 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -66,18 +65,51 @@ public class UserServiceImpl implements UserService {
         // Fetch all tokens where the user is associated
         List<Token> userTokens = tokenRepository.findByUserId(user_id);
 
-        List<Token> activeTokens =tokenRepository.findAll().stream()
-                .filter(token -> token.getStatus().equals(TokenStatus.ACTIVE))
+        // Filter tokens for today's date with PENDING or ACTIVE status
+        LocalDate today = LocalDate.now();
+        List<Token> activeTokens = tokenRepository.findAll().stream()
+                .filter(token ->
+                        (token.getStatus().equals(TokenStatus.ACTIVE) ||
+                                token.getStatus().equals(TokenStatus.PENDING)) &&
+                                token.getIssuedTime().toLocalDate().equals(today)) // Filter by today's date
                 .collect(Collectors.toList());
-        // Log active token IDs
-        if (!activeTokens.isEmpty()) {
-            activeTokens.forEach(token -> System.out.println("Active Token ID: " + token.getId()));
-        } else {
-            System.out.println("No active tokens found for the user.");
+
+        // Group tokens by Service ID
+        Map<Long, List<Token>> serviceTokensMap = activeTokens.stream()
+                .collect(Collectors.groupingBy(token -> token.getStaffId().getService().getServiceId()));
+
+        // Map to track current token for each service
+        Map<Long, Token> currentTokenMap = new HashMap<>();
+
+        // Map to track people ahead for each user's token
+        Map<Long, Integer> peopleAheadMap = new HashMap<>();
+
+        // Iterate through each service
+        for (Map.Entry<Long, List<Token>> entry : serviceTokensMap.entrySet()) {
+            List<Token> serviceTokens = entry.getValue();
+
+            // Sort tokens by issued time for correct queue order
+            serviceTokens.sort(Comparator.comparing(Token::getIssuedTime));
+
+            // Identify the current token for the service (First ACTIVE token)
+            Token currentToken = serviceTokens.stream()
+                    .filter(token -> token.getStatus().equals(TokenStatus.ACTIVE))
+                    .findFirst()
+                    .orElse(null);
+
+            currentTokenMap.put(entry.getKey(), currentToken);
+
+            // Calculate 'people ahead' for each user's token in each service
+            int count = 0;
+            for (Token token : serviceTokens) {
+                if (token.getStatus().equals(TokenStatus.PENDING)) {
+                    peopleAheadMap.put(token.getId(), count);
+                    count++; // Increment count only for PENDING tokens
+                }
+            }
         }
 
-        // Return both lists in the DTO
-        return new TokenResponseDto(userTokens, activeTokens);
+        return new TokenResponseDto(userTokens, new ArrayList<>(currentTokenMap.values()), peopleAheadMap);
     }
 
     @Override
@@ -85,6 +117,4 @@ public class UserServiceImpl implements UserService {
         return tokenRepository.findByUserId(id);
 
     }
-
-
 }

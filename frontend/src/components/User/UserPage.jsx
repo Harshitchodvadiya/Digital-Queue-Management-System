@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import Cookies from "js-cookie"; 
-import { jwtDecode } from "jwt-decode"; 
-import { useNavigate } from "react-router-dom"; 
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar";
 
 const UserHomePage = () => {
@@ -12,6 +12,7 @@ const UserHomePage = () => {
   const [selectedTime, setSelectedTime] = useState("");
   const [tokens, setTokens] = useState([]);
   const [serviceActiveTokens, setServiceActiveTokens] = useState({});
+  const [peopleAheadMap, setPeopleAheadMap] = useState({});
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -61,25 +62,30 @@ const UserHomePage = () => {
   const fetchTokensList = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:8081/api/v1/token/getRequestedTokenByUserId/${userId}`, {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-      });
-  
-      const { userTokens, activeTokens } = response.data;
-  
+      const response = await axios.get(
+        `http://localhost:8081/api/v1/token/getRequestedTokenByUserId/${userId}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const { userTokens, activeTokens, peopleAheadMap } = response.data;
+
+      // Filter out COMPLETED tokens
       setTokens(userTokens.filter(token => token.status !== "COMPLETED"));
-  
+      setPeopleAheadMap(peopleAheadMap); // Update "People Ahead"
+
+      // Correctly map active tokens by service ID
       const activeTokensMap = {};
       activeTokens.forEach((token) => {
-        const serviceId = token?.staffId?.id;  // Use `staffId` instead of `service.id`
+        const serviceId = token?.staffId?.service?.serviceId;
         if (serviceId) {
           activeTokensMap[serviceId] = token;
         }
       });
-  
+
       setServiceActiveTokens(activeTokensMap);
-  
     } catch (err) {
       console.error("Error fetching tokens:", err);
       setError("Failed to fetch tokens. Please try again.");
@@ -87,7 +93,6 @@ const UserHomePage = () => {
       setLoading(false);
     }
   };
-  
 
   const requestToken = async () => {
     if (!selectedStaff || !selectedDate || !selectedTime) {
@@ -208,15 +213,16 @@ const UserHomePage = () => {
                 <p>
                   <strong>Issued Time:</strong> {formatDateTime(token.issuedTime)}
                 </p>
+                <p className="mt-2 text-blue-500 font-bold">
+                  People Ahead: {peopleAheadMap[token.id] || 0}
+                </p>
 
-                {/* Current Token for Each Service */}
-                {serviceActiveTokens[token.staffId?.id] && (
+                {serviceActiveTokens[token.staffId?.service?.serviceId] && (
                   <p className="mt-2 bg-yellow-200 p-2 rounded-md font-bold text-black">
                     Current Token for {token.staffId?.firstname}: 
-                    <strong> #{serviceActiveTokens[token.staffId?.id]?.id}</strong>
+                    <strong> #{serviceActiveTokens[token.staffId?.service?.serviceId]?.id}</strong>
                   </p>
                 )}
-
               </div>
             ))}
           </div>
