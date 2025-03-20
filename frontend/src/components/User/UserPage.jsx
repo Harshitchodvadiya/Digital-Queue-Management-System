@@ -11,8 +11,7 @@ const UserHomePage = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [tokens, setTokens] = useState([]);
-  const [activeToken, setActiveToken] = useState(null);
-  const [pendingToken, setPendingToken] = useState(null);
+  const [serviceActiveTokens, setServiceActiveTokens] = useState({});
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -66,29 +65,29 @@ const UserHomePage = () => {
         withCredentials: true,
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      const filteredTokens = response.data.filter(
-        (token) =>token.status !== "COMPLETED"
-      );
-
-
-      // Identify the active and pending tokens
-      const activeTokenData = filteredTokens.find((token) => token.status === "ACTIVE");
-      console.log(activeToken);
-      const pendingTokenData = filteredTokens.find((token) => token.status === "PENDING");
-
-      console.log(pendingToken);
-
-
-      setTokens(filteredTokens);
-      setActiveToken(activeTokenData);
-      setPendingToken(pendingTokenData);
+  
+      const { userTokens, activeTokens } = response.data;
+  
+      setTokens(userTokens.filter(token => token.status !== "COMPLETED"));
+  
+      const activeTokensMap = {};
+      activeTokens.forEach((token) => {
+        const serviceId = token?.staffId?.id;  // Use `staffId` instead of `service.id`
+        if (serviceId) {
+          activeTokensMap[serviceId] = token;
+        }
+      });
+  
+      setServiceActiveTokens(activeTokensMap);
+  
     } catch (err) {
+      console.error("Error fetching tokens:", err);
       setError("Failed to fetch tokens. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   const requestToken = async () => {
     if (!selectedStaff || !selectedDate || !selectedTime) {
@@ -130,15 +129,14 @@ const UserHomePage = () => {
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-      // second: "2-digit",
       hour12: false,
     });
   };
 
   const getBoxColor = (status) => {
-    if (status === "PENDING") return "bg-yellow-100";
-    if (status === "ACTIVE") return "bg-green-300";
-    return "bg-white";
+    if (status === "PENDING") return "bg-yellow-100 border-yellow-400";
+    if (status === "ACTIVE") return "bg-green-300 border-green-400";
+    return "bg-white border-gray-300";
   };
 
   return (
@@ -147,7 +145,7 @@ const UserHomePage = () => {
 
       <div className="flex flex-row p-6 gap-6">
         {/* Left Side: Request Token Section */}
-        <div className="w-1/3 bg-white shadow-md rounded-lg p-6">
+        <div className="w-1/3 bg-white shadow-md rounded-lg p-6 border border-gray-300">
           <h2 className="text-2xl font-bold mb-4">Request a Token</h2>
           <p className="text-sm text-gray-500 mb-4">Select a service to join the queue</p>
 
@@ -196,19 +194,11 @@ const UserHomePage = () => {
         <div className="w-2/3">
           <h2 className="text-2xl font-bold mb-4">Your Active Tokens</h2>
 
-          {activeToken && pendingToken && (
-            <div className="p-4 bg-yellow-200 shadow-md rounded-md">
-              <p className="font-bold">
-                Your token is after Token #{activeToken.id}
-              </p>
-            </div>
-          )}
-
           <div className="grid grid-cols-2 gap-4">
             {tokens.map((token) => (
               <div
                 key={token.id}
-                className={`p-4 shadow-md rounded-md ${getBoxColor(token.status)}`}
+                className={`p-4 shadow-md rounded-md border ${getBoxColor(token.status)}`}
               >
                 <h3 className="font-bold">Token #{token.id}</h3>
                 <p>{token.staffId?.service?.serviceName}</p>
@@ -218,6 +208,15 @@ const UserHomePage = () => {
                 <p>
                   <strong>Issued Time:</strong> {formatDateTime(token.issuedTime)}
                 </p>
+
+                {/* Current Token for Each Service */}
+                {serviceActiveTokens[token.staffId?.id] && (
+                  <p className="mt-2 bg-yellow-200 p-2 rounded-md font-bold text-black">
+                    Current Token for {token.staffId?.firstname}: 
+                    <strong> #{serviceActiveTokens[token.staffId?.id]?.id}</strong>
+                  </p>
+                )}
+
               </div>
             ))}
           </div>

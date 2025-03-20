@@ -10,12 +10,12 @@ const StaffTokenTable = () => {
   const [error, setError] = useState(null);
   const [staffId, setStaffId] = useState(null);
   const [disabledStatus, setDisabledStatus] = useState({});
-  const [startClicked, setStartClicked] = useState({});
+  const [startedTokens, setStartedTokens] = useState(new Set()); // Tracks started tokens
+  const [activeTokenId, setActiveTokenId] = useState(null); // Tracks the active token
   const token = Cookies.get("jwtToken");
 
+  // Extract Staff ID from JWT
   useEffect(() => {
-    const token = Cookies.get("jwtToken");
-
     if (!token) {
       setError("Authentication error. Please log in again.");
       setLoading(false);
@@ -38,6 +38,7 @@ const StaffTokenTable = () => {
     }
   }, []);
 
+  // Format Date
   const formatDateTime = (isoString) => {
     if (!isoString) return "N/A";
     const date = new Date(isoString);
@@ -51,6 +52,7 @@ const StaffTokenTable = () => {
     });
   };
 
+  // Fetch Today's Tokens
   useEffect(() => {
     if (!staffId) return;
 
@@ -61,6 +63,7 @@ const StaffTokenTable = () => {
       })
       .then((response) => {
         setTokens(response.data);
+        setActiveTokenId(response.data.find((token) => token.status === "ACTIVE")?.id || null);
         setLoading(false);
       })
       .catch(() => {
@@ -69,25 +72,9 @@ const StaffTokenTable = () => {
       });
   }, [staffId]);
 
-  const handleActionClick = async (tokenId, action, currentStatus) => {
+  // Handle Token Actions
+  const handleActionClick = async (tokenId, action) => {
     if (!tokenId) return;
-
-    if (action === "skip" || action === "complete") {
-      setDisabledStatus((prev) => ({ ...prev, [tokenId]: true }));
-    }
-
-    if (action === "next") {
-      if (currentStatus !== "PENDING") {
-        setError("Start action is only allowed for pending tokens.");
-        return;
-      }
-      setStartClicked((prev) => ({ ...prev, [tokenId]: true }));
-    }
-
-    if ((action === "complete" || action === "skip") && !startClicked[tokenId]) {
-      setError(`"${action.toUpperCase()}" action can only be done after starting the token.`);
-      return;
-    }
 
     let apiUrl = "";
     let updatedStatus = "";
@@ -123,14 +110,17 @@ const StaffTokenTable = () => {
               : token
           )
         );
+
+        if (action === "next") {
+          setStartedTokens((prevStartedTokens) => new Set([...prevStartedTokens, tokenId]));
+          setActiveTokenId(tokenId);
+        } else if (action === "complete" || action === "skip") {
+          setActiveTokenId(null); // Clear active token after completion or skip
+        }
       }
     } catch (error) {
       console.error(`Error ${action} token:`, error);
       setError(`Failed to ${action} token. Please try again.`);
-
-      if (action === "skip" || action === "complete") {
-        setDisabledStatus((prev) => ({ ...prev, [tokenId]: false }));
-      }
     }
   };
 
@@ -159,6 +149,8 @@ const StaffTokenTable = () => {
                   const isFirstToken = index === 0;
                   const isPreviousTokenCompletedOrSkipped =
                     isFirstToken || tokens[index - 1].status === "COMPLETED" || tokens[index - 1].status === "SKIPPED";
+                  const isActive = token.id === activeTokenId;
+                  const isAlreadyStarted = startedTokens.has(token.id);
 
                   return (
                     <tr key={token.id} className="border-b hover:bg-gray-100 text-gray-700">
@@ -171,35 +163,26 @@ const StaffTokenTable = () => {
                         <button
                           className="bg-gray-500 text-white px-4 py-1 rounded hover:bg-gray-700"
                           onClick={() => handleActionClick(token.id, "skip")}
-                          disabled={
-                            !isPreviousTokenCompletedOrSkipped ||
-                            disabledStatus[token.id] ||
-                            !startClicked[token.id] || 
-                            token.status === "COMPLETED"
-                          }
+                          disabled={!isActive}
                         >
                           Skip
                         </button>
 
                         <button
                           className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-700"
-                          onClick={() => handleActionClick(token.id, "complete", token.status)}
-                          disabled={
-                            !isPreviousTokenCompletedOrSkipped ||
-                            disabledStatus[token.id] ||
-                            !startClicked[token.id]
-                          }
+                          onClick={() => handleActionClick(token.id, "complete")}
+                          disabled={!isActive}
                         >
                           Complete
                         </button>
 
                         <button
                           className="bg-blue-400 text-white px-4 py-1 rounded hover:bg-blue-700"
-                          onClick={() => handleActionClick(token.id, "next", token.status)}
+                          onClick={() => handleActionClick(token.id, "next")}
                           disabled={
-                            !isPreviousTokenCompletedOrSkipped ||
-                            disabledStatus[token.id] ||
-                            token.status !== "PENDING"
+                            isAlreadyStarted ||
+                            activeTokenId !== null ||
+                            !isPreviousTokenCompletedOrSkipped
                           }
                         >
                           START

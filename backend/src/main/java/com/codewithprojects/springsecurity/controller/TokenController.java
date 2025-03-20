@@ -1,24 +1,21 @@
 package com.codewithprojects.springsecurity.controller;
 
-import com.codewithprojects.springsecurity.entities.StaffServices;
+import com.codewithprojects.springsecurity.dto.TokenResponseDto;
 import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.entities.TokenStatus;
 import com.codewithprojects.springsecurity.entities.User;
-import com.codewithprojects.springsecurity.repository.StaffServicesRepository;
 import com.codewithprojects.springsecurity.repository.TokenRepository;
-import com.codewithprojects.springsecurity.repository.UserRepository;
 import com.codewithprojects.springsecurity.services.StaffService;
 import com.codewithprojects.springsecurity.services.TokenService;
 import com.codewithprojects.springsecurity.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -86,7 +83,7 @@ public class TokenController {
     }
 
     @GetMapping("/getRequestedTokenByUserId/{id}")
-    public List<Token> getRequestedTokenByUserId(@PathVariable Integer id) {
+    public TokenResponseDto getRequestedTokenByUserId(@PathVariable Integer id) {
         System.out.println("Received User ID: " + id);
         return userService.getRequestedToken(id);
     }
@@ -159,4 +156,14 @@ public class TokenController {
     public Token currentToken(){
         return tokenService.currentTokenNumber();
     }
+
+
+    @GetMapping("/tokenHistory/{id}")
+    public List<Token> tokenHistory(@PathVariable Integer id) {
+        System.out.println("Received User ID: " + id);
+        return userService.tokenHistory(id);
+    }
+
+
+
 }

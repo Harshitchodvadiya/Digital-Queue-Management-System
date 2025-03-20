@@ -42,6 +42,6 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
             LocalDateTime end
     );
 
-
+    List<Token> findByUserId(Integer id);
 
 }
