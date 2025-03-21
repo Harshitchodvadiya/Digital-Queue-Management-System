@@ -47,10 +47,10 @@ function AddStaffForm() {
     e.preventDefault();
 
     // Validate mobile number length
-  if (mobileNumber.length !== 10) {
-    alert("Mobile number must be exactly 10 digits.");
-    return; // Stop the function execution
-  }
+    if (formData.mobileNumber.length !== 10) {
+      alert("Mobile number must be exactly 10 digits.");
+      return; // Stop the function execution
+    }
     setLoading(true);
 
     if (!adminToken) {

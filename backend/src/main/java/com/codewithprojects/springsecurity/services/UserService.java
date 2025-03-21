@@ -1,5 +1,6 @@
 package com.codewithprojects.springsecurity.services;
 
+import com.codewithprojects.springsecurity.dto.TokenResponseDto;
 import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.entities.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -34,5 +35,7 @@ public interface UserService {
      */
     User findByName(String name);
 
-    List<Token> getRequestedToken(Integer id);
+    TokenResponseDto getRequestedToken(Integer id);
+
+    List<Token> tokenHistory(Integer id);
 }

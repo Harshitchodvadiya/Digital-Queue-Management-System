@@ -19,4 +19,5 @@ public interface StaffServicesRepository extends JpaRepository<StaffServices, Lo
      * @return List of all StaffServices entities.
      */
     List<StaffServices> findAll();
+
 }

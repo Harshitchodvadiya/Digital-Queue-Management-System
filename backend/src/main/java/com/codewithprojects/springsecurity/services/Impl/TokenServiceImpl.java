@@ -6,7 +6,7 @@ import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.entities.TokenStatus;
 import com.codewithprojects.springsecurity.repository.StaffServicesRepository;
 import com.codewithprojects.springsecurity.repository.TokenRepository;
-import com.codewithprojects.springsecurity.services.NotificationService;
+import com.codewithprojects.springsecurity.services.StaffService;
 import com.codewithprojects.springsecurity.services.TokenService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -173,33 +173,31 @@ public class TokenServiceImpl implements TokenService {
                 currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
                 tokenRepository.save(currentToken);
             }
-        }
+//        }
+
+        // If there is a previous pending token, check if it's completed
+//        if (i > 0) {
+//            Token previousToken = pendingTokens.get(i - 1);
+//            if (previousToken.getStatus() == TokenStatus.COMPLETED) {
+//                currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
+//                tokenRepository.save(currentToken);
+//            }
+//        }
+
+        // If the current token has an appointed time and is still running, increase wait time
+//        if (currentToken.getAppointedTime() != null) {
+//            LocalDateTime expectedEndTime = currentToken.getAppointedTime()
+//                    .plusMinutes(currentToken.getAdditionalWaitTime());
+//
+//            if (currentTime.isBefore(expectedEndTime)) {
+//                currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
+//                tokenRepository.save(currentToken);
+//            }
+//        }
     }
-
-    @Override
-    public Token currentTokenNumber() {
-        LocalDate today = LocalDate.now();
-        LocalDateTime startOfDay = today.atStartOfDay();
-        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+}
 
 
-        // Fetch all tokens of the day to find the last completed one
-        List<Token> pendingTokens = tokenRepository.findAllByIssuedTimeBetweenOrderByIssuedTimeAsc(
-                startOfDay, endOfDay
-        );
-
-        LocalDateTime currentTime = LocalDateTime.now();
-
-
-        for (int i = 0; i < pendingTokens.size(); i++) {
-            Token currentToken = pendingTokens.get(i);
-
-            if (currentToken.getStatus() == TokenStatus.ACTIVE) {
-                return currentToken;
-            }
-        }
-        return null;
-    }
 
 
     /**
