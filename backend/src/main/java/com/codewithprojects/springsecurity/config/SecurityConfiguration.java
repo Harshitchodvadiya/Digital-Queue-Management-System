@@ -51,6 +51,7 @@ public class SecurityConfiguration {
                         .requestMatchers("api/v1/admin/**").hasAuthority(Role.ADMIN.name()) // Only accessible by ADMIN
                         .requestMatchers("api/v1/user/**").hasAuthority(Role.USER.name())   // Only accessible by USER
                         .requestMatchers("api/v1/token/**").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name(), Role.STAFF.name()) // Accessible by USER, ADMIN, and STAFF
+                        .requestMatchers("/api/v1/notifications/**").permitAll()  // Allow SSE
                         .anyRequest().authenticated() // All other requests require authentication
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless authentication
@@ -85,7 +86,8 @@ public class SecurityConfiguration {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173")); // Allow frontend origin
+//        config.setAllowedOrigins(List.of("http://localhost:5173")); // Allow frontend origin
+        config.setAllowedOriginPatterns(List.of("*"));  // ✅ Allow specific frontend origin
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allowed HTTP methods
         config.setAllowedHeaders(List.of("*")); // Allow all headers
         config.setAllowCredentials(true);
