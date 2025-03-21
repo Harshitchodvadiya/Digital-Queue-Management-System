@@ -6,6 +6,7 @@ import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.entities.TokenStatus;
 import com.codewithprojects.springsecurity.repository.StaffServicesRepository;
 import com.codewithprojects.springsecurity.repository.TokenRepository;
+import com.codewithprojects.springsecurity.services.NotificationService;
 import com.codewithprojects.springsecurity.services.StaffService;
 import com.codewithprojects.springsecurity.services.TokenService;
 import jakarta.transaction.Transactional;
@@ -197,7 +198,30 @@ public class TokenServiceImpl implements TokenService {
     }
 }
 
+    @Override
+    public Token currentTokenNumber() {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
 
+
+        // Fetch all tokens of the day to find the last completed one
+        List<Token> pendingTokens = tokenRepository.findAllByIssuedTimeBetweenOrderByIssuedTimeAsc(
+                startOfDay, endOfDay
+        );
+
+        LocalDateTime currentTime = LocalDateTime.now();
+
+
+        for (int i = 0; i < pendingTokens.size(); i++) {
+            Token currentToken = pendingTokens.get(i);
+
+            if (currentToken.getStatus() == TokenStatus.ACTIVE) {
+                return currentToken;
+            }
+        }
+        return null;
+    }
 
 
     /**

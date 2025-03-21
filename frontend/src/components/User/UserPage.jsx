@@ -166,18 +166,26 @@ const UserHomePage = () => {
   const fetchTokensList = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `http://localhost:8081/api/v1/token/getRequestedTokenByUserId/${userId}`,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get(`http://localhost:8081/api/v1/token/getRequestedTokenByUserId/${userId}`, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      const filteredTokens = response.data.filter(
-        (token) => token.status !== "COMPLETED"
-      );
-      setTokens(filteredTokens);
+      const { userTokens, activeTokens, peopleAheadMap } = response.data;
+
+      setTokens(userTokens.filter(token => token.status !== "COMPLETED" && token.status !== "SKIPPED"));
+      setPeopleAheadMap(peopleAheadMap); // Update "People Ahead"
+
+      // Map active tokens by service ID
+      const activeTokensMap = {};
+      activeTokens.forEach((token) => {
+        const serviceId = token?.staffId?.service?.serviceId;
+        if (serviceId) {
+          activeTokensMap[serviceId] = token;
+        }
+      });
+
+      setServiceActiveTokens(activeTokensMap);
     } catch (err) {
       console.error("Error fetching tokens:", err);
       setError("Failed to fetch tokens. Please try again.");
@@ -292,39 +300,9 @@ const UserHomePage = () => {
               <option key={staff.id} value={staff.id}>{staff.service?.serviceName || "N/A"} - {staff.firstname}</option>
             ))}
           </select>
-
-          {selectedStaff && (
-            <div className="bg-gray-100 p-3 rounded-md mt-3">
-              <p className="text-sm">
-                <strong>Service Details:</strong> {selectedStaff.service?.serviceDescription || "N/A"}
-              </p>
-              <p className="text-sm">
-                <strong>Estimated time per customer:</strong> <span className="font-bold">{selectedStaff.service?.estimatedTime || "N/A"} minutes</span>
-              </p>
-            </div>
-          )}
-
-          <input
-            type="date"
-            className="w-full border p-2 rounded-md mt-4"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-          />
-
-          <input
-            type="time"
-            className="w-full border p-2 rounded-md mt-2"
-            value={selectedTime}
-            onChange={(e) => setSelectedTime(e.target.value)}
-          />
-
-          <button
-            className="bg-blue-500 px-4 py-2 mt-4 w-full text-white rounded-md font-bold"
-            onClick={requestToken}
-          >
-            Request Token
-          </button>
-
+          <input type="date" className="w-full border p-2 rounded-md mt-4" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
+          <input type="time" className="w-full border p-2 rounded-md mt-2" value={selectedTime} onChange={(e) => setSelectedTime(e.target.value)} />
+          <button className="bg-blue-500 px-4 py-2 mt-4 w-full text-white rounded-md font-bold" onClick={requestToken}>Request Token</button>
           <button
             className="bg-gray-500 px-4 py-2 mt-2 w-full text-white rounded-md font-bold"
             onClick={() => navigate("/token-history")}
@@ -333,8 +311,8 @@ const UserHomePage = () => {
           </button>
         </div>
 
-        {/* Right Side: Display Today's Tokens */}
-        <div className="w-2/3">
+         {/* Right Side: Display Tokens */}
+         <div className="w-2/3">
           <h2 className="text-2xl font-bold mb-4">Your Active Tokens</h2>
 
           <div className="grid grid-cols-2 gap-4">
