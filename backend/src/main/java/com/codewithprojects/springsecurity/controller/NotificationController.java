@@ -46,21 +46,19 @@ package com.codewithprojects.springsecurity.controller;
 
 import com.codewithprojects.springsecurity.entities.Notification;
 import com.codewithprojects.springsecurity.services.NotificationService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/notifications")
 public class NotificationController {
 
     private final NotificationService notificationService;
-
-    public NotificationController(NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
 
     /**
      * Subscribe a user to SSE notifications.

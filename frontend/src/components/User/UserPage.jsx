@@ -14,25 +14,30 @@ const UserHomePage = () => {
   const [serviceActiveTokens, setServiceActiveTokens] = useState({});
   const [peopleAheadMap, setPeopleAheadMap] = useState({});
   const [userId, setUserId] = useState(null);
-  const [notifications, setNotifications] = useState([]); // 🔔 Notifications state
-  const [showNotifications, setShowNotifications] = useState(false); // Toggle state
-  const [unreadNotifications, setUnreadNotifications] = useState(0); // read and unread
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const token = Cookies.get("jwtToken");
 
+  // Notification States
+  const [notifications, setNotifications] = useState([]); // 🔔 Notifications state
+  const [showNotifications, setShowNotifications] = useState(false); // Toggle state
+  const [unreadNotifications, setUnreadNotifications] = useState(0); // read and unread
+
   const navigate = useNavigate();
 
+   // ✅ Load stored notifications from localStorage on page load
   useEffect(() => {
+    //localStorage is a built-in web storage API in JavaScript that allows you to store key-value pairs in the browser persistently.
+    //The data remains saved even after the page is refreshed or the browser is closed.
     const storedNotifications = localStorage.getItem("notifications");
     if (storedNotifications) {
       const parsedNotifications = JSON.parse(storedNotifications);
 
-       // ✅ Ensure parsed data has `isRead` property
+       // ✅ Ensure notifications have `isRead` property
     const correctedNotifications = parsedNotifications.map((notif) =>
       notif.hasOwnProperty("isRead") ? notif : { ...notif, isRead: false }
     );
-
 
       // ✅ Set notifications from localStorage
       setNotifications(correctedNotifications);
@@ -70,10 +75,11 @@ const UserHomePage = () => {
     }
   }, [userId]);
 
-  // 🔔 Subscribe to SSE for Real-Time Notifications
+  //  Subscribe to SSE for Real-Time Notifications
   const subscribeToNotifications = (userId) => {
     const eventSource = new EventSource(`http://localhost:8081/api/v1/notifications/subscribe/${userId}`);
 
+    // Handle incoming messages
     eventSource.onmessage = (event) => {
       console.log("🔔 New Notification:", event.data);
       // setNotifications((prev) => [...prev, event.data]); // Store notifications
@@ -98,22 +104,26 @@ const UserHomePage = () => {
      
     };
 
+    // Handle errors
     eventSource.onerror = (error) => {
       console.error("SSE error:", error);
       eventSource.close();
     };
 
     return () => {
+      // Close connection when not needed
       eventSource.close();
     };
   };
 
+    // ✅ Fetch notification history from the backend
   const fetchNotificationHistory = async () => {
     try {
       const response = await axios.get(`http://localhost:8081/api/v1/notifications/history/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setNotifications(response.data);
+
       // ✅ Count unread notifications
       const unreadCount = response.data.filter(notif => !notif.isRead).length;
       setUnreadNotifications(unreadCount);
@@ -122,6 +132,7 @@ const UserHomePage = () => {
       }
     };
 
+    // ✅ Mark a notification as read
     const markAsRead = (notificationId) => {  
       setNotifications((prevNotifications) => { 
         // ✅ Update notifications state
