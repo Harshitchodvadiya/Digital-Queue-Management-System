@@ -136,11 +136,11 @@ const StaffTokenTable = () => {
           <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
             <thead className="bg-gray-800 text-white">
               <tr>
-                <th className="py-2 px-4">Token ID</th>
-                <th className="py-2 px-4">Service</th>
-                <th className="py-2 px-4">Status</th>
-                <th className="py-2 px-4">Issued Date and Time</th>
-                <th className="py-2 px-4">Actions</th>
+                <th className="py-4 px-6 text-center">Token ID</th>
+                <th className="py-4 px-6 text-center">Service</th>
+                <th className="py-4 px-6 text-center">Status</th>
+                <th className="py-4 px-6 text-center">Issued Date and Time</th>
+                <th className="py-4 px-6 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -154,12 +154,12 @@ const StaffTokenTable = () => {
 
                   return (
                     <tr key={token.id} className="border-b hover:bg-gray-100 text-gray-700">
-                      <td className="py-2 px-4 text-center">{token?.id || "N/A"}</td>
-                      <td className="py-2 px-4 text-center">{token.staffId?.service?.serviceName || "N/A"}</td>
-                      <td className="py-2 px-4 text-center font-bold">{token.status}</td>
-                      <td className="py-2 px-4 text-center font-bold">{formatDateTime(token.issuedTime)}</td>
+                      <td className="py-4 px-6 text-center font-medium text-gray-800">{token?.id || "N/A"}</td>
+                      <td className="py-4 px-6 text-center">{token.staffId?.service?.serviceName || "N/A"}</td>
+                      <td className="py-4 px-6 text-center font-bold">{token.status}</td>
+                      <td className="py-4 px-6 text-center font-bold">{formatDateTime(token.issuedTime)}</td>
 
-                      <div className="flex justify-center space-x-2 mt-1.5">
+                      <div className="flex justify-center space-x-2 mt-3.5">
                         <button
                           className="bg-gray-500 text-white px-4 py-1 rounded hover:bg-gray-700"
                           onClick={() => handleActionClick(token.id, "skip")}

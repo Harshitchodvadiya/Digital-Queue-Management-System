@@ -120,7 +120,7 @@ const TokenHistory = () => {
           className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4"
           onClick={() => navigate("/user")}
         >
-          ← Back to Dashboard
+          ←
         </button>
 
         {/* Heading + Filters in Same Row */}
@@ -171,11 +171,11 @@ const TokenHistory = () => {
             <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
               <thead className="bg-gray-800 text-white">
                 <tr>
-                  <th className="py-2 px-4">Token ID</th>
-                  <th className="py-2 px-4">Service</th>
-                  <th className="py-2 px-4">Status</th>
-                  <th className="py-2 px-4">Issued Date</th>
-                  <th className="py-2 px-4">Completed Date</th>
+                  <th className="py-4 px-6 text-left">Token ID</th>
+                  <th className="py-4 px-6 text-left">Service</th>
+                  <th className="py-4 px-6 text-left">Status</th>
+                  <th className="py-4 px-6 text-left">Issued Date</th>
+                  <th className="py-4 px-6 text-left">Completed Date</th>
                 </tr>
               </thead>
               <tbody>
@@ -184,15 +184,15 @@ const TokenHistory = () => {
                     key={token.id}
                     className="border-b hover:bg-gray-100 text-gray-700"
                   >
-                    <td className="py-2 px-4 text-center">{token.id}</td>
-                    <td className="py-2 px-4 text-center">
+                    <td className="py-4 px-6 font-medium text-gray-800">{token.id}</td>
+                    <td className="py-4 px-6 ">
                       {token.staffId?.service?.serviceName || "N/A"}
                     </td>
-                    <td className="py-2 px-4 text-center">{token.status}</td>
-                    <td className="py-2 px-4 text-center">
+                    <td className="py-4 px-6">{token.status}</td>
+                    <td className="py-4 px-6">
                       {formatDateTime(token.issuedTime)}
                     </td>
-                    <td className="py-2 px-4 text-center">
+                    <td className="py-4 px-6">
                       {formatDateTime(token.completedTime)}
                     </td>
                   </tr>

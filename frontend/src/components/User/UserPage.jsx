@@ -338,6 +338,10 @@ const UserHomePage = () => {
                   <strong>Status:</strong> {token.status}
                 </p>
                 <p>
+                  <strong>Waiting time:</strong> {Math.floor(token.additionalWaitTime)} min
+                </p>
+
+                <p>
                   <strong>Issued Time:</strong> {formatDateTime(token.issuedTime)}
                 </p>
                 <p className="mt-2 text-blue-500 font-bold">
