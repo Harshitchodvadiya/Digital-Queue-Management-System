@@ -146,8 +146,8 @@ const StaffTokenTable = () => {
               {tokens.length > 0 ? (
                 tokens.map((token, index) => {
                   const isFirstToken = index === 0;
-                  const isPreviousTokenCompletedOrSkipped =
-                    isFirstToken || tokens[index - 1].status === "COMPLETED" || tokens[index - 1].status === "SKIPPED";
+                  const isPreviousTokenCompletedOrSkippedOrCancelled =
+                    isFirstToken || ["COMPLETED", "SKIPPED", "CANCELLED"].includes(tokens[index - 1]?.status);
                   const isActive = token.id === activeTokenId;
                   const isAlreadyStarted = startedTokens.has(token.id);
                   const isCancelled = token.status === "CANCELLED"; // Check if token is cancelled
@@ -183,7 +183,7 @@ const StaffTokenTable = () => {
                             disabled={
                               isAlreadyStarted ||
                               activeTokenId !== null ||
-                              !isPreviousTokenCompletedOrSkipped ||
+                              !isPreviousTokenCompletedOrSkippedOrCancelled ||
                               isCancelled
                             }
                           >
