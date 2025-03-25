@@ -15,6 +15,10 @@ const UserHomePage = () => {
   const [peopleAheadMap, setPeopleAheadMap] = useState({});
   const [userId, setUserId] = useState(null);
 
+  const [rescheduleToken, setRescheduleToken] = useState(null);
+  const [newDate, setNewDate] = useState("");
+  const [newTime, setNewTime] = useState("");
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const token = Cookies.get("jwtToken");
@@ -222,6 +226,36 @@ const UserHomePage = () => {
       alert(error.response?.data || "Failed to cancel token.");
     }
   };
+
+  const handleRescheduleClick = (token) => {
+    setRescheduleToken(token);
+    setNewDate("");
+    setNewTime("");
+  };
+  
+  const confirmReschedule = async () => {
+    if (!newDate || !newTime) {
+      alert("Please select a new date and time.");
+      return;
+    }
+  
+    const updatedTime = new Date(`${newDate}T${newTime}:00`).toISOString();
+  
+    try {
+      await axios.put(
+        `http://localhost:8081/api/v1/token/rescheduleToken/${rescheduleToken.id}`,
+        { newIssuedTime: updatedTime }, // Fix here
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+  
+      alert("Token rescheduled successfully!");
+      setRescheduleToken(null);
+      fetchTokensList(); // Refresh token list
+    } catch (error) {
+      alert(error.response?.data || "Failed to reschedule token.");
+    }
+  };
+  
   
 
   // ✅ Request a Token
@@ -255,6 +289,7 @@ const UserHomePage = () => {
       alert(error.response?.data || "Failed to request token.");
     }
   };
+  
 
   // ✅ Format DateTime
   const formatDateTime = (isoString) => {
@@ -269,6 +304,7 @@ const UserHomePage = () => {
       hour12: false,
     });
   };
+  
 
   // ✅ Get Box Color Based on Token Status
   const getBoxColor = (status) => {
@@ -374,16 +410,74 @@ const UserHomePage = () => {
                   </p>
                 )}
 
-                  {/* ✅ Cancel Button (Only if token is not completed/skipped) */}
-                  {token.status === "PENDING" && (
-      <button onClick={() => cancelToken(token.id)} className="bg-red-500 text-white px-4 py-2 rounded-md mt-2 hover:bg-red-700">
-        Cancel
-      </button>
-    )}
+                {/* Reschedule Button */}
+                <button 
+                  onClick={() => handleRescheduleClick(token)}
+                  className="bg-blue-500 text-white px-4 py-2 mr-2 rounded hover:bg-blue-600"
+                >
+                  Reschedule
+                </button>
+
+                {/* ✅ Cancel Button (Only if token is not completed/skipped) */}
+                {token.status === "PENDING" && (
+                  <button onClick={() => cancelToken(token.id)} className="bg-red-500 text-white px-4 py-2 rounded-md mt-2 hover:bg-red-700">
+                    Cancel
+                  </button>
+                  
+                )}
+
+                  
               </div>
             ))}
           </div>
         </div>
+
+        {rescheduleToken && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <h2 className="text-xl font-bold mb-4">Reschedule Token</h2>
+              <p><strong>Current Time:</strong> {formatDateTime(rescheduleToken.issuedTime)}</p>
+              
+              <label className="block mt-2">New Date:</label>
+              <input
+                type="date"
+                value={newDate}
+                onChange={(e) => setNewDate(e.target.value)}
+                className="border p-2 rounded w-full"
+                min={new Date().toISOString().split("T")[0]} // Prevent selecting past dates
+              />
+
+              <label className="block mt-2">New Time:</label>
+              <input
+                type="time"
+                value={newTime}
+                onChange={(e) => setNewTime(e.target.value)}
+                className="border p-2 rounded w-full"
+                min={
+                  newDate === new Date().toISOString().split("T")[0] 
+                    ? new Date().toTimeString().slice(0, 5)  // Prevent past time on the current date
+                    : "00:00"
+                }
+              />
+
+              <div className="flex gap-2 mt-4">
+                <button 
+                  onClick={confirmReschedule} 
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
+                  Confirm
+                </button>
+                <button 
+                  onClick={() => setRescheduleToken(null)} 
+                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
 
         </div>
       </div>

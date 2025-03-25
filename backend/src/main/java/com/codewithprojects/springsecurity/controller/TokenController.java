@@ -11,10 +11,12 @@ import com.codewithprojects.springsecurity.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -169,6 +171,27 @@ public class TokenController {
         return tokenService.cancelToken(id);
     }
 
+
+    @PutMapping("/rescheduleToken/{id}")
+    public ResponseEntity<?> rescheduleToken(@PathVariable Long id, @RequestBody Map<String, String> requestBody) {
+        try {
+            String newIssuedTime = requestBody.get("newIssuedTime");
+            if (newIssuedTime == null) {
+                return ResponseEntity.badRequest().body("Missing newIssuedTime in request body");
+            }
+
+            // Convert ISO 8601 to LocalDateTime
+            Instant instant = Instant.parse(newIssuedTime);
+            LocalDateTime newTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+            Token updateToken = tokenService.rescheduleToken(id, newTime);
+            return ResponseEntity.ok(updateToken);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error rescheduling token: " + e.getMessage());
+        }
+    }
 
 
 }

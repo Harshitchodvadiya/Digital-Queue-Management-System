@@ -3,6 +3,7 @@ package com.codewithprojects.springsecurity.services;
 import com.codewithprojects.springsecurity.entities.Token;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -47,4 +48,6 @@ public interface TokenService {
     Token currentTokenNumber();
 
     Token cancelToken(Long id);
+
+    Token rescheduleToken(Long tokenId, LocalDateTime newIssuedTime);
 }

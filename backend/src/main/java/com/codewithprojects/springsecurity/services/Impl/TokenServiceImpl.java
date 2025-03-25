@@ -241,6 +241,26 @@ public class TokenServiceImpl implements TokenService {
         }
     }
 
+    @Override
+    public Token rescheduleToken(Long tokenId, LocalDateTime newIssuedTime) {
+        Token token = tokenRepository.findById(tokenId).orElseThrow(()-> new RuntimeException("Token not found"));
+
+        if(token.getStatus().equals(TokenStatus.COMPLETED)){
+            throw new RuntimeException("Token is already completed");
+        }
+
+        boolean isTimeTaken = tokenRepository.existsByIssuedTime(newIssuedTime);
+
+        if(isTimeTaken){
+            throw new RuntimeException("Time is already taken");
+        }
+
+        token.setIssuedTime(newIssuedTime);
+        token.setStatus(TokenStatus.PENDING);
+
+        return tokenRepository.save(token);
+    }
+
 
     /**
      * Adds a new token to the system, ensuring that the selected time slot is available.
