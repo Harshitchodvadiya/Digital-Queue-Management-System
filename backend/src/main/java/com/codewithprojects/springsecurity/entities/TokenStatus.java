@@ -11,5 +11,6 @@ public enum TokenStatus {
     //Token has been successfully completed.
     COMPLETED,
     //Token was skipped (e.g., user did not show up).
-    SKIPPED
+    SKIPPED,
+    CANCELLED
 }

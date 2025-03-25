@@ -223,6 +223,24 @@ public class TokenServiceImpl implements TokenService {
         return null;
     }
 
+    @Override
+    public Token cancelToken(Long id) {
+        Token token = tokenRepository.findById(id).get();
+
+        if(token==null){
+            throw new RuntimeException("token is not there");
+        }
+
+        if(token.getStatus()==TokenStatus.PENDING){
+            token.setStatus(TokenStatus.CANCELLED);
+            tokenRepository.save(token);
+            return token;
+        }
+        else {
+            throw new RuntimeException("Token is not able to cancel");
+        }
+    }
+
 
     /**
      * Adds a new token to the system, ensuring that the selected time slot is available.

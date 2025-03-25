@@ -45,4 +45,6 @@ public interface TokenService {
     void updateWaitTimes();
 
     Token currentTokenNumber();
+
+    Token cancelToken(Long id);
 }

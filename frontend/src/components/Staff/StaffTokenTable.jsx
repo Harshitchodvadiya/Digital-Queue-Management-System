@@ -9,7 +9,6 @@ const StaffTokenTable = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [staffId, setStaffId] = useState(null);
-  const [disabledStatus, setDisabledStatus] = useState({});
   const [startedTokens, setStartedTokens] = useState(new Set()); // Tracks started tokens
   const [activeTokenId, setActiveTokenId] = useState(null); // Tracks the active token
   const token = Cookies.get("jwtToken");
@@ -151,6 +150,7 @@ const StaffTokenTable = () => {
                     isFirstToken || tokens[index - 1].status === "COMPLETED" || tokens[index - 1].status === "SKIPPED";
                   const isActive = token.id === activeTokenId;
                   const isAlreadyStarted = startedTokens.has(token.id);
+                  const isCancelled = token.status === "CANCELLED"; // Check if token is cancelled
 
                   return (
                     <tr key={token.id} className="border-b hover:bg-gray-100 text-gray-700">
@@ -159,41 +159,44 @@ const StaffTokenTable = () => {
                       <td className="py-4 px-6 text-center font-bold">{token.status}</td>
                       <td className="py-4 px-6 text-center font-bold">{formatDateTime(token.issuedTime)}</td>
 
-                      <div className="flex justify-center space-x-2 mt-3.5">
-                        <button
-                          className="bg-gray-500 text-white px-4 py-1 rounded hover:bg-gray-700"
-                          onClick={() => handleActionClick(token.id, "skip")}
-                          disabled={!isActive}
-                        >
-                          Skip
-                        </button>
+                      <td className="py-4 px-6 text-center">
+                        <div className="flex justify-center space-x-2">
+                          <button
+                            className="bg-gray-500 text-white px-4 py-1 rounded hover:bg-gray-700"
+                            onClick={() => handleActionClick(token.id, "skip")}
+                            disabled={!isActive || isCancelled}
+                          >
+                            Skip
+                          </button>
 
-                        <button
-                          className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-700"
-                          onClick={() => handleActionClick(token.id, "complete")}
-                          disabled={!isActive}
-                        >
-                          Complete
-                        </button>
+                          <button
+                            className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-700"
+                            onClick={() => handleActionClick(token.id, "complete")}
+                            disabled={!isActive || isCancelled}
+                          >
+                            Complete
+                          </button>
 
-                        <button
-                          className="bg-blue-400 text-white px-4 py-1 rounded hover:bg-blue-700"
-                          onClick={() => handleActionClick(token.id, "next")}
-                          disabled={
-                            isAlreadyStarted ||
-                            activeTokenId !== null ||
-                            !isPreviousTokenCompletedOrSkipped
-                          }
-                        >
-                          START
-                        </button>
-                      </div>
+                          <button
+                            className="bg-blue-400 text-white px-4 py-1 rounded hover:bg-blue-700"
+                            onClick={() => handleActionClick(token.id, "next")}
+                            disabled={
+                              isAlreadyStarted ||
+                              activeTokenId !== null ||
+                              !isPreviousTokenCompletedOrSkipped ||
+                              isCancelled
+                            }
+                          >
+                            START
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   );
                 })
               ) : (
                 <tr>
-                  <td colSpan="8" className="text-center text-gray-500 py-4">
+                  <td colSpan="5" className="text-center text-gray-500 py-4">
                     No tokens found for this service.
                   </td>
                 </tr>

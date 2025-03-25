@@ -164,6 +164,11 @@ public class TokenController {
         return userService.tokenHistory(id);
     }
 
+    @PutMapping("/cancelToken/{id}")
+    public Token cancelToken(@PathVariable Long id){
+        return tokenService.cancelToken(id);
+    }
+
 
 
 }

@@ -184,7 +184,7 @@ const UserHomePage = () => {
 
       const { userTokens, activeTokens, peopleAheadMap } = response.data;
 
-      setTokens(userTokens.filter(token => token.status !== "COMPLETED" && token.status !== "SKIPPED"));
+      setTokens(userTokens.filter(token => token.status !== "COMPLETED" && token.status !== "SKIPPED"  && token.status !== "CANCELLED"));
       setPeopleAheadMap(peopleAheadMap); // Update "People Ahead"
 
       // Map active tokens by service ID
@@ -204,6 +204,25 @@ const UserHomePage = () => {
       setLoading(false);
     }
   };
+
+  const cancelToken = async (tokenId) => {
+    if (!tokenId) return;
+  
+    const confirmCancel = window.confirm("Are you sure you want to cancel this token?");
+    if (!confirmCancel) return;
+  
+    try {
+      await axios.put(`http://localhost:8081/api/v1/token/cancelToken/${tokenId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      alert("Token canceled successfully!");
+      fetchTokensList(); // ✅ Refresh tokens after canceling
+    } catch (error) {
+      alert(error.response?.data || "Failed to cancel token.");
+    }
+  };
+  
 
   // ✅ Request a Token
   const requestToken = async () => {
@@ -354,6 +373,13 @@ const UserHomePage = () => {
                     <strong> #{serviceActiveTokens[token.staffId?.service?.serviceId]?.id}</strong>
                   </p>
                 )}
+
+                  {/* ✅ Cancel Button (Only if token is not completed/skipped) */}
+                  {token.status === "PENDING" && (
+      <button onClick={() => cancelToken(token.id)} className="bg-red-500 text-white px-4 py-2 rounded-md mt-2 hover:bg-red-700">
+        Cancel
+      </button>
+    )}
               </div>
             ))}
           </div>
