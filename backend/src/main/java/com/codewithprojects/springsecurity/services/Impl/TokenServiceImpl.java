@@ -4,8 +4,10 @@ import com.codewithprojects.springsecurity.controller.NotificationController;
 import com.codewithprojects.springsecurity.entities.StaffServices;
 import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.entities.TokenStatus;
+import com.codewithprojects.springsecurity.entities.User;
 import com.codewithprojects.springsecurity.repository.StaffServicesRepository;
 import com.codewithprojects.springsecurity.repository.TokenRepository;
+import com.codewithprojects.springsecurity.repository.UserRepository;
 import com.codewithprojects.springsecurity.services.NotificationService;
 import com.codewithprojects.springsecurity.services.StaffService;
 import com.codewithprojects.springsecurity.services.TokenService;
@@ -30,7 +32,7 @@ public class TokenServiceImpl implements TokenService {
     private final TokenRepository tokenRepository;
     private final NotificationService notificationService;
 
-
+private final UserRepository  userRepository;
 
     private  final StaffServicesRepository staffServicesRepository;
     /**
@@ -241,23 +243,38 @@ public class TokenServiceImpl implements TokenService {
         }
     }
 
+
     @Override
     public Token rescheduleToken(Long tokenId, LocalDateTime newIssuedTime) {
-        Token token = tokenRepository.findById(tokenId).orElseThrow(()-> new RuntimeException("Token not found"));
+        Token token = tokenRepository.findById(tokenId)
+                .orElseThrow(() -> new RuntimeException("Token not found"));
 
-        if(token.getStatus().equals(TokenStatus.COMPLETED)){
+        if (token.getStatus().equals(TokenStatus.COMPLETED)) {
             throw new RuntimeException("Token is already completed");
         }
 
-        boolean isTimeTaken = tokenRepository.existsByIssuedTime(newIssuedTime);
+        // Fetch the staff and service details
+        int staffId = token.getStaffId().getId();
+        User user = userRepository.findById((long) staffId)
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
 
-        if(isTimeTaken){
-            throw new RuntimeException("Time is already taken");
+        StaffServices service = staffServicesRepository.findById(user.getService().getServiceId())
+                .orElseThrow(() -> new RuntimeException("Service not found"));
+
+        // Calculate the new token's active duration
+        LocalDateTime newEndTime = newIssuedTime.plusMinutes(service.getEstimatedTime());
+
+        // Check if any token exists at the new time or overlaps with the new slot
+        boolean isConflict = tokenRepository.existsByIssuedTime(newIssuedTime) ||
+                tokenRepository.existsByIssuedTimeBetween(newIssuedTime, newEndTime);
+
+        if (isConflict) {
+            throw new RuntimeException("Time slot is already taken or overlaps with an existing token.");
         }
 
+        // Update and save the rescheduled token
         token.setIssuedTime(newIssuedTime);
         token.setStatus(TokenStatus.PENDING);
-
         return tokenRepository.save(token);
     }
 
