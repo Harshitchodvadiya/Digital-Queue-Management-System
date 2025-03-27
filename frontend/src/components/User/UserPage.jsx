@@ -5,6 +5,8 @@ import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar";
 import { IoTicketOutline } from "react-icons/io5";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const UserHomePage = () => {
   const [staffList, setStaffList] = useState([]);
@@ -33,25 +35,34 @@ const UserHomePage = () => {
 
    // ✅ Load stored notifications from localStorage on page load
   useEffect(() => {
+
     //localStorage is a built-in web storage API in JavaScript that allows you to store key-value pairs in the browser persistently.
     //The data remains saved even after the page is refreshed or the browser is closed.
+    
     const storedNotifications = localStorage.getItem("notifications");
     if (storedNotifications) {
-      const parsedNotifications = JSON.parse(storedNotifications);
+      let parsedNotifications = JSON.parse(storedNotifications);
 
        // ✅ Ensure notifications have `isRead` property
-    const correctedNotifications = parsedNotifications.map((notif) =>
-      notif.hasOwnProperty("isRead") ? notif : { ...notif, isRead: false }
-    );
+       parsedNotifications = parsedNotifications.map((notif) =>
+        notif.hasOwnProperty("isRead") ? notif : { ...notif, isRead: false }
+      );
 
       // ✅ Set notifications from localStorage
-      setNotifications(correctedNotifications);
+      setNotifications(parsedNotifications);
       
   // ✅ Recalculate unread count after loading
         const unreadCount = parsedNotifications.filter((notif) => !notif.isRead).length;
       setUnreadNotifications(unreadCount);
     }
   }, []);
+
+  // ✅ Store updated notifications in `localStorage` every time they change
+useEffect(() => {
+  if (notifications.length > 0) {
+    localStorage.setItem("notifications", JSON.stringify(notifications));
+  }
+}, [notifications]); // ✅ Runs every time `notifications` updates
 
 
   // ✅ Decode JWT & Extract User ID
@@ -83,82 +94,103 @@ const UserHomePage = () => {
   //  Subscribe to SSE for Real-Time Notifications
   const subscribeToNotifications = (userId) => {
     const eventSource = new EventSource(`http://localhost:8081/api/v1/notifications/subscribe/${userId}`);
-
-    // Handle incoming messages
+  
     eventSource.onmessage = (event) => {
       console.log("🔔 New Notification:", event.data);
-      // setNotifications((prev) => [...prev, event.data]); // Store notifications
-      //setNotifications((prev) => [...prev, event.data]); // Force re-render by using a callback function
-
+  
       let newNotification;
       try {
         newNotification = JSON.parse(event.data);
       } catch (error) {
         newNotification = { message: event.data, isRead: false };
       }
-      alert(`🔔 Notification: ${event.data}`); // Show alert  
+  
+        // ✅ Show toast notification at the top-right corner
+    toast.info(newNotification.message, {
+      position: "top-right",
+      autoClose: 5000, // Hide after 5 sec
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      
+    });
 
-      setNotifications((prev) => {
-        const updatedNotifications = [...prev, { ...newNotification, isRead: false }];
-
-         // ✅ Save to localStorage immediately
+      // ✅ Retrieve existing notifications from localStorage
+      const storedNotifications = localStorage.getItem("notifications");
+      const parsedStoredNotifications = storedNotifications ? JSON.parse(storedNotifications) : [];
+  
+      // ✅ Merge new notification with stored ones, preserving `isRead` status
+      const updatedNotifications = [...parsedStoredNotifications, { ...newNotification, isRead: false }];
+  
+      // ✅ Save to localStorage
       localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
-      return updatedNotifications;
-      });
+  
+      setNotifications(updatedNotifications);
       setUnreadNotifications((prev) => prev + 1); // ✅ Increase unread count
-     
     };
-
-    // Handle errors
+  
     eventSource.onerror = (error) => {
       console.error("SSE error:", error);
       eventSource.close();
     };
-
-    return () => {
-      // Close connection when not needed
-      eventSource.close();
-    };
+  
+    return () => eventSource.close(); // ✅ Cleanup
   };
+  
 
     // ✅ Fetch notification history from the backend
-  const fetchNotificationHistory = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8081/api/v1/notifications/history/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setNotifications(response.data);
-
-      // ✅ Count unread notifications
-      const unreadCount = response.data.filter(notif => !notif.isRead).length;
-      setUnreadNotifications(unreadCount);
+    const fetchNotificationHistory = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8081/api/v1/notifications/history/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+    
+        const fetchedNotifications = response.data;
+    
+        // ✅ Retrieve stored notifications from localStorage
+        const storedNotifications = localStorage.getItem("notifications");
+        const parsedStoredNotifications = storedNotifications ? JSON.parse(storedNotifications) : [];
+    
+        // ✅ Merge `isRead` status from localStorage with fetched notifications
+        const updatedNotifications = fetchedNotifications.map((notif) => {
+          const storedNotif = parsedStoredNotifications.find((stored) => stored.id === notif.id);
+          return storedNotif ? { ...notif, isRead: storedNotif.isRead } : { ...notif, isRead: false };
+        });
+    
+        setNotifications(updatedNotifications);
+        
+        // ✅ Save merged notifications to `localStorage`
+        localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
+    
+        // ✅ Count unread notifications
+        const unreadCount = updatedNotifications.filter(notif => !notif.isRead).length;
+        setUnreadNotifications(unreadCount);
+        
       } catch (error) {
-      console.error("Failed to fetch notification history:", error);
+        console.error("Failed to fetch notification history:", error);
       }
     };
+    
 
     // ✅ Mark a notification as read
     const markAsRead = (notificationId) => {  
       setNotifications((prevNotifications) => { 
-        // ✅ Update notifications state
-      const updatedNotifications = prevNotifications.map((notif) =>
-      notif.id === notificationId ? { ...notif, isRead: true } : notif
-     );
+        const updatedNotifications = prevNotifications.map((notif) =>
+          notif.id === notificationId ? { ...notif, isRead: true } : notif
+        );
     
-        // ✅ Save updated notifications to localStorage
+        // ✅ Save updated notifications to `localStorage`
         localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
-
-        // ✅ Recalculate unread count after marking as read
+    
+        // ✅ Recalculate unread count
         const unreadCount = updatedNotifications.filter((notif) => !notif.isRead).length;
         setUnreadNotifications(unreadCount);
     
         return updatedNotifications;
       });
-    
-      // Update unread count
-      setUnreadNotifications((prev) => Math.max(0, prev - 1));
-    };
-    
+    };    
 
   // ✅ Fetch Staff List
   const fetchStaff = async () => {
@@ -256,8 +288,6 @@ const UserHomePage = () => {
       alert(error.response?.data || "Failed to reschedule token.");
     }
   };
-  
-  
 
   // ✅ Request a Token
   const requestToken = async () => {
@@ -306,6 +336,7 @@ const UserHomePage = () => {
     });
   };
   
+  
 
   // ✅ Get Box Color Based on Token Status
   const getBoxColor = (status) => {
@@ -318,6 +349,8 @@ const UserHomePage = () => {
     <div className="min-h-screen flex flex-col bg-white text-black">
       <Navbar />
 
+      {/* ✅ Notification Toast Container */}
+    <ToastContainer className="mt-20"></ToastContainer> 
       {/* 🔔 Notification Bell */}
       <div className="absolute top-4 left-290">
         <div className="relative">
@@ -325,7 +358,6 @@ const UserHomePage = () => {
           <button className="bg-yellow-500 text-white p-2 rounded-full shadow-md"
           onClick={() => setShowNotifications(!showNotifications)} >   
            🔔  {unreadNotifications > 0 && `(${unreadNotifications})`}
-             {/* 🔔 {notifications.length > 0 && `(${notifications.length})`} */}
           </button>
 
            {/* Show dropdown only when toggled */}
@@ -334,11 +366,8 @@ const UserHomePage = () => {
               <h3 className="font-bold">Recent Notifications</h3>
               {notifications.length > 0 ? (
                 notifications.map((notif, index) => (
-            //       <p key={notif.id || index} className="text-sm text-gray-700 mt-2">
-            //   📢 {notif.message}
-            // </p>
                 <p
-                key={notif.id}
+                key={notif.id || index} 
                 className={`text-sm mt-2 cursor-pointer transition-all ${
                   notif.isRead ? "text-gray-600 font-normal" : "text-black font-bold"
                 }`}
@@ -424,10 +453,7 @@ const UserHomePage = () => {
                   <button onClick={() => cancelToken(token.id)} className="bg-red-500 text-white px-4 py-2 rounded-md mt-2 hover:bg-red-700">
                     Cancel
                   </button>
-                  
                 )}
-
-                  
               </div>
             ))}
           </div>
@@ -478,11 +504,8 @@ const UserHomePage = () => {
             </div>
           </div>
         )}
-
-
         </div>
       </div>
-    
   );
 };
 
