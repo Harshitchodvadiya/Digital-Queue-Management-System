@@ -104,7 +104,7 @@ private final UserRepository  userRepository;
 
         tokenRepository.save(currentToken);
 
-        // 🔔 Send Notification to the user
+        //  Send Notification to the user
         String message = "It's your turn now for Token #" + currentToken.getId() + "! Please proceed to the counter.";
         notificationService.sendNotification(Long.valueOf(currentToken.getUser().getId()), message);
 
@@ -136,7 +136,7 @@ private final UserRepository  userRepository;
             token.setCompletedTime(LocalDateTime.now());
             tokenRepository.save(token);
 
-            // 🔔 Send Notification to the user
+            //  Send Notification to the user
             String message = "❌ Your Token #" + token.getId() + " was skipped by staff.";
             notificationService.sendNotification(Long.valueOf(token.getUser().getId()), message);
 

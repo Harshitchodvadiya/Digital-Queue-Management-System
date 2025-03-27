@@ -50,8 +50,10 @@
           withCredentials: true,
         })
         .then((response) => {
-          setTokens(response.data);
-          setActiveToken(response.data.find((token) => token.status === "ACTIVE") || null);
+          const filteredTokens = response.data.filter(token => token.status === "PENDING"); // ✅ Filter only pending tokens
+          console.log("Filtered Tokens:", filteredTokens); // ✅ Debug
+          setTokens(filteredTokens);
+          setActiveToken(filteredTokens.find((token) => token.status === "ACTIVE") || null);
           setLoading(false);
         })
         .catch(() => {
@@ -111,10 +113,6 @@
         case "complete":
           apiUrl = `http://localhost:8081/api/v1/token/completeToken/${activeToken.id}`;
           updatedStatus = "COMPLETED";
-          break;
-        case "next":
-          apiUrl = `http://localhost:8081/api/v1/token/nextToken/${activeToken.id}`;
-          updatedStatus = "ACTIVE";
           break;
         default:
           return;
@@ -194,9 +192,7 @@
                 <button className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center gap-2" onClick={() => handleAction("skip")}>
                   <SkipForward className="h-5 w-5" /> Skip Customer
                 </button>
-                <button className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center gap-2" onClick={() => handleAction("next")}>
-                  <Users className="h-5 w-5" /> Call Next
-                </button>
+              
             
               </div>
             </div>
@@ -218,6 +214,7 @@
           {/* Customer List */}         
           <ul className="divide-y">
             {tokens.map((token, index) => (
+              
               <li key={token.id} className="flex justify-between items-center py-3">
                 {/* Number + Customer Info */}
                 <div className="flex gap-4 items-center">
@@ -238,6 +235,7 @@
 
               </li>
             ))}
+            
           </ul>
           </div>
         </div>
