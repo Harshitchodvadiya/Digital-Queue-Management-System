@@ -65,52 +65,59 @@ public class UserServiceImpl implements UserService {
         // Fetch all tokens where the user is associated
         List<Token> userTokens = tokenRepository.findByUserId(user_id);
 
-        // Filter tokens for today's date with PENDING or ACTIVE status
-        LocalDate today = LocalDate.now();
-        List<Token> activeTokens = tokenRepository.findAll().stream()
-                .filter(token ->
-                        (token.getStatus().equals(TokenStatus.ACTIVE) ||
-                                token.getStatus().equals(TokenStatus.PENDING)) &&
-                                token.getIssuedTime().toLocalDate().equals(today)) // Filter by today's date
-                .collect(Collectors.toList());
+        // Fetch all tokens from the database
+        List<Token> allTokens = tokenRepository.findAll();
 
-        // Group tokens by Service ID
-        Map<Long, List<Token>> serviceTokensMap = activeTokens.stream()
-                .collect(Collectors.groupingBy(token -> token.getStaffId().getService().getServiceId()));
+        // Group tokens by Service ID and Date (Ensuring future dates are considered separately)
+        Map<Long, Map<LocalDate, List<Token>>> serviceDateTokensMap = allTokens.stream()
+                .collect(Collectors.groupingBy(
+                        token -> token.getStaffId().getService().getServiceId(),
+                        Collectors.groupingBy(token -> token.getIssuedTime().toLocalDate())
+                ));
 
-        // Map to track current token for each service
-        Map<Long, Token> currentTokenMap = new HashMap<>();
+        // Map to track the current active token for each service on each date
+        Map<String, Token> currentTokenMap = new HashMap<>(); // Key format: "serviceId_date"
 
         // Map to track people ahead for each user's token
         Map<Long, Integer> peopleAheadMap = new HashMap<>();
 
         // Iterate through each service
-        for (Map.Entry<Long, List<Token>> entry : serviceTokensMap.entrySet()) {
-            List<Token> serviceTokens = entry.getValue();
+        for (Map.Entry<Long, Map<LocalDate, List<Token>>> serviceEntry : serviceDateTokensMap.entrySet()) {
+            Long serviceId = serviceEntry.getKey();
+            Map<LocalDate, List<Token>> dateTokensMap = serviceEntry.getValue();
 
-            // Sort tokens by issued time for correct queue order
-            serviceTokens.sort(Comparator.comparing(Token::getIssuedTime));
+            // Iterate through each date
+            for (Map.Entry<LocalDate, List<Token>> dateEntry : dateTokensMap.entrySet()) {
+                LocalDate tokenDate = dateEntry.getKey();
+                List<Token> serviceTokens = dateEntry.getValue();
 
-            // Identify the current token for the service (First ACTIVE token)
-            Token currentToken = serviceTokens.stream()
-                    .filter(token -> token.getStatus().equals(TokenStatus.ACTIVE))
-                    .findFirst()
-                    .orElse(null);
+                // Sort tokens by issued time (FIFO queue)
+                serviceTokens.sort(Comparator.comparing(Token::getIssuedTime));
 
-            currentTokenMap.put(entry.getKey(), currentToken);
+                // Identify the first ACTIVE token for the service on this date
+                Token currentToken = serviceTokens.stream()
+                        .filter(token -> token.getStatus().equals(TokenStatus.ACTIVE))
+                        .findFirst()
+                        .orElse(null);
 
-            // Calculate 'people ahead' for each user's token in each service
-            int count = 0;
-            for (Token token : serviceTokens) {
-                if (token.getStatus().equals(TokenStatus.PENDING)) {
-                    peopleAheadMap.put(token.getId(), count);
-                    count++; // Increment count only for PENDING tokens
+                // Store current token separately for each service + date
+                String key = serviceId + "_" + tokenDate; // Unique key for service and date
+                currentTokenMap.put(key, currentToken);
+
+                // Calculate 'people ahead' for each user's token in each service for this specific date
+                int count = 0;
+                for (Token token : serviceTokens) {
+                    if (token.getStatus().equals(TokenStatus.PENDING)) {
+                        peopleAheadMap.put(token.getId(), count);
+                        count++; // Increment count only for PENDING tokens
+                    }
                 }
             }
         }
 
         return new TokenResponseDto(userTokens, new ArrayList<>(currentTokenMap.values()), peopleAheadMap);
     }
+
 
     @Override
     public List<Token> tokenHistory(Integer id) {
