@@ -1,67 +1,251 @@
-import React, { useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
-import StaffNavbar from "./StaffNavbar";
+  import React, { useEffect, useState } from "react";
+  import axios from "axios";
+  import Cookies from "js-cookie";
+  import { jwtDecode } from "jwt-decode";
+  import StaffNavbar from "./StaffNavbar";
+  import { Users, CheckCircle, SkipForward, Bell } from "lucide-react";
+  import { GoClock } from "react-icons/go";
 
-function StaffPage() {
-  const [staffId, setStaffId] = useState(null);
+  function StaffPage() {
+    const [staffId, setStaffId] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [tokens, setTokens] = useState([]);
+    const [activeToken, setActiveToken] = useState(null);
+    const [notification, setNotification] = useState(null);
 
-  useEffect(() => {
     const token = Cookies.get("jwtToken");
-    if (token) {
+
+    // Extract Staff ID from JWT
+    useEffect(() => {
+      if (!token) {
+        setError("Authentication error. Please log in again.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const decodedToken = jwtDecode(token);
-        const subValue = decodedToken.sub;
-        const parts = subValue.split("/");
-        if (parts.length > 1) {
-          const staffIdPart = parts[1].split(":")[0];
-          setStaffId(parseInt(staffIdPart, 10));
+        const subParts = decodedToken.sub.split("/");
+        if (subParts.length > 1) {
+          const extractedId = parseInt(subParts[1].split(":")[0], 10);
+          setStaffId(extractedId);
+        } else {
+          setError("Invalid token format. Please log in again.");
+          setLoading(false);
         }
       } catch (error) {
-        console.error("Error decoding JWT:", error);
+        setError("Failed to decode authentication token.");
+        setLoading(false);
       }
-    }
-  }, []);
+    }, []);
 
-  if (!staffId) {
+    // Fetch Today's Tokens
+    useEffect(() => {
+      if (!staffId) return;
+
+      axios
+        .get(`http://localhost:8081/api/v1/token/getTodayTokensByStaffId/${staffId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        })
+        .then((response) => {
+          setTokens(response.data);
+          setActiveToken(response.data.find((token) => token.status === "ACTIVE") || null);
+          setLoading(false);
+        })
+        .catch(() => {
+          setError("Failed to load today's token data. Please check permissions.");
+          setLoading(false);
+        });
+    }, [staffId]);
+
+    // Handle "Call Next Customer" Click
+    const handleCallNext = async () => {
+      const nextToken = tokens.find((token) => token.status === "PENDING");
+
+      if (!nextToken || !nextToken.id) {
+        console.error("No valid waiting token found!", nextToken);
+        return;
+      }
+
+      console.log(`Calling next token: ${nextToken.id}`); // ✅ Debug log
+      console.log("Authorization Header:", token); // ✅ Debug JWT Token
+
+      try {
+       
+        const response = await axios.put(
+          `http://localhost:8081/api/v1/token/nextToken/${nextToken.id}`,
+          null,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }
+        );
+
+        if (response.status === 200) {
+          console.log("Next token activated:", response.data); // ✅ Debug success response
+           setActiveToken(response.data); // ✅ Use the updated token from API response
+          // setNotification(`Now serving token ${nextToken.tokenNumber} - ${nextToken.user?.firstname}`);
+          setNotification(`Now serving token ${response.data.tokenNumber} - ${response.data.user?.firstname}`);
+
+        }
+      } catch (error) {
+        console.error("Error calling next customer:", error);
+        setError("Failed to call the next customer.");
+      }
+    };
+
+    // Handle Token Actions (Complete, Skip, Call Again)
+    const handleAction = async (action) => {
+      if (!activeToken) return;
+
+      let apiUrl = "";
+      let updatedStatus = "";
+
+      switch (action) {
+        case "skip":
+          apiUrl = `http://localhost:8081/api/v1/token/skipToken/${activeToken.id}`;
+          updatedStatus = "SKIPPED";
+          break;
+        case "complete":
+          apiUrl = `http://localhost:8081/api/v1/token/completeToken/${activeToken.id}`;
+          updatedStatus = "COMPLETED";
+          break;
+        case "next":
+          apiUrl = `http://localhost:8081/api/v1/token/nextToken/${activeToken.id}`;
+          updatedStatus = "ACTIVE";
+          break;
+        default:
+          return;
+      }
+
+      try {
+        const response = await axios.put(apiUrl, null, {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        });
+
+        if (response.status === 200) {
+          console.log(`${action} action successful:`, response.data);
+
+          
+          // **Update tokens list and remove completed/skipped tokens**
+            setTokens((prevTokens) =>
+              prevTokens.filter((token) => token.id !== activeToken.id) // ✅ Removes completed/skipped token
+            );
+
+            setActiveToken(null); // ✅ Clear active token after completion or skip
+                
+          if (action === "complete" || action === "skip") {
+            setActiveToken(null); // Clear active token after completion or skip
+          }
+        }
+      } catch (error) {
+        console.error(`Error ${action} token:`, error);
+        setError(`Failed to ${action} token. Please try again.`);
+      }
+    };
+
+    if (loading) return <p className="text-center">Loading tokens...</p>;
+    if (error) return <p className="text-red-500 text-center">{error}</p>;
+
     return (
-      <div className="flex justify-center items-center min-h-screen text-gray-700">
-        <p>Loading staff information... Please wait.</p>
+      <div className="min-h-screen bg-gray-100 flex flex-col">
+        <StaffNavbar />
+
+        <div className="container mx-auto px-6 py-6">
+          <div className="mb-4">
+            <h1 className="text-3xl font-bold text-gray-900">Staff Portal</h1>
+            <p className="text-gray-600">Manage customer queue and service delivery</p>
+          </div>
+
+          {/* Call Next Customer Section */}
+          {!activeToken ? (
+            <div className="bg-white shadow-lg rounded-lg p-8 text-center w-220 h-100">
+            
+              <div className="flex flex-col items-center mt-15">
+                <Users className="h-20 w-20 text-gray-400" />
+                <h2 className="text-xl font-semibold mt-4 text-gray-800">
+                  No Customer Currently Being Served
+                </h2>
+                <button
+                  className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+                  onClick={handleCallNext}
+                >
+                  <Users className="h-6 w-6" /> Call Next Customer
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white shadow-lg rounded-lg p-6 w-220 h-60">
+              <div className="flex justify-between items-center">
+                <span className="bg-blue-500 text-white px-3 py-1 rounded-full">Now Serving</span>
+                <span className="text-gray-500">Started {new Date().toLocaleTimeString()}</span>
+              </div>
+
+              <h2 className="text-2xl font-bold mt-3">{activeToken.id}</h2>
+              <p className="text-gray-700">{activeToken.user?.firstname || "Customer Name"}</p>
+
+              <div className="mt-4 flex space-x-4">
+                <button className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex items-center gap-2" onClick={() => handleAction("complete")}>
+                  <CheckCircle className="h-5 w-5" />  Complete Service
+                </button>
+                <button className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center gap-2" onClick={() => handleAction("skip")}>
+                  <SkipForward className="h-5 w-5" /> Skip Customer
+                </button>
+                <button className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center gap-2" onClick={() => handleAction("next")}>
+                  <Users className="h-5 w-5" /> Call Next
+                </button>
+            
+              </div>
+            </div>
+          )}
+
+        {/* /table */}
+        {/* <div className="w-250 mx-auto bg-white shadow-md rounded-lg p-6"> */}
+        <div className="bg-white shadow-lg rounded-lg p-8 text-center w-220 mt-8 h-150">
+
+          {/* Header */}
+            <div className="flex justify-between items-center mb-4 border-b pb-3">
+              <h2 className="text-xl font-semibold">Customer Queue</h2>
+              <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+                {tokens.filter((t) => t.status === "PENDING").length} Waiting
+              </button>
+            </div>
+
+
+          {/* Customer List */}         
+          <ul className="divide-y">
+            {tokens.map((token, index) => (
+              <li key={token.id} className="flex justify-between items-center py-3">
+                {/* Number + Customer Info */}
+                <div className="flex gap-4 items-center">
+                  <span className="text-sm font-semibold bg-gray-200 px-3 py-1 rounded-lg">{token.id  || "N/A"}</span>
+                  <div>
+                    <p className="font-medium">{token.user?.id} - {token.user?.firstname}</p>
+                    <span className="text-blue-600 text-sm font-medium bg-blue-100 px-2 py-1 rounded-lg">
+                      {token.staffId?.service?.serviceName}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Wait Time  */}
+                <div className="flex items-center gap-1 text-sm text-gray-500">
+                  <GoClock className="h-4 w-4" />
+                  <span>{token.additionalWaitTime} min</span>
+                </div>
+
+              </li>
+            ))}
+          </ul>
+          </div>
+        </div>
+
+
       </div>
+      
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
-      {/* Navbar */}
-      <StaffNavbar />
-
-      {/* Main Content Layout */}
-      <div className="container mx-auto px-6 py-6">
-        {/* Staff Portal Header */}
-        <div className="mb-4">
-          <h1 className="text-3xl font-bold text-gray-900">Staff Portal</h1>
-          <p className="text-gray-600">Manage customer queue and service delivery</p>
-        </div>
-
-        {/* Left-Aligned Call Next Customer Card */}
-        <div className="bg-white shadow-lg rounded-lg p-8 text-center w-2/5">
-          <div className="flex flex-col items-center">
-            <span className="text-gray-400 text-6xl">👤</span>
-            <h2 className="text-xl font-semibold mt-4 text-gray-800">
-              No Customer Currently Being Served
-            </h2>
-            <p className="text-gray-600 mt-2">
-              Click the "Call Next Customer" button to serve the next person in the queue.
-            </p>
-            <button className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
-              🚀 Call Next Customer
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default StaffPage;
+  export default StaffPage;

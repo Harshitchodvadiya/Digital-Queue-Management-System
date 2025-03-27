@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar";
+import { IoTicketOutline } from "react-icons/io5";
 
 const UserHomePage = () => {
   const [staffList, setStaffList] = useState([]);
@@ -368,7 +369,7 @@ const UserHomePage = () => {
           </select>
           <input type="date" className="w-full border p-2 rounded-md mt-4" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
           <input type="time" className="w-full border p-2 rounded-md mt-2" value={selectedTime} onChange={(e) => setSelectedTime(e.target.value)} />
-          <button className="bg-blue-500 px-4 py-2 mt-4 w-full text-white rounded-md font-bold" onClick={requestToken}>Request Token</button>
+          <button className="bg-blue-500 px-6 py-3 mt-4 w-full text-white rounded-md font-bold flex items-center justify-center gap-2" onClick={requestToken}> <IoTicketOutline className="h-6 w-6" /> Request Token</button>
           <button
             className="bg-gray-500 px-4 py-2 mt-2 w-full text-white rounded-md font-bold"
             onClick={() => navigate("/token-history")}
@@ -433,8 +434,8 @@ const UserHomePage = () => {
         </div>
 
         {rescheduleToken && (
-          <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg">
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-300 bg-opacity-90">
+            <div className=" bg-white p-6 rounded-lg shadow-lg">
               <h2 className="text-xl font-bold mb-4">Reschedule Token</h2>
               <p><strong>Current Time:</strong> {formatDateTime(rescheduleToken.issuedTime)}</p>
               
