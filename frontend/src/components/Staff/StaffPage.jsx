@@ -177,26 +177,33 @@
               </div>
             </div>
           ) : (
-            <div className="bg-white shadow-lg rounded-lg p-6 w-220 h-60">
+            <div className="bg-white shadow-lg rounded-lg p-6 w-220 h-54">
               <div className="flex justify-between items-center">
-                <span className="bg-blue-500 text-white px-3 py-1 rounded-full">Now Serving</span>
+                <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-sm">Now Serving</span>
                 <span className="text-gray-500">Started {new Date().toLocaleTimeString()}</span>
               </div>
 
               <h2 className="text-2xl font-bold mt-3">{activeToken.id}</h2>
-              <p className="text-gray-700">{activeToken.user?.firstname || "Customer Name"}</p>
+
+              {/* Customer Name & Service Name in the same row, but service name aligned to the right */}
+              <div className="flex justify-between items-center mt-1">
+                <p className="text-gray-700">{activeToken.user?.firstname || "Customer Name"}</p>
+                <span className="text-blue-600 text-sm font-medium bg-blue-100 px-2 py-1 rounded-lg">
+                  {activeToken.staffId?.service?.serviceName || "Service Name"}
+                </span>
+              </div>
 
               <div className="mt-4 flex space-x-4">
-                <button className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex items-center gap-2" onClick={() => handleAction("complete")}>
-                  <CheckCircle className="h-5 w-5" />  Complete Service
+                <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2" onClick={() => handleAction("complete")}>
+                  <CheckCircle className="h-5 w-5" /> Complete Service
                 </button>
                 <button className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center gap-2" onClick={() => handleAction("skip")}>
                   <SkipForward className="h-5 w-5" /> Skip Customer
                 </button>
-              
-            
               </div>
             </div>
+
+
           )}
 
         {/* /table */}
@@ -206,7 +213,7 @@
           {/* Header */}
             <div className="flex justify-between items-center mb-4 border-b pb-3">
               <h2 className="text-xl font-semibold">Customer Queue</h2>
-              <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+              <button className="border border-gray-300 text-gray-700 px-4 py-1 rounded-lg hover:bg-gray-100 transition">
                 {tokens.filter((t) => t.status === "PENDING").length} Waiting
               </button>
             </div>
@@ -215,13 +222,13 @@
           {/* Customer List */}         
           <ul className="divide-y">
             {tokens.map((token, index) => (
-              
               <li key={token.id} className="flex justify-between items-center py-3">
                 {/* Number + Customer Info */}
                 <div className="flex gap-4 items-center">
-                  <span className="text-sm font-semibold bg-gray-200 px-3 py-1 rounded-lg">{token.id  || "N/A"}</span>
+                  {/* Display sequential count (1, 2, 3...) */}
+                  <span className="text-sm font-semibold bg-gray-200 px-3 py-1 rounded-lg">{index + 1}</span>
                   <div>
-                    <p className="font-medium">{token.user?.id} - {token.user?.firstname}</p>
+                    <p className="font-medium">Token Number : {token.id} - {token.user?.firstname}</p>
                     <span className="text-blue-600 text-sm font-medium bg-blue-100 px-2 py-1 rounded-lg">
                       {token.staffId?.service?.serviceName}
                     </span>
@@ -233,11 +240,10 @@
                   <GoClock className="h-4 w-4" />
                   <span>{token.additionalWaitTime} min</span>
                 </div>
-
               </li>
             ))}
-            
           </ul>
+
           </div>
         </div>
 
