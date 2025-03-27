@@ -65,17 +65,16 @@
     // Handle "Call Next Customer" Click
     const handleCallNext = async () => {
       const nextToken = tokens.find((token) => token.status === "PENDING");
-
+    
       if (!nextToken || !nextToken.id) {
         console.error("No valid waiting token found!", nextToken);
         return;
       }
-
+    
       console.log(`Calling next token: ${nextToken.id}`); // ✅ Debug log
       console.log("Authorization Header:", token); // ✅ Debug JWT Token
-
+    
       try {
-       
         const response = await axios.put(
           `http://localhost:8081/api/v1/token/nextToken/${nextToken.id}`,
           null,
@@ -84,19 +83,21 @@
             withCredentials: true,
           }
         );
-
+    
         if (response.status === 200) {
           console.log("Next token activated:", response.data); // ✅ Debug success response
-           setActiveToken(response.data); // ✅ Use the updated token from API response
-          // setNotification(`Now serving token ${nextToken.tokenNumber} - ${nextToken.user?.firstname}`);
+          setActiveToken(response.data); // ✅ Use the updated token from API response
           setNotification(`Now serving token ${response.data.tokenNumber} - ${response.data.user?.firstname}`);
-
+    
+          // ✅ Remove the served token from the queue
+          setTokens((prevTokens) => prevTokens.filter((t) => t.id !== nextToken.id));
         }
       } catch (error) {
         console.error("Error calling next customer:", error);
         setError("Failed to call the next customer.");
       }
     };
+    
 
     // Handle Token Actions (Complete, Skip, Call Again)
     const handleAction = async (action) => {
