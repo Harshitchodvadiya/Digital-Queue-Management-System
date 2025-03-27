@@ -290,13 +290,20 @@ private final UserRepository  userRepository;
             return ResponseEntity.badRequest().body("Invalid token or staff ID.");
         }
 
+        User staff = token.getStaffId();
+        StaffServices service = staff.getService();
+
+        // 🚨 Prevent token creation if service is inactive
+        if (service == null || !service.isActive()) {
+            return ResponseEntity.badRequest().body("Error: Cannot book a token for an inactive service.");
+        }
+
         // Fetch all tokens and filter by staff ID to check for overlapping time slots.
         List<Token> existingTokens = tokenRepository.findAll().stream()
-                .filter(e -> e.getStaffId() != null && e.getStaffId().getId().equals(token.getStaffId().getId()))
+                .filter(e -> e.getStaffId() != null && e.getStaffId().getId().equals(staff.getId()))
                 .collect(Collectors.toList());
 
-        // Get estimated service time in minutes for the staff member.
-        int estimatedTime = token.getStaffId().getService().getEstimatedTime();
+        int estimatedTime = service.getEstimatedTime();
 
         // Calculate the start and end time for the new token.
         LocalDateTime newTokenStartTime = token.getIssuedTime();
@@ -307,7 +314,6 @@ private final UserRepository  userRepository;
             LocalDateTime existingStartTime = existingToken.getIssuedTime();
             LocalDateTime existingEndTime = existingStartTime.plusMinutes(existingToken.getStaffId().getService().getEstimatedTime());
 
-            // Condition for overlapping time slots.
             return newTokenStartTime.isBefore(existingEndTime) && newTokenEndTime.isAfter(existingStartTime);
         });
 
