@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -285,44 +286,59 @@ private final UserRepository  userRepository;
      * @param token The token entity containing staff details and issued time.
      * @return ResponseEntity with the saved token if successful, or an error message if the time slot is taken.
      */
+
     public ResponseEntity<?> addToken(Token token) {
         if (token == null || token.getStaffId() == null || token.getStaffId().getId() == null) {
             return ResponseEntity.badRequest().body("Invalid token or staff ID.");
         }
 
-        User staff = token.getStaffId();
-        StaffServices service = staff.getService();
+        Long staffId = Long.valueOf(token.getStaffId().getId());
 
-        // 🚨 Prevent token creation if service is inactive
-        if (service == null || !service.isActive()) {
-            return ResponseEntity.badRequest().body("Error: Cannot book a token for an inactive service.");
-        }
-
-        // Fetch all tokens and filter by staff ID to check for overlapping time slots.
+        // Fetch all tokens assigned to the same staff member.
         List<Token> existingTokens = tokenRepository.findAll().stream()
-                .filter(e -> e.getStaffId() != null && e.getStaffId().getId().equals(staff.getId()))
+                .filter(e -> e.getStaffId() != null && e.getStaffId().getId().equals(staffId))
                 .collect(Collectors.toList());
 
-        int estimatedTime = service.getEstimatedTime();
+        // Get estimated service time in minutes for the staff member.
+        int estimatedTime = token.getStaffId().getService().getEstimatedTime();
 
         // Calculate the start and end time for the new token.
         LocalDateTime newTokenStartTime = token.getIssuedTime();
         LocalDateTime newTokenEndTime = newTokenStartTime.plusMinutes(estimatedTime);
 
-        // Check if the new token's time slot overlaps with any existing tokens.
-        boolean isSlotTaken = existingTokens.stream().anyMatch(existingToken -> {
-            LocalDateTime existingStartTime = existingToken.getIssuedTime();
-            LocalDateTime existingEndTime = existingStartTime.plusMinutes(existingToken.getStaffId().getService().getEstimatedTime());
+        // Find the last completed token for the same staff member
+        Optional<Token> lastCompletedToken = existingTokens.stream()
+                .filter(e -> e.getStatus() == TokenStatus.COMPLETED) // Ensure there's a status field
+                .max(Comparator.comparing(Token::getCompletedTime)); // Sort by completed time
 
-            return newTokenStartTime.isBefore(existingEndTime) && newTokenEndTime.isAfter(existingStartTime);
-        });
+        // Adjust start time based on actual completion of the last token.
+        if (lastCompletedToken.isPresent()) {
+            LocalDateTime lastCompletionTime = lastCompletedToken.get().getCompletedTime();
+            if (lastCompletionTime.isBefore(newTokenStartTime)) {
+                newTokenStartTime = lastCompletionTime;
+                newTokenEndTime = newTokenStartTime.plusMinutes(estimatedTime);
+            }
+        }
+
+        // Check if the new token's time slot overlaps with any existing pending or active tokens.
+        LocalDateTime finalNewTokenStartTime = newTokenStartTime;
+        LocalDateTime finalNewTokenEndTime = newTokenEndTime;
+        boolean isSlotTaken = existingTokens.stream()
+                .filter(e -> e.getStatus() == TokenStatus.PENDING || e.getStatus() == TokenStatus.ACTIVE)
+                .anyMatch(existingToken -> {
+                    LocalDateTime existingStartTime = existingToken.getIssuedTime();
+                    LocalDateTime existingEndTime = existingStartTime.plusMinutes(existingToken.getStaffId().getService().getEstimatedTime());
+                    return finalNewTokenStartTime.isBefore(existingEndTime) && finalNewTokenEndTime.isAfter(existingStartTime);
+                });
 
         if (isSlotTaken) {
             return ResponseEntity.badRequest().body("Error: The selected time slot is already booked.");
         }
 
-        // Save the token if no conflicts exist.
+        // Save the token with updated timing
+        token.setIssuedTime(newTokenStartTime);
         Token savedToken = tokenRepository.save(token);
         return ResponseEntity.ok(savedToken);
     }
+
 }
