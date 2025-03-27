@@ -44,6 +44,9 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
 
     List<Token> findByUserId(Integer id);
     boolean existsByIssuedTime(LocalDateTime issuedTime);
+    boolean existsByIssuedTimeBetween(LocalDateTime start, LocalDateTime end);
+
+
 
 
 }
