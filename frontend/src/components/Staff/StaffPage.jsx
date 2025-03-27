@@ -164,9 +164,13 @@
             
               <div className="flex flex-col items-center mt-15">
                 <Users className="h-20 w-20 text-gray-400" />
-                <h2 className="text-xl font-semibold mt-4 text-gray-800">
+                <h1 className="text-xl font-semibold mt-4 text-gray-800">
                   No Customer Currently Being Served
+                </h1>
+                <h2 className="text-xl  mt-4 text-gray-500 items-center">
+                  Click the "Call Next Customer" button to serve the next person in the queue.
                 </h2>
+               
                 <button
                   className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex items-center gap-2"
                   onClick={handleCallNext}
