@@ -441,12 +441,14 @@ useEffect(() => {
                 )}
 
                 {/* Reschedule Button */}
-                <button 
-                  onClick={() => handleRescheduleClick(token)}
-                  className="bg-blue-500 text-white px-4 py-2 mr-2 rounded hover:bg-blue-600"
-                >
-                  Reschedule
-                </button>
+                { token.status==="PENDING" && (
+                  <button 
+                    onClick={() => handleRescheduleClick(token)}
+                    className="bg-blue-500 text-white px-4 py-2 mr-2 mt-2 rounded hover:bg-blue-600"
+                  >
+                    Reschedule
+                  </button>
+                )}
 
                 {/* ✅ Cancel Button (Only if token is not completed/skipped) */}
                 {token.status === "PENDING" && (

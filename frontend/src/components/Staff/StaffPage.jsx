@@ -53,7 +53,7 @@
           const filteredTokens = response.data.filter(token => token.status === "PENDING"); // ✅ Filter only pending tokens
           console.log("Filtered Tokens:", filteredTokens); // ✅ Debug
           setTokens(filteredTokens);
-          setActiveToken(filteredTokens.find((token) => token.status === "ACTIVE") || null);
+          setActiveToken(response.data.find((token) => token.status === "ACTIVE") || null); // ✅ Keep active token
           setLoading(false);
         })
         .catch(() => {
