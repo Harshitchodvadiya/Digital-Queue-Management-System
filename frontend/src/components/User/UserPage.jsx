@@ -362,7 +362,7 @@ useEffect(() => {
 
            {/* Show dropdown only when toggled */}
            {showNotifications && (
-            <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-md p-4">
+            <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-md p-4 max-h-64 overflow-y-auto">
               <h3 className="font-bold">Recent Notifications</h3>
               {notifications.length > 0 ? (
                 notifications.map((notif, index) => (

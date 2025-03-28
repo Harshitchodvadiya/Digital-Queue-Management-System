@@ -206,8 +206,6 @@
                 </button>
               </div>
             </div>
-
-
           )}
 
         {/* /table */}
@@ -250,11 +248,11 @@
 
           </div>
         </div>
-
-
       </div>
-      
     );
   }
+export default StaffPage;
 
-  export default StaffPage;
+
+
+  
