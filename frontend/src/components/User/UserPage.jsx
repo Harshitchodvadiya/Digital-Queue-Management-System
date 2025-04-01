@@ -409,8 +409,11 @@ useEffect(() => {
 
          {/* Right Side: Display Tokens */}
          <div className="w-2/3">
-          <h2 className="text-2xl font-bold mb-4">Your Active Tokens</h2>
 
+          <h2 className="text-2xl font-bold mb-4">Your Active Tokens</h2>
+          <div className="my-4">
+            <hr className="border-t-2 border-gray-300" />
+          </div>
           <div className="grid grid-cols-2 gap-4">
             {tokens.map((token) => (
               <div
