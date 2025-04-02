@@ -393,7 +393,7 @@ useEffect(() => {
           <select className="w-full border p-2 rounded-md" onChange={(e) => setSelectedStaff(staffList.find(staff => staff.id == e.target.value))}>
             <option value="">-- Select Service --</option>
             {staffList.map((staff) => (
-              <option key={staff.id} value={staff.id}>{staff.service?.serviceName || "N/A"} - {staff.firstname}</option>
+              <option key={staff.id} value={staff.id}>{staff.service?.serviceName|| "N/A"} - {staff.service?.estimatedTime ? ` - ${staff.service.estimatedTime} mins` : ""}</option>
             ))}
           </select>
           <input type="date" className="w-full border p-2 rounded-md mt-4" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
@@ -409,8 +409,11 @@ useEffect(() => {
 
          {/* Right Side: Display Tokens */}
          <div className="w-2/3">
-          <h2 className="text-2xl font-bold mb-4">Your Active Tokens</h2>
 
+          <h2 className="text-2xl font-bold mb-4">Your Active Tokens</h2>
+          <div className="my-4">
+            <hr className="border-t-2 border-gray-300" />
+          </div>
           <div className="grid grid-cols-2 gap-4">
             {tokens.map((token) => (
               <div

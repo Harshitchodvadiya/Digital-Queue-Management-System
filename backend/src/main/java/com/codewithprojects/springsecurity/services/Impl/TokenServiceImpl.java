@@ -287,6 +287,7 @@ private final UserRepository  userRepository;
      * @return ResponseEntity with the saved token if successful, or an error message if the time slot is taken.
      */
 
+
     public ResponseEntity<?> addToken(Token token) {
         if (token == null || token.getStaffId() == null || token.getStaffId().getId() == null) {
             return ResponseEntity.badRequest().body("Invalid token or staff ID.");

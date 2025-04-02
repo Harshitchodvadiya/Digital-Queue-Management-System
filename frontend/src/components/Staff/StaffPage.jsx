@@ -438,6 +438,9 @@ function StaffPage() {
           <p className="text-gray-600">Manage customer queue and service delivery</p>
         </div>
 
+        
+        
+
         {/* Call Next Customer Section */}
         {!activeToken ? (
           <div className="bg-white shadow-lg rounded-lg p-8 text-center w-200 h-100">
@@ -527,41 +530,17 @@ function StaffPage() {
           </ul>
 
         </div>
-        {/* Today's All Tokens
-        <div className="w-100 bg-white shadow-lg rounded-lg p-6 mt-8 overflow-y-auto ">
-             <h2 className="text-lg font-semibold border-b pb-2">Today's  Tokens</h2>
-             <div className="mt-3 max-h-64">
-              {allTokens.length > 0 ? (
-                allTokens.map((token) => (
-                  <div key={token.id} className="border-b py-1">
-                    <h3 className="text-md font-medium">Token Number : {token.id} - {token.user?.firstname}</h3>
-                    <p className="text-gray-700">{token.user?.firstname} {token.user?.lastname}</p>
-                    <p className="text-sm text-gray-500">{token.staffId?.service?.serviceName}</p>
-                    <div className="flex flex-col justify-end items-end">
-                      <span className={`px-2 py-1 rounded text-xs  ${
-                        token.status === "COMPLETED" ? "text-green-600 bg-green-100" :
-                        token.status === "SKIPPED" ? "text-red-600 bg-red-100" :
-                        "text-gray-600 bg-gray-100"
-                      }`}>
-                        {token.status}
-                      </span>
-                      <span className="text-gray-600 text-xs">{token.additionalWaitTime} min</span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 text-center">No tokens for today</p>
-              )}
-            </div>
-          </div> */}
-        
         {/* calculated execution time */}
         {/* Today's All Tokens */}
           <div className="w-100 bg-white shadow-lg rounded-lg p-6 mt-8 overflow-y-auto">
             <h2 className="text-lg font-semibold border-b pb-2">Today's Tokens</h2>
             <div className="mt-3 max-h-64">
-              {allTokens.length > 0 ? (
-                allTokens.map((token) => (
+            {allTokens.filter(token => 
+                      ["COMPLETED", "SKIPPED", "CANCELLED"].includes(token.status)
+                    ).length > 0 ?(
+                allTokens
+                .filter(token => ["COMPLETED", "SKIPPED", "CANCELLED"].includes(token.status))
+                .map((token) => (
                   <div key={token.id} className="border-b py-2">
                     <h3 className="text-md font-medium">
                       Token Number : {token.id} - {token.user?.firstname}

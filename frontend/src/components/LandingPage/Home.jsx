@@ -45,7 +45,7 @@ export default function Home() {
             Modernizing Wait Times
           </span>
           <h1 className="mt-4 text-5xl font-bold text-gray-900 leading-tight">
-            Elegant Token System for{" "}
+            Digital Token System for{" "}
             <span className="text-blue-600">Modern Queues</span>
           </h1>
           <p className="mt-6 text-lg text-gray-600">
