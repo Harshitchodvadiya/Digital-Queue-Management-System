@@ -7,6 +7,11 @@ import Navbar from "../Navbar";
 import { IoTicketOutline } from "react-icons/io5";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { MdOutlineWatchLater } from "react-icons/md";
+import { BsPersonCheck } from "react-icons/bs";
+import { RiErrorWarningLine } from "react-icons/ri";
+
+
 
 const UserHomePage = () => {
   const [staffList, setStaffList] = useState([]);
@@ -352,10 +357,10 @@ useEffect(() => {
       {/* ✅ Notification Toast Container */}
     <ToastContainer className="mt-20"></ToastContainer> 
       {/* 🔔 Notification Bell */}
-      <div className="absolute top-4 left-290">
+      <div className="absolute top-2.5 left-290">
         <div className="relative">
         {/* 🔥 Toggle on click */}
-          <button className="bg-yellow-500 text-white p-2 rounded-full shadow-md"
+          <button className="text-white p-2 rounded-full shadow-md"
           onClick={() => setShowNotifications(!showNotifications)} >   
            🔔  {unreadNotifications > 0 && `(${unreadNotifications})`}
           </button>
@@ -388,7 +393,7 @@ useEffect(() => {
 
       <div className="flex flex-row p-6 gap-6">
         {/* Left Side: Request Token Section */}
-        <div className="w-1/3 bg-white shadow-md rounded-lg p-6 border border-gray-300">
+        <div className="w-1/3 h-95 bg-white shadow-md rounded-lg p-6 border border-gray-300">
           <h2 className="text-2xl font-bold mb-4">Request a Token</h2>
           <select className="w-full border p-2 rounded-md" onChange={(e) => setSelectedStaff(staffList.find(staff => staff.id == e.target.value))}>
             <option value="">-- Select Service --</option>
@@ -407,62 +412,96 @@ useEffect(() => {
           </button>
         </div>
 
-         {/* Right Side: Display Tokens */}
-         <div className="w-2/3">
+         
 
-          <h2 className="text-2xl font-bold mb-4">Your Active Tokens</h2>
-          <div className="my-4">
-            <hr className="border-t-2 border-gray-300" />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {tokens.map((token) => (
-              <div
-                key={token.id}
-                className={`p-4 shadow-md rounded-md border ${getBoxColor(token.status)}`}
-              >
-                <h3 className="font-bold">Token #{token.id}</h3>
-                <p>{token.staffId?.service?.serviceName}</p>
-                <p>
-                  <strong>Status:</strong> {token.status}
-                </p>
-                <p>
-                  <strong>Waiting time:</strong> {Math.floor(token.additionalWaitTime)} min
-                </p>
 
-                <p>
-                  <strong>Issued Time:</strong> {formatDateTime(token.issuedTime)}
-                </p>
-                <p className="mt-2 text-blue-500 font-bold">
-                  People Ahead: {peopleAheadMap[token.id] || 0}
-                </p>
+         
+        <div className="w-2/3">
 
-                {serviceActiveTokens[token.staffId?.service?.serviceId] && (
-                  <p className="mt-2 bg-yellow-200 p-2 rounded-md font-bold text-black">
-                    Current Token for {token.staffId?.firstname}: 
-                    <strong> #{serviceActiveTokens[token.staffId?.service?.serviceId]?.id}</strong>
+          {/* Token Cards */}
+          <div className="grid grid-cols-2 gap-6">
+            {tokens.length > 0 ? (
+              tokens.map((token) => (
+                <div
+                  key={token.id}
+                  className="p-6 shadow-lg rounded-2xl bg-white border border-gray-200"
+                >
+                  {/* Service Name */}
+                  <p className="text-gray-600 text-sm font-semibold">
+                    {token.staffId?.service?.serviceName || "Service"}
+                  </p>
+
+                  {/* Token Number & Status */}
+                  <div className="flex justify-between items-center mt-2">
+                    <h3 className="text-xl font-bold">{token.id}</h3>
+                    <span className="px-3 py-1 text-sm font-semibold text-blue-600 bg-blue-100 rounded-xl">
+                      {token.status || "Waiting"}
+                    </span>
+                  </div>
+
+                  {/* Estimated Wait Time & Position */}
+                  <p className="flex items-center mt-2 text-gray-500">
+                  <MdOutlineWatchLater />
+                  <span className="ml-1">{Math.floor(token.additionalWaitTime) || 0} min</span>
+                  </p>
+                  <p className="flex items-center mt-1 text-gray-500">
+                  <BsPersonCheck />
+
+                   <span className="ml-1">People Ahead: {peopleAheadMap[token.id] || 0}</span>
+                  </p>
+
+                  {serviceActiveTokens[token.staffId?.service?.serviceId] && (
+                  <p className="mt-1 p-1 rounded-md font-bold text-black">
+                    Current Token for {token.staffId?.firstname} : 
+                    <strong> {serviceActiveTokens[token.staffId?.service?.serviceId]?.id}</strong>
                   </p>
                 )}
+                {peopleAheadMap[token.id] === 0 && (
+                    <div className="mt-3 bg-green-200 p-2 rounded-md text-green-700 text-sm flex items-center">
+                       Next Turn Will Be Yours
+                    </div>
+                  )}
 
-                {/* Reschedule Button */}
-                { token.status==="PENDING" && (
-                  <button 
-                    onClick={() => handleRescheduleClick(token)}
-                    className="bg-blue-500 text-white px-4 py-2 mr-2 mt-2 rounded hover:bg-blue-600"
-                  >
-                    Reschedule
-                  </button>
-                )}
+                  {/* Notification Box: "Customers ahead of you" */}
+                  {peopleAheadMap[token.id] > 0 && peopleAheadMap[token.id] < 4 && (
+                    <div className="mt-3 bg-yellow-100 p-2 rounded-md text-yellow-700 text-sm flex items-center">
+                    <RiErrorWarningLine />
+                    {peopleAheadMap[token.id]} customers ahead of you
+                    </div>
+                  )}
 
-                {/* ✅ Cancel Button (Only if token is not completed/skipped) */}
-                {token.status === "PENDING" && (
-                  <button onClick={() => cancelToken(token.id)} className="bg-red-500 text-white px-4 py-2 rounded-md mt-2 hover:bg-red-700">
-                    Cancel
-                  </button>
-                )}
-              </div>
-            ))}
+                  
+
+                  {/* Action Buttons */}
+                  <div className="mt-auto flex justify-between pt-4">
+                    {token.status === "PENDING" && (
+                      <button 
+                        onClick={() => handleRescheduleClick(token)}
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-1/2 mr-2"
+                      >
+                        Reschedule
+                      </button>
+                    )}
+                    {token.status === "PENDING" && (
+                      <button 
+                        onClick={() => cancelToken(token.id)}
+                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 w-1/2"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
+
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-center col-span-2">No active tokens</p>
+            )}
           </div>
         </div>
+
+
+
 
         {rescheduleToken && (
           <div className="fixed inset-0 flex items-center justify-center bg-gray-300 bg-opacity-90">

@@ -41,17 +41,17 @@ const StaffNavbar = ({ title = "Digital Queue Management System" }) => {
   return (
     <nav className="flex items-center justify-between p-4 bg-gray-900 text-white shadow-lg text-center">
       {/* Sidebar */}
-      <StaffSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      {/* <StaffSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} /> */}
 
       {/* Sidebar Toggle Button (Hidden when sidebar is open) */}
-      {!isSidebarOpen && (
+      {/* {!isSidebarOpen && (
         <button
           onClick={() => setIsSidebarOpen(true)}
           className="absolute top-4 left-4 bg-gray-700 p-2 rounded-md shadow-md hover:bg-gray-600 text-white"
         >
           <Menu size={24} />
         </button>
-      )}
+      )} */}
 
       {/* Centered Title */}
       <h1 className="text-xl font-bold text-center flex-grow pl-70">
@@ -73,7 +73,7 @@ const StaffNavbar = ({ title = "Digital Queue Management System" }) => {
               onClick={handleLogout}
               className="flex items-center w-full px-4 py-2 hover:bg-gray-200"
             >
-              <AiOutlineLogout className="mr-2" />
+              <AiOutlineLogout className="mr-1" />
               Logout
             </button>
           </div>

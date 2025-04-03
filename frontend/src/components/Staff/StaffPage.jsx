@@ -380,57 +380,60 @@ function StaffPage() {
 
         {/* calculated execution time */}
         {/* Today's All Tokens */}
-          <div className="w-100 bg-white shadow-xl rounded-lg p-6 overflow-y-auto">
-            <h2 className="text-lg font-semibold border-b pb-2">Today's Tokens</h2>
-            <div className="mt-3 max-h-64">
-           
+          <div className="w-100 bg-white shadow-xl rounded-lg p-6 h-80 flex flex-col">
+          {/* Sticky Header */}
+          <h2 className="text-lg font-semibold border-b pb-2 bg-white sticky top-0 z-10">
+            Today's Tokens
+          </h2>
+
+          {/* Scrollable Content */}
+          <div className="mt-3 flex-1 overflow-y-auto">
             {allTokens.filter(token => 
-                      ["COMPLETED", "SKIPPED", "CANCELLED"].includes(token.status)
-                    ).length > 0 ?(
-                allTokens
+              ["COMPLETED", "SKIPPED", "CANCELLED"].includes(token.status)
+            ).length > 0 ? (
+              allTokens
                 .filter(token => ["COMPLETED", "SKIPPED", "CANCELLED"].includes(token.status))
                 .map((token) => (
                   <div key={token.id} className="border-b py-2">
                     <h3 className="text-md font-medium">
                       Token Number : {token.id} - {token.user?.firstname}
                     </h3>
-                    
-                    
+
                     {/* Service name and status in one line */}
                     <div className="flex justify-between items-center">
-                    <p className="text-gray-700">
-                      {token.user?.firstname} {token.user?.lastname}
-                    </p>
+                      <p className="text-gray-700">
+                        {token.user?.firstname} {token.user?.lastname}
+                      </p>
                       <span
                         className={`px-2 py-1 rounded text-xs ${
                           token.status === "COMPLETED" ? "text-green-600 bg-green-100" :
-                          token.status === "SKIPPED" ? "text-red-600 bg-red-100" :
-                          "text-gray-600 bg-gray-100"
+                          token.status === "SKIPPED" ? "text-yellow-600 bg-yellow-100" :
+                          "text-red-600 bg-red-100"
                         }`}
                       >
                         {token.status}
                       </span>
                     </div>
 
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm text-gray-500">{token.staffId?.service?.serviceName}</p>
-                     {/* Total Service Time Calculation */}
-                     <p className="text-gray-600 text-xs pr-2">
-                        
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-gray-500">{token.staffId?.service?.serviceName}</p>
+                      {/* Total Service Time Calculation */}
+                      <p className="text-gray-600 text-xs pr-2">
                         {token.appointedTime && token.completedTime
                           ? Math.round(
                               (new Date(token.completedTime).getTime() - new Date(token.appointedTime).getTime()) / 60000
                             ) + " min"
                           : "N/A"}
-                    </p>
+                      </p>
+                    </div>
                   </div>
-                </div>
                 ))
-              ) : (
-                <p className="text-gray-500 text-center">No tokens for today</p>
-              )}
-            </div>
+            ) : (
+              <p className="text-gray-500 text-center">No tokens for today</p>
+            )}
           </div>
+        </div>
+
       </div>
       </div>
     // </div>
