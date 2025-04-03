@@ -42,17 +42,16 @@ const Navbar = ({ title = "Digital Queue Management System" }) => {
   return (
     <nav className="flex items-center justify-between p-2.5 bg-gray-900 text-white shadow-lg text-center">
       {/* Sidebar */}
-      {/* <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} /> */}
-
-      {/* Sidebar Toggle Button (Hidden when sidebar is open) */}
-      {/* {!isSidebarOpen && ( */}
-        {/* <button */}
-          {/* onClick={() => setIsSidebarOpen(true)}
-          className="absolute top-4 left-4 bg-gray-700 p-2 rounded-md shadow-md hover:bg-gray-600 text-white" */}
-        {/* >
-          <Menu size={24} /> */}
-        {/* </button> */}
-      {/* )} */}
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      {!isSidebarOpen && (
+        <button
+           onClick={() => setIsSidebarOpen(true)}
+          className="absolute top-4 left-4 bg-gray-700 p-2 rounded-md shadow-md hover:bg-gray-600 text-white"
+         >
+          <Menu size={19} />
+         </button> 
+      
+      )}
 
       {/* Centered Title */}
       <h1 className="text-xl font-bold text-center flex-grow pl-70" >
