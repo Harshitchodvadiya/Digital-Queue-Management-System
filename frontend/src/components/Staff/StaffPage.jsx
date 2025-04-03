@@ -259,7 +259,7 @@ function StaffPage() {
       <div className="bg-white shadow-lg rounded-lg p-6 w-220 h-54">
         <div className="flex justify-between items-center">
           <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-sm">Now Serving</span>
-          <span className="text-gray-500">Started {new Date().toLocaleTimeString()}</span>
+          <span className="text-gray-500">Started {new Date(activeToken.appointedTime).toLocaleString()}</span>
         </div>
 
         <h2 className="text-2xl font-bold mt-3">{activeToken.id}</h2>
@@ -286,30 +286,30 @@ function StaffPage() {
     <div className="w-1/3 bg-white shadow-lg rounded-lg p-6">
       <h2 className="text-lg font-semibold border-b pb-2">Today's Summary</h2>
       <p className="text-gray-500 mt-2">Your service performance</p>
-      
-      <div className="mt-4 space-y-2">
+            
+        <div className="mt-4 space-y-2">
           <div className="flex justify-between">
-          <span className="text-gray-600 text-sm">Total Served</span>
-          <span className="text-xl font-bold text-green-600">{summary.totalServed}</span>
-        </div>
+            <span className="text-gray-600 text-sm">Total Served</span>
+            <span className="text-xl font-bold text-green-600">{summary.totalServed}</span>
+          </div>
 
-        <div className="flex justify-between">
-          <span className="text-gray-600 text-sm">Avg Service Time</span>
-          <span className="text-xl font-bold text-blue-600">{summary.avgServiceTime} min</span>
-        </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600 text-sm">Avg Service Time</span>
+            <span className="text-xl font-bold text-blue-600">{summary.avgServiceTime} min</span>
+          </div>
 
-        <div className="flex justify-between">
-          <span className="text-gray-600 text-sm">Skipped Tokens</span>
-          <span className="text-xl font-bold text-red-600">{summary.skippedTokens}</span>
+          <div className="flex justify-between">
+            <span className="text-gray-600 text-sm">Skipped Tokens</span>
+            <span className="text-xl font-bold text-red-600">{summary.skippedTokens}</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
+    </div>
       {/* for both tables */}
       <div className="flex gap-6 mt-6">
           {/* token queue */}
-        <div className="bg-white shadow-lg rounded-lg p-8 text-center w-205  h-135 ml-15">
+        <div className="bg-white shadow-lg rounded-lg p-8 text-center w-205  h-full ml-15">
 
           {/* Header */}
             <div className="flex justify-between items-center mb-4 border-b pb-3">
@@ -344,24 +344,38 @@ function StaffPage() {
             ))}
           </ul>
 
-           {/* Pagination Controls */}
-           <div className="flex justify-between mt-4">
-               <button
+          {/* Pagination Controls */}
+          <div className="flex-grow">
+            {/* Your queue content */}
+            {/* Fixed Pagination at the Bottom */}
+          <div className="p-4 bg-white shadow-md">
+            <div className="flex justify-center space-x-4 items-center">
+              {/* Previous Button */}
+              <button
                 onClick={() => setQueuePage(queuePage - 1)}
                 disabled={queuePage === 1}
                 className={`px-3 py-1 rounded ${queuePage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-400"}`}
               >
                 <GoChevronLeft />
-              </button>  
-               <button
+              </button>
+
+              {/* Page Number Display */}
+              <span className="text-sm">{queuePage}</span>
+
+              {/* Next Button */}
+              <button
                 onClick={() => setQueuePage(queuePage + 1)}
                 disabled={queueEndIndex >= tokens.length}
-                className={`px-3 py-1  rounded ${queueEndIndex >= tokens.length ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-400"}`}
+                className={`px-3 py-1 rounded ${queueEndIndex >= tokens.length ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-400"}`}
               >
                 <GoChevronRight />
-              </button> 
-             
+              </button>
             </div>
+          </div>
+          </div>
+
+          
+ 
         </div>
 
         {/* calculated execution time */}
