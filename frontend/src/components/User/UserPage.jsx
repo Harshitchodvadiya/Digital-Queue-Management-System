@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { MdOutlineWatchLater } from "react-icons/md";
 import { BsPersonCheck } from "react-icons/bs";
 import { RiErrorWarningLine } from "react-icons/ri";
+import { GoSync } from "react-icons/go";
 
 
 
@@ -476,11 +477,13 @@ useEffect(() => {
                   <div className="mt-auto flex justify-between pt-4">
                     {token.status === "PENDING" && (
                       <button 
-                        onClick={() => handleRescheduleClick(token)}
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-1/2 mr-2"
-                      >
-                        Reschedule
-                      </button>
+                          onClick={() => handleRescheduleClick(token)}
+                          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-1/2 mr-2 flex items-center justify-center space-x-2"
+                        >
+                          <GoSync className="h-5 w-5" />  
+                          <span>Reschedule</span>
+                        </button>
+
                     )}
                     {token.status === "PENDING" && (
                       <button 

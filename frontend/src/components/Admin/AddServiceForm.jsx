@@ -252,14 +252,14 @@ function AddServiceForm() {
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Service Description
             </label>
-            <input
-              type="text"
+            <textarea
               name="serviceDescription"
               value={formData.serviceDescription}
+              rows={3}
               onChange={handleChange}
               required
               className="w-full px-3 py-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md"
-            />
+            ></textarea>
           </div>
 
           {/* Estimated Time Input (Minutes) */}

@@ -117,8 +117,6 @@ const StaffList = () => {
             + Add Staff
           </button>
 
-          
-
           {/* Staff Count Table */}
           <div className="mb-6 overflow-x-auto">
             <h3 className="text-lg font-semibold mb-2">Staff Count by Service</h3>
@@ -140,7 +138,6 @@ const StaffList = () => {
             </table>
           </div>
 
-
           {loading ? (
             <p className="text-center text-gray-600">Loading...</p>
           ) : error ? (
@@ -149,8 +146,6 @@ const StaffList = () => {
             <p className="text-center text-gray-500">No staff members found.</p>
           ) : (
 
-            
-            
             <div className="overflow-x-auto">
               {/* <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg"> */}
               <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
@@ -274,8 +269,6 @@ const StaffList = () => {
     </div>
   </div>
 )}
-
-
     </div>
   );
 };

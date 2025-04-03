@@ -101,8 +101,6 @@ public class TokenController {
         );
     }
 
-
-
     /**
      * Updates the details of an existing token.
      *
@@ -115,16 +113,11 @@ public class TokenController {
         return tokenService.updateToken(id, token);
     }
 
-//    @PutMapping("/nextToken/{tokenId}")
-//    public ResponseEntity<?> activateNextToken(@PathVariable Long tokenId) {
-//        return ResponseEntity.ok(tokenService.activateNextToken(tokenId));
-//    }
     @PutMapping("/nextToken/{tokenId}")
     public ResponseEntity<?> activateNextToken(@PathVariable Long tokenId) {
         Token nextToken = tokenService.activateNextToken(tokenId);
         return ResponseEntity.ok(nextToken);
     }
-
 
     @PutMapping("/completeToken/{tokenId}")
     public ResponseEntity<?> completeToken(@PathVariable Long tokenId) {
@@ -179,7 +172,6 @@ public class TokenController {
             if (newIssuedTime == null) {
                 return ResponseEntity.badRequest().body("Missing newIssuedTime in request body");
             }
-
             // Convert ISO 8601 to LocalDateTime
             Instant instant = Instant.parse(newIssuedTime);
             LocalDateTime newTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -192,6 +184,4 @@ public class TokenController {
             return ResponseEntity.badRequest().body("Error rescheduling token: " + e.getMessage());
         }
     }
-
-
 }

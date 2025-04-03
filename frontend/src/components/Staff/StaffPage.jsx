@@ -407,7 +407,7 @@ function StaffPage() {
                       <span
                         className={`px-2 py-1 rounded text-xs ${
                           token.status === "COMPLETED" ? "text-green-600 bg-green-100" :
-                          token.status === "SKIPPED" ? "text-yellow-600 bg-yellow-100" :
+                          token.status === "SKIPPED" ? "text-red-600 bg-red-100" :
                           "text-red-600 bg-red-100"
                         }`}
                       >
