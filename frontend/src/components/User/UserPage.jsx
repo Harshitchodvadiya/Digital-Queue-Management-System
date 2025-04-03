@@ -498,7 +498,7 @@ useEffect(() => {
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 text-center col-span-2">No active tokens</p>
+              <p className="text-gray-500 text-center col-span-2 mt-55 text-2xl " >No active tokens</p>
             )}
           </div>
         </div>
