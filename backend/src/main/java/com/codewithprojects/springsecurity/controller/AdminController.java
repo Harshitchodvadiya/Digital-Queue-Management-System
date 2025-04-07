@@ -3,6 +3,7 @@ package com.codewithprojects.springsecurity.controller;
 import com.codewithprojects.springsecurity.dto.SignUpRequest;
 import com.codewithprojects.springsecurity.entities.Role;
 import com.codewithprojects.springsecurity.services.AuthenticationService;
+import com.codewithprojects.springsecurity.services.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,4 +37,5 @@ public class AdminController {
     public ResponseEntity<?> addStaff(@RequestBody SignUpRequest signUpRequest) {
         return ResponseEntity.ok(authenticationService.signup(signUpRequest, Role.STAFF, signUpRequest.getService_id()));
     }
+
 }

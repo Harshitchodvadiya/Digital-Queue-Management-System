@@ -48,7 +48,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("api/v1/auth/**").permitAll() // Public endpoints, accessible by anyone
-                        .requestMatchers("api/v1/admin/**").hasAuthority(Role.ADMIN.name()) // Only accessible by ADMIN
+                        .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name()) // Only accessible by ADMIN
                         .requestMatchers("api/v1/user/**").hasAuthority(Role.USER.name())   // Only accessible by USER
                         .requestMatchers("api/v1/token/**").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name(), Role.STAFF.name()) // Accessible by USER, ADMIN, and STAFF
                         .requestMatchers("/api/v1/notifications/**").permitAll()  // Allow SSE

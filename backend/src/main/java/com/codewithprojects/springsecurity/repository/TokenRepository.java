@@ -46,7 +46,6 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
     boolean existsByIssuedTime(LocalDateTime issuedTime);
     boolean existsByIssuedTimeBetween(LocalDateTime start, LocalDateTime end);
 
-
-
-
+    // Find all tokens with a specific status
+    List<Token> findAllByStatus(TokenStatus status);
 }

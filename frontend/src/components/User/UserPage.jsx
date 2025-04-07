@@ -12,8 +12,6 @@ import { BsPersonCheck } from "react-icons/bs";
 import { RiErrorWarningLine } from "react-icons/ri";
 import { GoSync } from "react-icons/go";
 
-
-
 const UserHomePage = () => {
   const [staffList, setStaffList] = useState([]);
   const [selectedStaff, setSelectedStaff] = useState(null);
@@ -413,10 +411,6 @@ useEffect(() => {
           </button>
         </div>
 
-         
-
-
-         
         <div className="w-2/3">
 
           {/* Token Cards */}
@@ -471,8 +465,6 @@ useEffect(() => {
                     </div>
                   )}
 
-                  
-
                   {/* Action Buttons */}
                   <div className="mt-auto flex justify-between pt-4">
                     {token.status === "PENDING" && (
@@ -504,11 +496,9 @@ useEffect(() => {
         </div>
 
 
-
-
         {rescheduleToken && (
           <div className="fixed inset-0 flex items-center justify-center bg-gray-300 bg-opacity-90">
-            <div className=" bg-white p-6 rounded-lg shadow-lg">
+            <div className=" bg-white p-6 rounded-lg shadow-lg w-100 ">
               <h2 className="text-xl font-bold mb-4">Reschedule Token</h2>
               <p><strong>Current Time:</strong> {formatDateTime(rescheduleToken.issuedTime)}</p>
               
