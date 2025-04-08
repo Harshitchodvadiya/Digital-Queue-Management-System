@@ -8,11 +8,13 @@ import com.codewithprojects.springsecurity.entities.User;
 import com.codewithprojects.springsecurity.repository.StaffServicesRepository;
 import com.codewithprojects.springsecurity.repository.TokenRepository;
 import com.codewithprojects.springsecurity.repository.UserRepository;
+import com.codewithprojects.springsecurity.services.EmailService;
 import com.codewithprojects.springsecurity.services.NotificationService;
 import com.codewithprojects.springsecurity.services.StaffService;
 import com.codewithprojects.springsecurity.services.TokenService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -29,13 +31,15 @@ import java.util.stream.Collectors;
 /**
  * Service implementation for handling token-related operations.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TokenServiceImpl implements TokenService {
     private final TokenRepository tokenRepository;
     private final NotificationService notificationService;
+    private final EmailService emailService;
     private final UserRepository  userRepository;
-    private  final StaffServicesRepository staffServicesRepository;
+    private final StaffServicesRepository staffServicesRepository;
     /**
      * Retrieves all tokens requested in the system.
      *
@@ -105,8 +109,19 @@ public class TokenServiceImpl implements TokenService {
 
         tokenRepository.save(currentToken);
 
-        //  Send Notification to the user
+
+        String subject = "Digital Queue Management System -🎉 It's your turn!";
+        String message1 = "Hi " + currentToken.getUser().getFirstname() + ",\n\nYour token #" + currentToken.getId() + " is now active. Please proceed to the counter.\n\n" +
+
+                "Regards,\nDigital Queue Management System";
+
+        //log.info("📧 Sending email to: " + currentToken.getUser().getEmail());
+
+        emailService.sendEmail(currentToken.getUser().getEmail(), subject, message1);
+
+        //  Send Notification to the user-in app
         String message = "It's your turn now for Token #" + currentToken.getId() + "! Please proceed to the counter.";
+
         notificationService.sendNotification(Long.valueOf(currentToken.getUser().getId()), message);
 
         return currentToken;
@@ -137,7 +152,14 @@ public class TokenServiceImpl implements TokenService {
             token.setCompletedTime(LocalDateTime.now());
             tokenRepository.save(token);
 
-            //  Send Notification to the user
+            String subject = "Digital Queue Management System - Token Skipped ";
+            String message1 = "Hi " + token.getUser().getFirstname() + ",\n\nYour token #" + token.getId() + " has been skipped.\n\n" +
+                    "Please contact support or rejoin the queue.\n\n" +
+                    "Regards,\n Digital Queue Management System";
+
+            emailService.sendEmail(token.getUser().getEmail(), subject, message1);
+
+            //  Send Notification to the user-in app
             String message = "❌ Your Token #" + token.getId() + " was skipped by staff.";
             notificationService.sendNotification(Long.valueOf(token.getUser().getId()), message);
 
@@ -177,29 +199,29 @@ public class TokenServiceImpl implements TokenService {
                 currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
                 tokenRepository.save(currentToken);
             }
-//        }
+            //        }
 
-        // If there is a previous pending token, check if it's completed
-//        if (i > 0) {
-//            Token previousToken = pendingTokens.get(i - 1);
-//            if (previousToken.getStatus() == TokenStatus.COMPLETED) {
-//                currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
-//                tokenRepository.save(currentToken);
-//            }
-//        }
+            // If there is a previous pending token, check if it's completed
+            //        if (i > 0) {
+            //            Token previousToken = pendingTokens.get(i - 1);
+            //            if (previousToken.getStatus() == TokenStatus.COMPLETED) {
+            //                currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
+            //                tokenRepository.save(currentToken);
+            //            }
+            //        }
 
-        // If the current token has an appointed time and is still running, increase wait time
-//        if (currentToken.getAppointedTime() != null) {
-//            LocalDateTime expectedEndTime = currentToken.getAppointedTime()
-//                    .plusMinutes(currentToken.getAdditionalWaitTime());
-//
-//            if (currentTime.isBefore(expectedEndTime)) {
-//                currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
-//                tokenRepository.save(currentToken);
-//            }
-//        }
+            // If the current token has an appointed time and is still running, increase wait time
+            //        if (currentToken.getAppointedTime() != null) {
+            //            LocalDateTime expectedEndTime = currentToken.getAppointedTime()
+            //                    .plusMinutes(currentToken.getAdditionalWaitTime());
+            //
+            //            if (currentTime.isBefore(expectedEndTime)) {
+            //                currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
+            //                tokenRepository.save(currentToken);
+            //            }
+            //        }
+        }
     }
-}
 
     @Override
     public Token currentTokenNumber() {
