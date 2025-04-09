@@ -100,8 +100,6 @@
 			<version>6.2.3</version>  <!-- Make sure the version matches your Spring Boot version -->
 		</dependency>
 
-
-
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-jackson</artifactId>

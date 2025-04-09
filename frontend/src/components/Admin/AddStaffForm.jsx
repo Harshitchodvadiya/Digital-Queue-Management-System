@@ -73,7 +73,7 @@ function AddStaffForm() {
       );
 
       alert("Staff added successfully!");
-      navigate("/staff-list");
+      navigate("/admin");
     } catch (error) {
       console.error("Error:", error.response?.data || error.message);
       alert(

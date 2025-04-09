@@ -210,7 +210,7 @@ function AddServiceForm() {
       );
 
       alert("Service added successfully!");
-      navigate("/service-list");
+      navigate("/admin");
     } catch (error) {
       console.error("Request Error:", error.response || error);
       alert(

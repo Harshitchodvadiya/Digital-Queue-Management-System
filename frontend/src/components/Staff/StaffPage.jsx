@@ -251,7 +251,7 @@ function StaffPage() {
             className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex items-center gap-2"
             onClick={handleCallNext}
           >
-            <Users className="h-6 w-6" /> Call Next Customer
+            <Users className="h-4 w-4" /> Call Next Customer
           </button>
         </div>
       </div>
@@ -373,9 +373,6 @@ function StaffPage() {
             </div>
           </div>
           </div>
-
-          
- 
         </div>
 
         {/* calculated execution time */}

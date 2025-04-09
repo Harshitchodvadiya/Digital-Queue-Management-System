@@ -274,11 +274,14 @@
 // };
 
 // export default StaffList;
+
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar";
+import { Users} from "lucide-react";
+import { GoTrash } from "react-icons/go";
 
 const StaffList = () => {
   const [staff, setStaff] = useState([]);
@@ -383,95 +386,95 @@ const StaffList = () => {
   return (
     <div className="h-full w-full flex">
       
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col p-6">
       
-        <div className="p-6">
-         
+         {/* Staff Management Header & Add Button */}
+         <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-700">Staff Management</h3>
+          <button
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow flex items-center gap-2 "
+            onClick={() => navigate("/add-staff")}
+          >
+            <Users className="h-5 w-5 gap-2"/>  Add Staff Members
+          </button>
+        </div>
 
-          {/* Staff Count Table */}
-          <div className="mb-6 overflow-x-auto">
-            <h3 className="text-lg font-semibold mb-2">Staff Count by Service</h3>
-            <table className="min-w-full text-sm text-gray-700">
-              <thead className= "bg-[#0f3460] text-white text-center">
+        {/* Staff Table */}
+        {loading ? (
+          <p className="text-center text-gray-600">Loading...</p>
+        ) : error ? (
+          <p className="text-center text-red-500">{error}</p>
+        ) : staff.length === 0 ? (
+          <p className="text-center text-gray-500">No staff members found.</p>
+        ) : (
+          <div className="overflow-x-auto mb-6">
+            <table className="min-w-full text-sm text-gray-700 border-separate border-spacing-y-2">
+            <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
                 <tr>
-                  <th className="py-2 px-4 ">Service Name</th>
-                  <th className="py-2 px-4 ">Total Staff</th>
+                  <th className="text-left px-6 py-3">Full Name</th>
+                  <th className="py-2 px-4 text-left">Service Name</th>
+                  <th className="py-2 px-4 text-left">Email</th>
+                  <th className="py-2 px-4 text-left">Mobile</th>
+                  <th className="py-2 px-4 text-left">Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                {Object.entries(staffByService).map(([service, count]) => (
-                  <tr key={service} className="hover:bg-gray-50 transition duration-200 text-center border-t">
-                    <td className="py-2 px-4">{service}</td>
-                    <td className="py-2 px-4">{count}</td>
+              <tbody className="divide-y divide-gray-100">
+                {staff.map((member) => (
+                  <tr key={member.id} className="bg-white shadow-sm rounded-lg">
+                    <td className="px-6 py-4 font-medium text-gray-800">{member.firstname}</td>
+                    <td className="px-6 py-4 font-medium">{member.service?.serviceName || "N/A"}</td>
+                    <td className="px-6 py-4 font-medium">{member.email}</td>
+                    <td className="px-6 py-4 font-medium">{member.mobileNumber}</td>
+                    <td className="py-2 px-4">
+                      <div className="flex  space-x-2">
+                        <button
+                          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow flex items-center gap-2"
+                          onClick={() => handleEditClick(member)}
+                        >
+                        <Users className="h-5 w-5 gap-2"/>  Edit
+                        </button>
+                        <button
+                          className="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg shadow flex items-center gap-2"
+                          onClick={() => handleDeleteStaff(member.id)}
+                        >
+                        <GoTrash className="h-5 w-5 gap-2"/>  Delete
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+        )}
 
-          {loading ? (
-            <p className="text-center text-gray-600">Loading...</p>
-          ) : error ? (
-            <p className="text-center text-red-500">{error}</p>
-          ) : staff.length === 0 ? (
-            <p className="text-center text-gray-500">No staff members found.</p>
-          ) : (
-
-            <div className="overflow-x-auto">
-               <h3 className="text-lg font-semibold mb-4 text-gray-700">Staff List</h3>
-               <button
-                className="bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-500 transition duration-300 mb-4 "
-                 onClick={() => navigate("/add-staff")}
-              >
-            + Add Staff
-          </button>
-              <table className="min-w-full text-sm text-gray-700">
-              <thead className="bg-[#0f3460] text-white text-center">
-                  <tr>
-                    <th className="py-2 px-4">Full Name</th>
-                    <th className="py-2 px-4 ">Service Name</th>
-                    <th className="py-2 px-4 ">Email</th>
-                    <th className="py-2 px-4 ">Mobile</th>
-                    <th className="py-2 px-4 ">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {staff.map((member) => (
-                    <tr key={member.id} className="hover:bg-gray-50 transition duration-200 text-center border-t">
-                      <td className="py-2 px-4 ">{member.firstname}</td>
-                      <td className="py-2 px-4 ">{member.service?.serviceName || "N/A"}</td>
-                      <td className="py-2 px-4 ">{member.email}</td>
-                      <td className="py-2 px-4 ">{member.mobileNumber}</td>
-                      <td className="py-2 px-4 ">
-                        <div className="flex justify-center space-x-2">
-                          <button
-                            className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-700"
-                            onClick={() => handleEditClick(member)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-700"
-                            onClick={() => handleDeleteStaff(member.id)}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+        {/* Staff Count by Service */}
+        <div className="overflow-x-auto">
+          <h3 className="text-lg font-semibold mb-2">Staff Count by Service</h3>
+          <table className="min-w-full text-sm text-gray-700 border-separate border-spacing-y-2">
+            <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
+              <tr>
+                <th className="text-left px-6 py-3">Service Name</th>
+                <th className="text-left px-6 py-3">Total Staff</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {Object.entries(staffByService).map(([service, count]) => (
+                <tr key={service} className="bg-white shadow-sm rounded-lg">
+                  <td className="px-6 py-4 font-medium text-gray-800">{service}</td>
+                  <td className="px-6 py-4 font-medium">{count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
       </div>
 
-      {/* Edit Staff Modal */}
 
-{editStaff && (
-  //<div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] bg-opacity-50">
-  <div className="fixed inset-0 flex items-center justify-center bg-gray-300 opacity-90">
+
+      {/* Edit Staff Modal */}
+      {editStaff && (
+   
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-300 opacity-90">
     <div className="bg-white p-6 rounded-lg shadow-lg w-96">
       <h2 className="text-2xl font-semibold text-center mb-4">Edit Staff</h2>
       <form onSubmit={handleUpdateStaff} className="space-y-4">
@@ -545,7 +548,8 @@ const StaffList = () => {
       </form>
     </div>
   </div>
-)}
+        )}
+    </div>
     </div>
   );
 };

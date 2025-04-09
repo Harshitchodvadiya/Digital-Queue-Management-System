@@ -317,10 +317,8 @@ const ServiceList = () => {
 
   return (
     <div className="h-full w-full flex">
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col p-6">
        
-        <div className="p-6">
-        
           {loading ? (
             <p className="text-center text-gray-600">Loading...</p>
           ) : error ? (
@@ -329,7 +327,7 @@ const ServiceList = () => {
             <p className="text-center text-gray-500">No services found.</p>
           ) : (
 
-            <div className="bg-white shadow-2xl rounded-xl p-4">
+            <div className="bg-white rounded-xl p-4">
               <div className="flex justify-between items-center px-4 pb-2">
                 <h2 className="text-lg font-semibold text-gray-700">Total Services</h2>
                 
@@ -342,8 +340,8 @@ const ServiceList = () => {
                 
               </div>
             <div className="overflow-x-auto">
-              <table className="min-w-full text-sm text-gray-700">
-              <thead className="bg-gray-100 text-gray-700 font-semibold">
+            <table className="min-w-full text-sm text-gray-700 border-separate border-spacing-y-2">
+            <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
                 
                   <tr>
                     <th className="px-6 py-4 text-center ">Service ID</th>
@@ -356,21 +354,21 @@ const ServiceList = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {services.map((service) => (
-                    <tr key={service.serviceId} className="hover:bg-gray-50">
+                    <tr key={service.serviceId} className="bg-white shadow-sm rounded-lg">
                       <td className="px-6 py-4 font-medium ">{service.serviceId || "N/A"}</td>
-                      <td className="px-6 py-4 text-center">{service.serviceName || "N/A"}</td>
-                      <td className="px-6 py-4 text-center ">{service.serviceDescription || "N/A"}</td>
-                      <td className="px-6 py-4 text-center ">{service.estimatedTime || "N/A"}</td>
-                      <td className="px-6 py-4 text-center ">
+                      <td className="px-6 py-4 font-medium">{service.serviceName || "N/A"}</td>
+                      <td className="px-6 py-4 font-medium ">{service.serviceDescription || "N/A"}</td>
+                      <td className="px-6 py-4 font-medium ">{service.estimatedTime || "N/A"}</td>
+                      <td className="px-6 py-4 font-medium ">
                         {service.active ? "Yes" : "No"}
                       </td>
                       <td className="py-2 px-4 ">
-                        <div className="flex justify-center space-x-2">
+                        <div className="flex  space-x-2">
                           <button
-                            className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-700"
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow flex items-center gap-2"
                             onClick={() => handleEditClick(service)}
                           >
-                            Edit
+                          <SlSettings />  Edit
                           </button>
                         </div>
                       </td>
@@ -442,7 +440,7 @@ const ServiceList = () => {
               </div>
             </div>
           )}
-        </div>
+       
       </div>
     </div>
   );
