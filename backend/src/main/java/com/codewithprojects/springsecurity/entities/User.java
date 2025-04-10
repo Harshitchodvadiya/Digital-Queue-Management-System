@@ -37,6 +37,10 @@ public class User implements UserDetails {
     @JoinColumn(name = "service_id")
     private StaffServices service; // Service associated with the user (if applicable)
 
+    @Column(nullable = false)
+    private boolean enabled = false; // Default to false until verified
+
+
     /**
      * Returns the authorities granted to the user.
      * Each user is assigned a role which determines their access level.

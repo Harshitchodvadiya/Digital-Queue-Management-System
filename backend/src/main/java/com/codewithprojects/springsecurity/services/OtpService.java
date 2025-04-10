@@ -1,4 +1,7 @@
 package com.codewithprojects.springsecurity.services;
 
-public class OtpService {
+public interface OtpService {
+    void sendOtp(String email);
+    boolean verifyOtp(String email, String otp);
+    boolean resetPassword(String email, String newPassword);
 }

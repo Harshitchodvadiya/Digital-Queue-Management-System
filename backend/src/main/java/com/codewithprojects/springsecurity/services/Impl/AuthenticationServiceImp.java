@@ -4,12 +4,15 @@ import com.codewithprojects.springsecurity.dto.JwtAuthenticationResponse;
 import com.codewithprojects.springsecurity.dto.RefreshTokenRequest;
 import com.codewithprojects.springsecurity.dto.SignUpRequest;
 import com.codewithprojects.springsecurity.dto.SigninRequest;
+import com.codewithprojects.springsecurity.entities.OtpVerification;
 import com.codewithprojects.springsecurity.entities.Role;
 import com.codewithprojects.springsecurity.entities.StaffServices;
 import com.codewithprojects.springsecurity.entities.User;
+import com.codewithprojects.springsecurity.repository.OtpVerificationRepository;
 import com.codewithprojects.springsecurity.repository.StaffServicesRepository;
 import com.codewithprojects.springsecurity.repository.UserRepository;
 import com.codewithprojects.springsecurity.services.AuthenticationService;
+import com.codewithprojects.springsecurity.services.EmailService;
 import com.codewithprojects.springsecurity.services.JWTService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +27,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +45,9 @@ public class AuthenticationServiceImp implements AuthenticationService {
     @Autowired
     HttpServletResponse httpServletResponse;
 
+    private final OtpVerificationRepository otpVerificationRepository;
+    private final EmailService emailService;
+
     /**
      * Registers a new user with the given role and associated service.
      * @param signUpRequest The signup request containing user details.
@@ -47,6 +55,25 @@ public class AuthenticationServiceImp implements AuthenticationService {
      * @param service_id The service ID assigned to the user (nullable for non-staff users).
      * @return The saved user entity.
      */
+//    public User signup(SignUpRequest signUpRequest, Role role, Integer service_id) {
+//        User user = new User();
+//        user.setEmail(signUpRequest.getEmail());
+//        user.setFirstname(signUpRequest.getFirstname());
+//        user.setSecondname(signUpRequest.getLastname());
+//        user.setMobileNumber(signUpRequest.getMobileNumber());
+//        user.setRole(role);
+//        user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+//
+//        // If service_id is 0, set `null`, else fetch the service entity
+//        StaffServices service = (service_id == 0) ? null :
+//                staffServicesRepository.findById(Long.valueOf(service_id))
+//                        .orElseThrow(() -> new IllegalArgumentException("Service not found"));
+//
+//        user.setService(service);
+//
+//        return userRepository.save(user);
+//    }
+
     public User signup(SignUpRequest signUpRequest, Role role, Integer service_id) {
         User user = new User();
         user.setEmail(signUpRequest.getEmail());
@@ -54,17 +81,60 @@ public class AuthenticationServiceImp implements AuthenticationService {
         user.setSecondname(signUpRequest.getLastname());
         user.setMobileNumber(signUpRequest.getMobileNumber());
         user.setRole(role);
+        user.setEnabled(false); // Not verified yet
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
 
-        // If service_id is 0, set `null`, else fetch the service entity
         StaffServices service = (service_id == 0) ? null :
                 staffServicesRepository.findById(Long.valueOf(service_id))
                         .orElseThrow(() -> new IllegalArgumentException("Service not found"));
 
         user.setService(service);
+        userRepository.save(user);
 
-        return userRepository.save(user);
+        // 🔐 Generate OTP and store it
+        String otp = String.valueOf(new Random().nextInt(900000) + 100000);
+        OtpVerification otpVerification = new OtpVerification();
+        otpVerification.setEmail(user.getEmail());
+        otpVerification.setOtp(otp);
+        otpVerification.setExpiryTime(LocalDateTime.now().plusMinutes(10));
+        otpVerification.setVerified(false);
+        otpVerificationRepository.save(otpVerification);
+
+        // 📧 Send OTP email
+        emailService.sendEmail(
+                user.getEmail(),
+                "Verify your account - OTP",
+                "Your OTP for account verification is: " + otp
+        );
+
+        return user;
     }
+
+    public boolean verifySignupOtp(String email, String otp) {
+        Optional<OtpVerification> record = otpVerificationRepository.findByEmailAndOtp(email, otp);
+        if (record.isPresent() && record.get().getExpiryTime().isAfter(LocalDateTime.now())) {
+            record.get().setVerified(true);
+            otpVerificationRepository.save(record.get());
+
+            // ✅ Activate user
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            user.setEnabled(true);
+            userRepository.save(user);
+
+            // ✉️ Send welcome email
+            emailService.sendEmail(
+                    email,
+                    "Account Verified",
+                    "Welcome! Your account has been successfully verified."
+            );
+
+            return true;
+        }
+        return false;
+    }
+
+
 
     /**
      * Authenticates a user and generates JWT and refresh tokens.
