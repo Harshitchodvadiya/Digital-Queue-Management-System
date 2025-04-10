@@ -356,7 +356,7 @@ useEffect(() => {
       {/* ✅ Notification Toast Container */}
     <ToastContainer className="mt-20"></ToastContainer> 
       {/* 🔔 Notification Bell */}
-      <div className="absolute top-2.5 left-290">
+      <div className="absolute top-2.5 left-280">
         <div className="relative">
         {/* 🔥 Toggle on click */}
           <button className="text-white p-2 rounded-full shadow-md"

@@ -22,10 +22,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -352,6 +350,33 @@ public class TokenServiceImpl implements TokenService {
         Token savedToken = tokenRepository.save(token);
         return ResponseEntity.ok(savedToken);
     }
+
+    @Override
+    public Map<String, Long> getTokenStats(int days) {
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusDays(days - 1);
+        Map<String, Long> stats = new LinkedHashMap<>();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        for (int i = 0; i < days; i++) {
+            LocalDate date = startDate.plusDays(i);
+            stats.put(date.format(formatter), 0L);
+        }
+
+        List<Token> tokens = tokenRepository.findAllByIssuedTimeBetween(
+                startDate.atStartOfDay(),
+                today.atTime(LocalTime.MAX)
+        );
+
+        for (Token token : tokens) {
+            String dateKey = token.getIssuedTime().toLocalDate().format(formatter);
+            stats.computeIfPresent(dateKey, (k, v) -> v + 1);
+        }
+
+        return stats;
+    }
+
 
 }
 

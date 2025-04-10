@@ -1,4 +1,4 @@
-
+import { IoIosArrowBack } from "react-icons/io";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -87,6 +87,14 @@ function AddStaffForm() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] text-white overflow-hidden">
       <Navbar />
+            <div className="p-2 ml-20">
+              <button
+                onClick={() => navigate("/admin")}
+                className=" text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition duration-200"
+              >
+              <IoIosArrowBack  className="h-5 w-5"/>
+              </button>
+            </div>  
 
       <div className="flex flex-col items-center justify-center flex-grow p-4">
       

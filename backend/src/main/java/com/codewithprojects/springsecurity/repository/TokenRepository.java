@@ -48,4 +48,6 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
 
     // Find all tokens with a specific status
     List<Token> findAllByStatus(TokenStatus status);
+
+    List<Token> findAllByIssuedTimeBetween(LocalDateTime start, LocalDateTime end);
 }

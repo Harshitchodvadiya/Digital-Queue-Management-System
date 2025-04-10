@@ -172,7 +172,6 @@
 // }
 
 // export default AdminPage;
-
 import { useEffect, useState } from "react";
 import Navbar from "../Navbar";
 import axios from "axios";
@@ -184,6 +183,8 @@ import { IoTicketOutline } from "react-icons/io5";
 import ServiceList from "./ServiceList";
 import StaffList from "../Staff/StaffList";
 import { SlSettings } from "react-icons/sl";
+import Analytics from "./Analytics"
+import { FiBarChart } from "react-icons/fi";
 
 function AdminPage() {
   const [tokens, setTokens] = useState([]);
@@ -193,12 +194,14 @@ function AdminPage() {
   const [error, setError] = useState(0);
   const [todaysTokens, setTodaysTokens] = useState(0);
   const [activeTab, setActiveTab] = useState("services");
+  const [barChartData, setBarChartData] = useState([]);
 
   const token = Cookies.get("jwtToken");
 
   useEffect(() => {
     fetchRequestedTokens();
     fetchStaff();
+    fetchTokenStats();
   }, []);
 
   const fetchRequestedTokens = async () => {
@@ -212,6 +215,8 @@ function AdminPage() {
       });
 
       const fetchedTokens = response.data;
+      console.log(fetchedTokens);
+      
       setTokens(fetchedTokens);
       setTotalTokens(fetchedTokens.length);
 
@@ -273,12 +278,29 @@ function AdminPage() {
     }
   };
 
+  const fetchTokenStats = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/api/v1/token/token-stats", {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      setBarChartData(response.data);
+    } catch (error) {
+      console.error("Error fetching bar chart data:", error);
+    }
+  };
+
   const renderActiveTab = () => {
     switch (activeTab) {
       case "services":
         return <ServiceList />;
       case "staff":
         return <StaffList />;
+      case "analytics":
+      return <Analytics />;
       default:
         return null;
     }
@@ -348,6 +370,14 @@ function AdminPage() {
             }`}
           >
           <Users className="h-4 w-4"/>  Staff Members
+          </button>
+          <button
+            onClick={() => setActiveTab("analytics")}
+            className={`text-md font-semibold hover:cursor-pointer flex items-center gap-2 ${
+              activeTab === "analytics" ? "text-gray-900" : "text-gray-600"
+            }`}
+          >
+            <FiBarChart />  Analytics
           </button>
         </div>
       </div>

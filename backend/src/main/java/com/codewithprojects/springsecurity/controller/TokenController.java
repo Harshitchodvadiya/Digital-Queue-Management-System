@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @RestController
@@ -164,7 +163,6 @@ public class TokenController {
         return tokenService.cancelToken(id);
     }
 
-
     @PutMapping("/rescheduleToken/{id}")
     public ResponseEntity<?> rescheduleToken(@PathVariable Long id, @RequestBody Map<String, String> requestBody) {
         try {
@@ -184,4 +182,41 @@ public class TokenController {
             return ResponseEntity.badRequest().body("Error rescheduling token: " + e.getMessage());
         }
     }
+
+    @GetMapping("/token-stats")
+    public ResponseEntity<List<Map<String, Object>>> getTokenStats(@RequestParam(defaultValue = "7") int days) {
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusDays(days - 1);
+
+        List<Token> tokens = tokenRepository.findAllByIssuedTimeBetween(
+                startDate.atStartOfDay(), today.plusDays(1).atStartOfDay()
+        );
+
+        Map<LocalDate, Map<String, Long>> statsMap = new TreeMap<>();
+
+        for (Token token : tokens) {
+            if (token.getIssuedTime() == null || token.getStatus() == null) continue;
+
+            LocalDate date = token.getIssuedTime().toLocalDate();
+            String status = token.getStatus().name(); // ENUM → String like "COMPLETED"
+
+            statsMap.putIfAbsent(date, new HashMap<>());
+            Map<String, Long> dayStats = statsMap.get(date);
+            dayStats.put(status, dayStats.getOrDefault(status, 0L) + 1);
+        }
+
+        List<Map<String, Object>> responseList = new ArrayList<>();
+
+        for (Map.Entry<LocalDate, Map<String, Long>> entry : statsMap.entrySet()) {
+            Map<String, Object> dayData = new HashMap<>();
+            dayData.put("date", entry.getKey().toString());
+            dayData.put("completed", entry.getValue().getOrDefault("COMPLETED", 0L));
+            dayData.put("skipped", entry.getValue().getOrDefault("SKIPPED", 0L));
+            dayData.put("cancelled", entry.getValue().getOrDefault("CANCELLED", 0L));
+            responseList.add(dayData);
+        }
+
+        return ResponseEntity.ok(responseList);
+    }
+
 }

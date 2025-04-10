@@ -39,7 +39,7 @@ const StaffNavbar = ({ title = "Digital Queue Management System" }) => {
   };
 
   return (
-    <nav className="flex items-center justify-between p-4 bg-gray-900 text-white shadow-lg text-center">
+    <nav className="flex items-center justify-between p-3 bg-gray-900 text-white shadow-lg text-center">
       {/* Sidebar */}
       {/* <StaffSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} /> */}
 

@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Service interface for managing token-related operations.
@@ -51,5 +52,6 @@ public interface TokenService {
 
     Token rescheduleToken(Long tokenId, LocalDateTime newIssuedTime);
 
+    Map<String, Long> getTokenStats(int days);
 
 }
