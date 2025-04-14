@@ -60,7 +60,6 @@ const TokenHistory = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
       setTokenHistory(response.data);
       setFilteredHistory(response.data); // Set initial filtered data
     } catch (err) {
@@ -80,11 +79,9 @@ const TokenHistory = () => {
         token.issuedTime.startsWith(selectedDate)
       );
     }
-
     if (selectedStatus) {
       filteredData = filteredData.filter((token) => token.status === selectedStatus);
     }
-
     if (selectedService) {
       filteredData = filteredData.filter((token) =>
         token.staffId?.service?.serviceName
@@ -92,7 +89,6 @@ const TokenHistory = () => {
           .includes(selectedService.toLowerCase())
       );
     }
-
     setFilteredHistory(filteredData);
     setCurrentPage(1); // Reset to first page after filtering
   };
@@ -119,7 +115,6 @@ const TokenHistory = () => {
   const handleNextPage = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
-
   const handlePrevPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
@@ -140,7 +135,6 @@ const TokenHistory = () => {
         {/* Heading + Filters */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Token History</h2>
-
           {/* Filters */}
           <div className="flex gap-4">
             <input
@@ -149,7 +143,6 @@ const TokenHistory = () => {
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
             />
-
             <select
               className="border p-2 rounded-md"
               value={selectedStatus}
@@ -159,7 +152,6 @@ const TokenHistory = () => {
               <option value="COMPLETED">Completed</option>
               <option value="SKIPPED">Skipped</option>
             </select>
-
             <input
               type="text"
               className="border p-2 rounded-md"
@@ -209,12 +201,10 @@ const TokenHistory = () => {
               <div className="flex justify-center items-center mt-4 gap-2">
                 <button onClick={handlePrevPage} disabled={currentPage === 1} className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-md disabled:opacity-50">
                 <IoMdArrowRoundBack />
-
                 </button>
                 <span className="font-bold bg-blue-400 px-3 py-1 rounded-md ">{currentPage}</span>
                 <button onClick={handleNextPage} disabled={currentPage === totalPages} className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-md disabled:opacity-50">
                 <IoMdArrowRoundForward />
-
                 </button>
               </div>
             )}

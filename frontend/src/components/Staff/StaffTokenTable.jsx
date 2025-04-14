@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import StaffNavbar from "./StaffNavbar";
+import Navbar from "../Navbar";
 
 const StaffTokenTable = () => {
   const [tokens, setTokens] = useState([]);

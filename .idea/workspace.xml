@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7fc6df7c-de32-4db9-bfa8-546c824d9970" name="Changes" comment="" />
+    <list default="true" id="7fc6df7c-de32-4db9-bfa8-546c824d9970" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/Admin/AddStaffForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Admin/AddStaffForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/Admin/AdminPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Admin/AdminPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/Admin/ServiceList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Admin/ServiceList.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/LandingPage/About.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/LandingPage/About.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/Staff/StaffList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Staff/StaffList.jsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -10,21 +16,21 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "KoshtiArchie"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;KoshtiArchie&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Harshitchodvadiya/Digital-Queue-Management-System.git",
-    "accountId": "e01911d1-7466-4f64-847f-1e9edc242cc2"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Harshitchodvadiya/Digital-Queue-Management-System.git&quot;,
+    &quot;accountId&quot;: &quot;e01911d1-7466-4f64-847f-1e9edc242cc2&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="2tyfDDehvkEEep4ePoYpIO2EBic" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -35,6 +41,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/Digital-Queue-Management-System/backend"
   }
 }]]></component>
