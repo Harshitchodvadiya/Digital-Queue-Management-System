@@ -2,13 +2,16 @@ package com.codewithprojects.springsecurity.controller;
 
 import com.codewithprojects.springsecurity.entities.StaffServices;
 import com.codewithprojects.springsecurity.entities.User;
+import com.codewithprojects.springsecurity.repository.UserRepository;
 import com.codewithprojects.springsecurity.services.AuthenticationService;
 import com.codewithprojects.springsecurity.services.StaffService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -18,15 +21,11 @@ public class UserController {
 
     private final StaffService staffService;
     private final AuthenticationService authenticationService;
+    private final PasswordEncoder passwordEncoder;
 
-    /**
-     * Endpoint to test API availability.
-     * @return A simple greeting message.
-     */
-    @GetMapping
-    public ResponseEntity<String> sayHello() {
-        return ResponseEntity.ok("Hii, User this side");
-    }
+
+    private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
 
     /**
      * Retrieves a list of all available services.
@@ -45,4 +44,44 @@ public class UserController {
     public ResponseEntity<List<User>> getAllStaff() {
         return ResponseEntity.ok(authenticationService.getAllStaff());
     }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getUserProfile(Authentication authentication) {
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email).orElseThrow();
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUserProfile(@RequestBody User updatedUser, Authentication authentication) {
+        String currentEmail = authentication.getName();  // This is from JWT token
+        User user = userRepository.findByEmail(currentEmail).orElseThrow();
+
+        boolean emailChanged = !user.getEmail().equals(updatedUser.getEmail());
+
+        user.setFirstname(updatedUser.getFirstname());
+        user.setSecondname(updatedUser.getSecondname());
+        user.setMobileNumber(updatedUser.getMobileNumber());
+
+        if (emailChanged) {
+            user.setEmail(updatedUser.getEmail()); // update email
+        }
+
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
+
+        userRepository.save(user);
+
+        // Optional: if email changed, ask frontend to logout and login again
+        if (emailChanged) {
+            return ResponseEntity.ok("Profile updated successfully! Please re-login with your new email.");
+        }
+
+        return ResponseEntity.ok("Profile updated successfully!");
+    }
+
+
+
+
 }

@@ -23,7 +23,7 @@ public interface AuthenticationService {
      * @param service_id The service ID to which the staff belongs (if applicable).
      * @return The created user entity.
      */
-    User signup(SignUpRequest signUpRequest, Role role, Integer service_id);
+//    User signup(SignUpRequest signUpRequest, Role role, Integer service_id);
 
     /**
      * Authenticates a user based on provided credentials and returns a JWT token.
@@ -63,4 +63,7 @@ public interface AuthenticationService {
      * @return The updated user entity.
      */
     User updateStaff(Long id, SignUpRequest updateRequest);
+
+    boolean verifySignupOtp(String email, String otp);
+    User signup(SignUpRequest signUpRequest, Role role, Integer service_id);
 }

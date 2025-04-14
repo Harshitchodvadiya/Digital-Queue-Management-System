@@ -17,7 +17,7 @@ public class TokenScheduler {
      * Scheduled task that updates the waiting times for tokens.
      * This method runs every minute (60000 milliseconds) to keep the queue updated.
      */
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 300000)
     public void updateWaitingTimes() {
         System.out.println("🟢 Scheduler triggered at: " + LocalDateTime.now());
         tokenService.updateWaitTimes();
