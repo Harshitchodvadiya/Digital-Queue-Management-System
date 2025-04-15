@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
-import { rescheduleToken } from "../services/UserTokenService";
+import { rescheduleToken } from "../services/userTokenService";
 
 const RescheduleTokenModal = ({ token, onClose, onUpdate }) => {
   const [newTime, setNewTime] = useState("");
   const [newDate, setNewDate] = useState("");
   const [currentDateTime, setCurrentDateTime] = useState("");
+  const [today, setToday] = useState("");
+  const [currentTime, setCurrentTime] = useState("");
+
 
   useEffect(() => {
     // Disable background scroll
@@ -13,7 +16,11 @@ const RescheduleTokenModal = ({ token, onClose, onUpdate }) => {
     const now = new Date();
     const date = now.toLocaleDateString("en-GB"); // e.g., "14/04/2025"
     const time = now.toTimeString().slice(0, 5);  // e.g., "15:43"
-    setCurrentDateTime(`${date.replace(/\//g, "-")} ${time}`);
+    // setCurrentDateTime(`${date.replace(/\//g, "-")} ${time}`);
+    setCurrentDateTime(`${today.split("-").reverse().join("-")} ${time}`);
+    setToday(today);
+    setCurrentTime(time);
+
 
     return () => {
       document.body.style.overflow = "auto"; // Restore scroll
@@ -25,6 +32,17 @@ const RescheduleTokenModal = ({ token, onClose, onUpdate }) => {
       alert("Please select a new date and time.");
       return;
     }
+
+    
+  // Combine selected date and time into a Date object
+  const selectedDateTime = new Date(`${newDate}T${newTime}`);
+  const now = new Date();
+
+  if (selectedDateTime <= now) {
+    alert("You cannot select a past date or time.");
+    return;
+  }
+
 
     try {
       await rescheduleToken(token.id, newTime, newDate);
@@ -60,11 +78,7 @@ const RescheduleTokenModal = ({ token, onClose, onUpdate }) => {
             value={newTime}
             onChange={(e) => setNewTime(e.target.value)}
             className="border p-2 rounded w-full"
-            min={
-              newDate === new Date().toISOString().split("T")[0]
-                ? new Date().toTimeString().slice(0, 5)
-                : "00:00"
-            }
+            min={newDate === today ? currentTime : undefined}
           />
         </div>
 

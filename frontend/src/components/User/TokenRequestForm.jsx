@@ -64,6 +64,16 @@ const TokenRequestForm = ({ onRefresh, onTokenCreated }) => {
     }
     const issuedTime = `${date}T${time}:00`;
 
+     // Combine selected date and time into a Date object
+    const selectedDateTime = new Date(`${date}T${time}`);
+    const now = new Date();
+
+    if (selectedDateTime <= now) {
+      alert("You cannot select a past date or time.");
+      return;
+    }
+
+
     try {
       const response = await requestToken({
         userId,
@@ -120,6 +130,7 @@ const TokenRequestForm = ({ onRefresh, onTokenCreated }) => {
           className="w-full mb-3 p-2 border rounded focus:outline-none"
           value={date}
           onChange={(e) => setDate(e.target.value)}
+          min={new Date().toISOString().split("T")[0]}  // Prevent selecting past dates
         />
 
         <input
@@ -127,6 +138,11 @@ const TokenRequestForm = ({ onRefresh, onTokenCreated }) => {
           className="w-full mb-4 p-2 border rounded focus:outline-none"
           value={time}
           onChange={(e) => setTime(e.target.value)}
+          min={
+            date === new Date().toISOString().split("T")[0]
+              ? new Date().toTimeString().slice(0, 5)
+              : "00:00"
+          }
         />
 
         {/* Request Token Button */}
