@@ -134,6 +134,24 @@ public class AuthenticationServiceImp implements AuthenticationService {
         return false;
     }
 
+    public boolean resendOtp(String email) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) return false;
+
+        // Create new OTP
+        String otp = String.valueOf(new Random().nextInt(900000) + 100000);
+        OtpVerification otpVerification = new OtpVerification();
+        otpVerification.setEmail(email);
+        otpVerification.setOtp(otp);
+        otpVerification.setExpiryTime(LocalDateTime.now().plusMinutes(5));
+        otpVerification.setVerified(false);
+        otpVerificationRepository.save(otpVerification);
+
+        emailService.sendEmail(email, "Resend OTP", "Your new OTP is: " + otp);
+        return true;
+    }
+
+
 
 
     /**

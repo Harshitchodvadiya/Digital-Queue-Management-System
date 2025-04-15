@@ -66,4 +66,5 @@ public interface AuthenticationService {
 
     boolean verifySignupOtp(String email, String otp);
     User signup(SignUpRequest signUpRequest, Role role, Integer service_id);
+    boolean resendOtp(String email);
 }

@@ -34,12 +34,14 @@ function RegistrationForm() {
       password: password,
     };
 
-    axios
+      // After successful signup, navigate to OTP page
+      axios
       .post("http://localhost:8081/api/v1/auth/signup", user)
       .then((response) => {
         console.log("Registration successful:", response.data);
-        navigate("/login");
+        navigate("/verify-otp", { state: { email: user.email } });
       })
+
       .catch((error) => {
         console.error("Registration failed:", error);
       });

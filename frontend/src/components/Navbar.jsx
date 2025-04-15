@@ -2,13 +2,10 @@ import { useState, useEffect } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { AiOutlineLogout } from "react-icons/ai";
 import Cookies from "js-cookie";
-import Sidebar from "./Admin/Sidebar";
-import { Menu } from "lucide-react";
 
 const Navbar = ({ title = "Digital Queue Management System" }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userName, setUserName] = useState("Admin");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   /**
    * Fetches the username from cookies and updates the state.

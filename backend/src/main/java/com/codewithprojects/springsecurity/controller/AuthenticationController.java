@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -56,6 +58,14 @@ public class AuthenticationController {
         return ResponseEntity.badRequest().body("Invalid or expired OTP.");
     }
 
+    @PostMapping("/resend-otp")
+    public ResponseEntity<?> resendOtp(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        boolean resent = authenticationService.resendOtp(email);
+        return resent ? ResponseEntity.ok("OTP resent.") : ResponseEntity.badRequest().body("Failed to resend OTP.");
+    }
+
+
 
     /**
      * Authenticates a user and generates a JWT access token.
@@ -79,8 +89,6 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.refreshToken(refreshTokenRequest));
     }
 
-
-
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         otpService.sendOtp(request.getEmail());
@@ -101,6 +109,4 @@ public class AuthenticationController {
         return isReset ? ResponseEntity.ok("Password Reset Successful")
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Reset failed. Verify OTP first.");
     }
-
-
 }
