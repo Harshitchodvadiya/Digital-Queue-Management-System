@@ -3,17 +3,18 @@ package com.codewithprojects.springsecurity.dto;
 public class ResetPasswordRequest {
     private String email;
     private String newPassword;
+    private String confirmPassword;
 
     // Constructors
     public ResetPasswordRequest() {
     }
 
-    public ResetPasswordRequest(String email, String newPassword) {
+    public ResetPasswordRequest(String email, String newPassword,String confirmPassword) {
         this.email = email;
         this.newPassword = newPassword;
+        this.confirmPassword=confirmPassword;
     }
 
-    // Getters and Setters
     public String getEmail() {
         return email;
     }
@@ -28,5 +29,13 @@ public class ResetPasswordRequest {
 
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
     }
 }

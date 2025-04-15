@@ -105,8 +105,20 @@ public class AuthenticationController {
 
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
-        boolean isReset = otpService.resetPassword(request.getEmail(), request.getNewPassword());
-        return isReset ? ResponseEntity.ok("Password Reset Successful")
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Reset failed. Verify OTP first.");
+        try {
+            boolean isReset = otpService.resetPassword(
+                    request.getEmail(),
+                    request.getNewPassword(),
+                    request.getConfirmPassword()
+            );
+            return isReset
+                    ? ResponseEntity.ok("Password Reset Successful")
+                    : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Reset failed. Verify OTP first.");
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong.");
+        }
     }
+
 }

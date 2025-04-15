@@ -71,8 +71,12 @@ public class OtpServiceImpl implements OtpService {
         return false;
     }
 
-    @Override
-    public boolean resetPassword(String email, String newPassword) {
+    public boolean resetPassword(String email, String newPassword, String confirmPassword) {
+        // Check if newPassword and confirmPassword match
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("New password and confirm password do not match.");
+        }
+
         Optional<OtpVerification> otpVerified = otpVerificationRepository.findByEmail(email);
         if (otpVerified.isPresent() && otpVerified.get().isVerified()) {
             User user = userRepository.findByEmail(email)
@@ -95,4 +99,5 @@ public class OtpServiceImpl implements OtpService {
 
         return false;
     }
+
 }
