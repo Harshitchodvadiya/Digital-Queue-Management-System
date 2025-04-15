@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { fetchUserTokenDetails, cancelToken } from "../services/UserTokenService";
+import { fetchUserTokenDetails, cancelToken } from "../services/userTokenService";
 import { MdOutlineWatchLater } from "react-icons/md";
 import { BsPersonCheck } from "react-icons/bs";
 import { RiErrorWarningLine } from "react-icons/ri";
 import { GoSync } from "react-icons/go";
 import RescheduleTokenModal from "./RescheduleTokenModal";
 
-const TokenInfoCard = ({ userId }) => {
+const TokenInfoCard = ({ userId, refreshTrigger }) => {
   const [tokens, setTokens] = useState([]);
   const [serviceActiveTokens, setServiceActiveTokens] = useState({});
   const [loading, setLoading] = useState(true);
@@ -31,7 +31,7 @@ const TokenInfoCard = ({ userId }) => {
 
   useEffect(() => {
     loadTokenInfo();
-  }, [userId]);
+  }, [userId, refreshTrigger]); // 🔁 refresh on trigger change
 
   const openRescheduleModal = (token) => {
     setSelectedToken(token);

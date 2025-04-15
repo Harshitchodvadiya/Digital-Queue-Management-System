@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { IoTicketOutline } from "react-icons/io5";
-import { fetchStaffList, requestToken } from "../services/UserTokenService"; 
+import { fetchStaffList, requestToken } from "../services/userTokenService"; 
 
-const TokenRequestForm = ({ onRefresh }) => {
+const TokenRequestForm = ({ onRefresh, onTokenCreated }) => {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [userId, setUserId] = useState("");
@@ -65,14 +65,25 @@ const TokenRequestForm = ({ onRefresh }) => {
     const issuedTime = `${date}T${time}:00`;
 
     try {
-      await requestToken({
+      const response = await requestToken({
         userId,
         staffId: selectedStaff.id,
         issuedTime,
       });
 
       alert("Token requested successfully!");
-      onRefresh(); // Refresh token list
+      onTokenCreated(response); // <-- this updates tokenDetails state immediately
+      // 🔥 Immediately update tokenDetails in parent without waiting
+      if (onTokenCreated) {
+        onTokenCreated(response); // assuming response is the token object
+      }
+
+      // Optionally still refresh
+      if (onRefresh) {
+        console.log('Token requested! Calling onRefresh...')
+        onRefresh();
+      }
+
     } catch (error) {
       console.error(error);
       alert(error.response?.data || "Failed to request token.");
