@@ -68,7 +68,7 @@ const TokenRequestForm = ({ onRefresh, onTokenCreated }) => {
     const selectedDateTime = new Date(`${date}T${time}`);
     const now = new Date();
 
-    if (selectedDateTime <= now) {
+    if (selectedDateTime < now) {
       alert("You cannot select a past date or time.");
       return;
     }

@@ -49,7 +49,7 @@ const TokenInfoCard = ({ userId, refreshTrigger }) => {
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-6 m-4">
         {tokens.length > 0 ? (
           tokens.map((token) => (
             <div

@@ -144,7 +144,14 @@ const Navbar = ({ title = "Digital Queue Management System" }) => {
             <span>{userName}</span>
           </button>
           {dropdownOpen && (
-            <div className="absolute right-0 mt-12 w-40 bg-gray-300 text-black rounded-lg shadow-lg">
+            <div className="absolute right-0 mt-1 w-40 bg-gray-300 text-black rounded-lg shadow-lg">
+              <button
+                onClick={() => navigate("/profile")}
+                className="flex items-center w-full px-4 py-2 rounded-lg hover:bg-gray-200"
+              >
+                <FaUserCircle size={20} className="mr-2"/>
+               Profile
+              </button>
               <button
                 onClick={handleLogout}
                 className="flex items-center w-full px-4 py-2 rounded-lg hover:bg-gray-200"
@@ -152,6 +159,7 @@ const Navbar = ({ title = "Digital Queue Management System" }) => {
                 <AiOutlineLogout className="mr-2" />
                 Logout
               </button>
+              
             </div>
           )}
         </div>

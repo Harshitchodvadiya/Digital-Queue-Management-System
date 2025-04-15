@@ -6,14 +6,11 @@ import "./App.css";
 
 import LoginForm from "./components/auth/LoginForm";
 import RegistrationForm from "./components/auth/RegistrationForm";
-
 import UserPage from "./pages/UserPage";  
 import TokenHistory from "./components/User/TokenHistory";
-
+import ProfilePage from "./components/User/ProfilePage";
 
 import AddStaffForm from "../src/components/Admin/AddStaffForm";
-
-
 import Layout from "./components/LandingPage/Layout";
 import Home from "./components/LandingPage/Home";
 import About from "./components/LandingPage/About";
@@ -52,6 +49,7 @@ function App() {
         {/* User Routes */}
         <Route path="/user" element={<UserPage /> }/>
         <Route path="/token-history" element={<TokenHistory />} />
+        <Route path="/profile" element={<ProfilePage />} />
 
         {/* Staff Routes */}
         <Route path="/staff" element={<StaffPage />} />

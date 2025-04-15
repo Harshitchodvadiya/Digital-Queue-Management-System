@@ -4,9 +4,8 @@ import { rescheduleToken } from "../services/userTokenService";
 const RescheduleTokenModal = ({ token, onClose, onUpdate }) => {
   const [newTime, setNewTime] = useState("");
   const [newDate, setNewDate] = useState("");
-  const [currentDateTime, setCurrentDateTime] = useState("");
-  const [today, setToday] = useState("");
-  const [currentTime, setCurrentTime] = useState("");
+  const [minDate, setMinDate] = useState("");
+  const [minTime, setMinTime] = useState(""); 
 
 
   useEffect(() => {
@@ -14,12 +13,14 @@ const RescheduleTokenModal = ({ token, onClose, onUpdate }) => {
     document.body.style.overflow = "hidden";
 
     const now = new Date();
-    const date = now.toLocaleDateString("en-GB"); // e.g., "14/04/2025"
-    const time = now.toTimeString().slice(0, 5);  // e.g., "15:43"
-    // setCurrentDateTime(`${date.replace(/\//g, "-")} ${time}`);
-    setCurrentDateTime(`${today.split("-").reverse().join("-")} ${time}`);
-    setToday(today);
-    setCurrentTime(time);
+
+
+    const isoDate = now.toISOString().split("T")[0]; // "2025-04-15"
+    const isoTime = now.toTimeString().slice(0, 5);   // "15:43"
+
+    setMinDate(isoDate);
+    setMinTime(isoTime);
+    setNewDate(isoDate); // default to today
 
 
     return () => {
@@ -43,7 +44,6 @@ const RescheduleTokenModal = ({ token, onClose, onUpdate }) => {
     return;
   }
 
-
     try {
       await rescheduleToken(token.id, newTime, newDate);
       alert("Token rescheduled successfully!");
@@ -58,7 +58,7 @@ const RescheduleTokenModal = ({ token, onClose, onUpdate }) => {
     <div className="fixed inset-0 overflow-hidden bg-gray-300 bg-opacity-100 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-w-full">
         <h2 className="text-xl font-bold mb-4">Reschedule Token</h2>
-        <p><strong>Current Date & Time:</strong> {currentDateTime}</p>
+        <p><strong>Current Date & Time:</strong>{new Date().toLocaleString()}</p>
 
         <div className="mt-4">
           <label className="block text-sm mb-1">New Date:</label>
@@ -67,7 +67,7 @@ const RescheduleTokenModal = ({ token, onClose, onUpdate }) => {
             value={newDate}
             onChange={(e) => setNewDate(e.target.value)}
             className="border p-2 rounded w-full"
-            min={new Date().toISOString().split("T")[0]}  // Prevent selecting past dates
+            min={minDate}  // Prevent selecting past dates
           />
         </div>
 
@@ -78,7 +78,7 @@ const RescheduleTokenModal = ({ token, onClose, onUpdate }) => {
             value={newTime}
             onChange={(e) => setNewTime(e.target.value)}
             className="border p-2 rounded w-full"
-            min={newDate === today ? currentTime : undefined}
+            min={newDate === minDate ? minTime : undefined}
           />
         </div>
 
