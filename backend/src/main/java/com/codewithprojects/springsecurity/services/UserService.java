@@ -38,4 +38,7 @@ public interface UserService {
     TokenResponseDto getRequestedToken(Integer id);
 
     List<Token> tokenHistory(Integer id);
+
+    User getUserById(Long id);
+    User updateUser(Long id, User updatedUser);
 }

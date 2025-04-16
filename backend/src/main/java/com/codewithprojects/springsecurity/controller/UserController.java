@@ -4,7 +4,9 @@ import com.codewithprojects.springsecurity.entities.StaffServices;
 import com.codewithprojects.springsecurity.entities.User;
 import com.codewithprojects.springsecurity.repository.UserRepository;
 import com.codewithprojects.springsecurity.services.AuthenticationService;
+import com.codewithprojects.springsecurity.services.Impl.UserServiceImpl;
 import com.codewithprojects.springsecurity.services.StaffService;
+import com.codewithprojects.springsecurity.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,7 +25,7 @@ public class UserController {
     private final AuthenticationService authenticationService;
     private final PasswordEncoder passwordEncoder;
 
-
+    private final UserService userService;
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
 
@@ -45,43 +47,16 @@ public class UserController {
         return ResponseEntity.ok(authenticationService.getAllStaff());
     }
 
-    @GetMapping("/profile")
-    public ResponseEntity<?> getUserProfile(Authentication authentication) {
-        String email = authentication.getName();
-        User user = userRepository.findByEmail(email).orElseThrow();
-        return ResponseEntity.ok(user);
+
+    @GetMapping("/profile/{id}")
+    public ResponseEntity<User> getUserProfile(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updateUserProfile(@RequestBody User updatedUser, Authentication authentication) {
-        String currentEmail = authentication.getName();  // This is from JWT token
-        User user = userRepository.findByEmail(currentEmail).orElseThrow();
-
-        boolean emailChanged = !user.getEmail().equals(updatedUser.getEmail());
-
-        user.setFirstname(updatedUser.getFirstname());
-        user.setSecondname(updatedUser.getSecondname());
-        user.setMobileNumber(updatedUser.getMobileNumber());
-
-        if (emailChanged) {
-            user.setEmail(updatedUser.getEmail()); // update email
-        }
-
-        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-        }
-
-        userRepository.save(user);
-
-        // Optional: if email changed, ask frontend to logout and login again
-        if (emailChanged) {
-            return ResponseEntity.ok("Profile updated successfully! Please re-login with your new email.");
-        }
-
-        return ResponseEntity.ok("Profile updated successfully!");
+    // Update profile by ID
+    @PutMapping("/updateProfile/{id}")
+    public ResponseEntity<User> updateUserProfile(@PathVariable Long id, @RequestBody User updatedUser) {
+        return ResponseEntity.ok(userService.updateUser(id, updatedUser));
     }
-
-
-
 
 }
