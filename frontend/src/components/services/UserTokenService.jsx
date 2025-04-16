@@ -35,7 +35,7 @@ export const fetchUserTokenDetails = async () => {
   });
 
 // Check if the data contains userTokens array
-console.log("Fetched token data:", response.data);
+// console.log("Fetched token data:", response.data);
 
 
 if (Array.isArray(response.data.userTokens)) {

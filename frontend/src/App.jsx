@@ -18,7 +18,6 @@ import Contact from "./components/LandingPage/ContactUs";
 import StaffList from "./components/Staff/StaffList";
 import ServiceList from "./components/Admin/ServiceList";
 import AddServiceForm from "./components/Admin/AddServiceForm";
-import StaffTokenTable from "./components/Staff/StaffTokenTable";
 import AdminPage from "./pages/AdminPage";
 import StaffPage from "./pages/StaffPage";
 import OtpVerification from "./components/auth/OtpVerification";
@@ -54,7 +53,6 @@ function App() {
         {/* Staff Routes */}
         <Route path="/staff" element={<StaffPage />} />
         <Route path="/staff-list"  element={<StaffList />}  />
-        <Route path="/staff-token-list"  element={<StaffTokenTable/>}  />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminPage />}  />

@@ -15,13 +15,29 @@ const getUserId = () => {
 //  ✅ Fetch current token details for the logged-in user
 export const getUserProfile = async () => {
   const token = getToken();
-//   const userId = getUserId();
 
   const response = await axios.get(`${BASE_URL}/profile`, {
     withCredentials: true,
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  console.log(response.data);
+
   return response.data;
 }
+
+export const editUserProfile = async (formData) => {
+    const token = getToken();
+    const userId = getUserId();
+    console.log(token);
+  
+    console.log(formData);
+    const response = await axios.put(`${BASE_URL}/update${userId}`, formData, {
+      withCredentials: true,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  
+    console.log(response.data);
+    
+    return response.data;
+};
+  

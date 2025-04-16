@@ -5,16 +5,33 @@ import EditUserProfile from "./EditProfilePage"
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(null);
 
-  const loadProfile = () => {
-    getUserProfile()
-      .then(res => setUser(res.data))
-      .catch(err => console.error("Failed to fetch profile", err));
-  };
+//   const loadProfile = () => {
+//     getUserProfile()
+//       .then(res => setUser(res.data))
+//       .catch(err => console.error("Failed to fetch profile", err));
+//   };
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
+//   useEffect(() => {
+//     loadProfile();
+//   }, []);
+
+   useEffect(() => {
+      const loadProfile = async () => {
+        setLoading(true);
+        try {
+          const userData = await getUserProfile();
+          setUser(userData);
+        } catch (err) {
+          console.error(err);
+          setError("Failed to fetch staff members. Please try again.");
+        } finally {
+          setLoading(false);
+        }
+      };
+      loadProfile();
+    }, []);
 
   if (!user) return <div className="p-4">Loading...</div>;  
 
@@ -27,11 +44,11 @@ const ProfilePage = () => {
     <div className="bg-white text-gray-900 p-6 rounded-2xl shadow-2xl h-50 w-full max-w-lg">
       <div className="flex items-center justify-cener mb-2">
         <h3 className="text-lg font-semibold text-gray-700 mr-2">First Name:</h3>
-        <p className="text-lg font-semibold text-gray-900">{user.firstName}</p>
+        <p className="text-lg font-semibold text-gray-900">{user.firstname}</p>
       </div>
       <div className="flex items-center justify-cener mb-2">
         <h3 className="text-lg font-semibold text-gray-700 mr-2">Second Name:</h3>
-        <p className="text-lg font-semibold text-gray-900">{user.secondName}</p>
+        <p className="text-lg font-semibold text-gray-900">{user.secondname}</p>
       </div>
       <div className="flex items-center justify-cener mb-2">
         <h3 className="text-lg font-semibold text-gray-700 mr-2">Mobile No.:</h3>
