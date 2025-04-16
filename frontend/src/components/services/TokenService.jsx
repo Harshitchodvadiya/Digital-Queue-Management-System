@@ -12,7 +12,6 @@ export const getTokenAndStaffId = () => {
   const decoded = jwtDecode(token);
 
   try {
-    // sub = "staff@gmail.com/3:STAFF"
     const sub = decoded.sub;
     const parts = sub.split("/");
 
@@ -43,6 +42,17 @@ export const getAllRequestedTokens = async () => {
   });
   // ✅ Filter only PENDING tokens
   const filteredTokens = response.data.filter(token => token.status != "PENDING");
+  return filteredTokens;
+};
+
+export const getPendingTokens = async () => {
+  const { token, staffId } = getTokenAndStaffId();
+  const response = await axios.get(`${API_BASE_URL}/getTodayTokensByStaffId/${staffId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    withCredentials: true,
+  });
+  // ✅ Filter only PENDING tokens
+  const filteredTokens = response.data.filter(token => token.status === "PENDING");
   return filteredTokens;
 };
 

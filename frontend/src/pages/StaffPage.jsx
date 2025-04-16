@@ -5,6 +5,7 @@ import {
   callNextToken,
   completeToken,
   skipToken,
+  getPendingTokens
 } from "../components/services/TokenService";
 import CustomerQueue from "../components/Staff/CustomerQueue";
 import ActiveToken from "../components/Staff/ActiveToken";
@@ -14,6 +15,7 @@ import Navbar from "../components/Navbar";
 
 const StaffPage = () => {
   const [tokens, setTokens] = useState([]);
+  const [tokensStatus, setTokensStatus] = useState([]);
   const [activeToken, setActiveToken] = useState(null);
   const [summary, setSummary] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,6 +24,15 @@ const StaffPage = () => {
   const fetchTokens = async () => {
     try {
       const res = await getAllRequestedTokens();
+      setTokensStatus(res);
+    } catch (err) {
+      console.error("Error fetching tokens:", err);
+    }
+  };
+
+  const fetchPendingTokens = async () => {
+    try {
+      const res = await getPendingTokens();
       setTokens(res);
     } catch (err) {
       console.error("Error fetching tokens:", err);
@@ -64,9 +75,10 @@ const StaffPage = () => {
   useEffect(() => {
     fetchTokens();
     fetchSummary();
-
+    fetchPendingTokens()
     const interval = setInterval(() => {
       fetchSummary();
+      fetchPendingTokens();
     }, 1000); // every 10 sec
 
     return () => clearInterval(interval);
@@ -89,8 +101,9 @@ const StaffPage = () => {
               <ActiveToken activeToken={activeToken}
                   handleCallNext={handleCallNext}
                   handleAction={handleAction} />
+
             {/* Queue List */}
-              <CustomerQueue tokens={tokens.filter((t) => t.status === "WAITING")} />
+              <CustomerQueue tokens={tokens} />
            
           </div>
 
@@ -101,7 +114,7 @@ const StaffPage = () => {
           
             {/* Completed/Skipped Tokens */}
               <AllTokens
-                allTokens={tokens}
+                allTokens={tokensStatus}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
                 itemsPerPage={itemsPerPage}
