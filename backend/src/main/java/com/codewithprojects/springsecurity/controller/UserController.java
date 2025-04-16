@@ -1,5 +1,6 @@
 package com.codewithprojects.springsecurity.controller;
 
+import com.codewithprojects.springsecurity.dto.UserDto;
 import com.codewithprojects.springsecurity.entities.StaffServices;
 import com.codewithprojects.springsecurity.entities.User;
 import com.codewithprojects.springsecurity.repository.UserRepository;
@@ -50,13 +51,20 @@ public class UserController {
 
     @GetMapping("/profile/{id}")
     public ResponseEntity<User> getUserProfile(@PathVariable Long id) {
+
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
     // Update profile by ID
+//    @PutMapping("/updateProfile/{id}")
+//    public ResponseEntity<User> updateUserProfile(@PathVariable Long id, @RequestBody UserDto updatedUser) {
+//        System.out.println("blablal");
+//        return ResponseEntity.ok(userService.updateUser(id, updatedUser));
+//    }
+
     @PutMapping("/updateProfile/{id}")
-    public ResponseEntity<User> updateUserProfile(@PathVariable Long id, @RequestBody User updatedUser) {
-        return ResponseEntity.ok(userService.updateUser(id, updatedUser));
+    public ResponseEntity<User> updateUserProfile(@PathVariable Long id, @RequestBody UserDto updatedUserDto) {
+        return ResponseEntity.ok(userService.updateUser(id, updatedUserDto));
     }
 
 }

@@ -1,6 +1,7 @@
 package com.codewithprojects.springsecurity.services.Impl;
 
 import com.codewithprojects.springsecurity.dto.TokenResponseDto;
+import com.codewithprojects.springsecurity.dto.UserDto;
 import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.entities.TokenStatus;
 import com.codewithprojects.springsecurity.entities.User;
@@ -264,13 +265,22 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
-    public User updateUser(Long id, User updatedUser) {
+//    public User updateUser(Long id, UserDto updatedUser) {
+//        User existingUser = getUserById(id);
+//        existingUser.setFirstname(updatedUser.getFirstName());
+//        existingUser.setSecondname(updatedUser.getSecondName());
+//        existingUser.setMobileNumber(updatedUser.getMobileNumber());
+//        return userRepository.save(existingUser);
+//    }
+
+    public User updateUser(Long id, UserDto updatedUserDto) {
         User existingUser = getUserById(id);
-        existingUser.setFirstname(updatedUser.getFirstname());
-        existingUser.setSecondname(updatedUser.getSecondname());
-        existingUser.setMobileNumber(updatedUser.getMobileNumber());
+        existingUser.setFirstname(updatedUserDto.getFirstName());
+        existingUser.setSecondname(updatedUserDto.getSecondName());
+        existingUser.setMobileNumber(updatedUserDto.getMobileNumber());
         return userRepository.save(existingUser);
     }
+
 
     @Override
     public List<Token> tokenHistory(Integer id) {

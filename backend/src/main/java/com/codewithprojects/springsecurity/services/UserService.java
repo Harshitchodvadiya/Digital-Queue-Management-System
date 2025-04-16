@@ -1,6 +1,7 @@
 package com.codewithprojects.springsecurity.services;
 
 import com.codewithprojects.springsecurity.dto.TokenResponseDto;
+import com.codewithprojects.springsecurity.dto.UserDto;
 import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.entities.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -40,5 +41,5 @@ public interface UserService {
     List<Token> tokenHistory(Integer id);
 
     User getUserById(Long id);
-    User updateUser(Long id, User updatedUser);
+    User updateUser(Long id, UserDto updatedUserDto);
 }

@@ -5,6 +5,7 @@ import EditUserProfile from "./EditProfilePage"
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(null);
 
 //   const loadProfile = () => {
@@ -22,10 +23,12 @@ const ProfilePage = () => {
         setLoading(true);
         try {
           const userData = await getUserProfile();
+          console.log(userData);
+          
           setUser(userData);
         } catch (err) {
           console.error(err);
-          setError("Failed to fetch staff members. Please try again.");
+          setError("Failed to fetch profile. Please try again.");
         } finally {
           setLoading(false);
         }
