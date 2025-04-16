@@ -259,9 +259,18 @@ public class UserServiceImpl implements UserService {
         return new TokenResponseDto(userTokens, currentTokens, peopleAheadMap);
     }
 
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    }
 
-
-
+    public User updateUser(Long id, User updatedUser) {
+        User existingUser = getUserById(id);
+        existingUser.setFirstname(updatedUser.getFirstname());
+        existingUser.setSecondname(updatedUser.getSecondname());
+        existingUser.setMobileNumber(updatedUser.getMobileNumber());
+        return userRepository.save(existingUser);
+    }
 
     @Override
     public List<Token> tokenHistory(Integer id) {
