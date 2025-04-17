@@ -1,72 +1,52 @@
 import { useEffect, useState } from "react";
-import {getUserProfile} from "../services/Profile";
-
-import EditUserProfile from "./EditProfilePage"
+import { getUserProfile } from "../services/Profile";
+import EditUserProfile from "./EditProfilePage";
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-//   const loadProfile = () => {
-//     getUserProfile()
-//       .then(res => setUser(res.data))
-//       .catch(err => console.error("Failed to fetch profile", err));
-//   };
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const userData = await getUserProfile();
+        console.log("Fetched profile:", userData);
+        setUser(userData);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to fetch profile. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProfile();
+  }, []);
 
-//   useEffect(() => {
-//     loadProfile();
-//   }, []);
-
-   useEffect(() => {
-      const loadProfile = async () => {
-        setLoading(true);
-        try {
-          const userData = await getUserProfile();
-          console.log(userData);
-          
-          setUser(userData);
-        } catch (err) {
-          console.error(err);
-          setError("Failed to fetch profile. Please try again.");
-        } finally {
-          setLoading(false);
-        }
-      };
-      loadProfile();
-    }, []);
-
-  if (!user) return <div className="p-4">Loading...</div>;  
+  if (loading) return <div className="text-white p-6 text-center">Loading...</div>;
 
   return (
-    <div className="bg-gray-100 flex h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
-   
-    <div className="bg-white rounded-lg shadow-md p-6 w-1/2 h-full">
-      <h2 className="text-lg font-bold mb-4">Your Profile</h2>
-
-    <div className="bg-white text-gray-900 p-6 rounded-2xl shadow-2xl h-50 w-full max-w-lg">
-      <div className="flex items-center justify-cener mb-2">
-        <h3 className="text-lg font-semibold text-gray-700 mr-2">First Name:</h3>
-        <p className="text-lg font-semibold text-gray-900">{user.firstname}</p>
-      </div>
-      <div className="flex items-center justify-cener mb-2">
-        <h3 className="text-lg font-semibold text-gray-700 mr-2">Second Name:</h3>
-        <p className="text-lg font-semibold text-gray-900">{user.secondname}</p>
-      </div>
-      <div className="flex items-center justify-cener mb-2">
-        <h3 className="text-lg font-semibold text-gray-700 mr-2">Mobile No.:</h3>
-        <p className="text-lg font-semibold text-gray-900">{user.mobileNumber}</p>
-      </div>
-      <div className="flex items-center justify-cener mb-2">
-        <h3 className="text-lg font-semibold text-gray-700 mr-2">Email:</h3>
-        <p className="text-lg font-semibold text-gray-900">{user.email}</p>
-      </div>
-      
-    </div>
-
-    </div>
-    <div className="w-2/3">
-      <EditUserProfile/>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-[#0f2027] via-[#203a43] to-[#2c5364] p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-6xl">
+        <div className="bg-white/20 backdrop-blur-lg p-8 rounded-3xl shadow-2xl text-white">
+          <h2 className="text-3xl font-bold mb-6 text-center">Your Profile</h2>
+          <div className="space-y-4 text-lg">
+            <div>
+              <span className="font-semibold">First Name:</span> {user.firstname}
+            </div>
+            <div>
+              <span className="font-semibold">Second Name:</span> {user.secondname}
+            </div>
+            <div>
+              <span className="font-semibold">Mobile Number:</span> {user.mobileNumber}
+            </div>
+            <div>
+              <span className="font-semibold">Email:</span> {user.email}
+            </div>
+          </div>
+        </div>
+        {/* 👇 Pass setUser and user to EditUserProfile */}
+        <EditUserProfile user={user} setUser={setUser} />
       </div>
     </div>
   );
