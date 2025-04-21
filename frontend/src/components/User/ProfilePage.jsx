@@ -26,9 +26,9 @@ const ProfilePage = () => {
   if (loading) return <div className="text-white p-6 text-center">Loading...</div>;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-[#0f2027] via-[#203a43] to-[#2c5364] p-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-6xl">
-        <div className="bg-white/20 backdrop-blur-lg p-8 rounded-3xl shadow-2xl text-white">
+        <div className="bg-white backdrop-blur-lg p-8 rounded-3xl shadow-2xl text-black">
           <h2 className="text-3xl font-bold mb-6 text-center">Your Profile</h2>
           <div className="space-y-4 text-lg">
             <div>

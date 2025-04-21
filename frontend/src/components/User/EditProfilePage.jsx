@@ -37,39 +37,39 @@ const EditUserProfile = ({ user, setUser }) => {
   };
 
   return (
-    <div className="bg-white/20 backdrop-blur-lg shadow-xl rounded-3xl p-6 w-full max-w-md mx-auto mt-4">
-      <h2 className="text-2xl font-bold text-white mb-3 text-center">Edit Your Profile</h2>
+    <div className="bg-white backdrop-blur-lg shadow-xl rounded-3xl p-6 w-full max-w-md mx-auto mt-4">
+      <h2 className="text-2xl font-bold text-gray-900 mb-3 text-center">Edit Your Profile</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-white text-sm mb-1">First Name</label>
+          <label className="block text-gray-900 text-sm mb-1">First Name</label>
           <input
             type="text"
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
-            className="w-full p-2 rounded-lg bg-white/80 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="w-full p-2 rounded-lg bg-white border focus:outline-none focus:ring-2 focus:ring-indigo-400"
             required
           />
         </div>
         <div>
-          <label className="block text-white text-sm mb-1">Second Name</label>
+          <label className="block text-gray-900 text-sm mb-1">Second Name</label>
           <input
             type="text"
             name="secondName"
             value={formData.secondName}
             onChange={handleChange}
-            className="w-full p-2 rounded-lg bg-white/80 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="w-full p-2 rounded-lg border bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
             required
           />
         </div>
         <div>
-          <label className="block text-white text-sm mb-1">Mobile Number</label>
+          <label className="block text-gray-900 text-sm mb-1">Mobile Number</label>
           <input
             type="text"
             name="mobileNumber"
             value={formData.mobileNumber}
             onChange={handleChange}
-            className="w-full p-2 rounded-lg bg-white/80 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="w-full p-2 rounded-lg border bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
             required
           />
         </div>

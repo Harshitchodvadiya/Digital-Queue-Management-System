@@ -75,7 +75,7 @@ const UserPage = ({ user }) => {
 
   const handleTokenCreated = (newToken) => {
     setTokenDetails(newToken);
-    setRefreshTrigger((prev) => prev + 1); // 🔁 trigger refresh
+    setRefreshTrigger((prev) => prev + 1); //  trigger refresh
   };
 
   const loadTokenDetails = async () => {

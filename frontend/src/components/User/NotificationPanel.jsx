@@ -15,6 +15,8 @@ const NotificationPanel = () => {
   // Load from localStorage initially
   useEffect(() => {
     const stored = localStorage.getItem("notifications");
+    console.log(localStorage);
+    
     if (stored) {
       const parsed = JSON.parse(stored).map((notif) =>
         notif.hasOwnProperty("isRead") ? notif : { ...notif, isRead: false }
@@ -31,7 +33,7 @@ const NotificationPanel = () => {
     }
   }, [notifications]);
 
-  // Fetch history from backend
+  // Fetch history from backend and merge it with localstorage 
   useEffect(() => {
     const loadHistory = async () => {
       try {

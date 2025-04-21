@@ -2,9 +2,6 @@ import { useEffect, useState } from "react";
 import { GoClock } from "react-icons/go";
 
 const CustomerQueue = ({tokens}) => {
-
-  const [loading, setLoading] = useState(true);
-  const [staffId, setStaffId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const tokensPerPage = 5;
 

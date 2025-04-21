@@ -48,6 +48,8 @@ public class OtpServiceImpl implements OtpService {
 
         // Send the OTP via email
         emailService.sendEmail(email, "Your OTP Code", "Your OTP is: " + otp);
+
+
     }
 
     @Override
@@ -67,37 +69,63 @@ public class OtpServiceImpl implements OtpService {
 
             return true;
         }
-
+        otpVerificationRepository.delete(otpRecord.get());
         return false;
     }
 
+//    public boolean resetPassword(String email, String newPassword, String confirmPassword) {
+//        // Check if newPassword and confirmPassword match
+//        if (!newPassword.equals(confirmPassword)) {
+//            throw new IllegalArgumentException("New password and confirm password do not match.");
+//        }
+//
+//        Optional<OtpVerification> otpVerified = otpVerificationRepository.findByEmail(email);
+//        if (otpVerified.isPresent() && otpVerified.get().isVerified()) {
+//            User user = userRepository.findByEmail(email)
+//                    .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//            user.setPassword(passwordEncoder.encode(newPassword));
+//            userRepository.save(user);
+//
+//            // ✅ Send confirmation email after password reset
+//            emailService.sendEmail(
+//                    email,
+//                    "Password Reset Successful",
+//                    "Hi, your password has been successfully updated. If this wasn't you, please contact our support immediately."
+//            );
+//
+//            // Clean up OTP record
+//            otpVerificationRepository.delete(otpVerified.get());
+//            return true;
+//        }
+//
+//        return false;
+//    }
+
+    @Override
     public boolean resetPassword(String email, String newPassword, String confirmPassword) {
-        // Check if newPassword and confirmPassword match
         if (!newPassword.equals(confirmPassword)) {
             throw new IllegalArgumentException("New password and confirm password do not match.");
         }
 
         Optional<OtpVerification> otpVerified = otpVerificationRepository.findByEmail(email);
-        if (otpVerified.isPresent() && otpVerified.get().isVerified()) {
-            User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-
-            user.setPassword(passwordEncoder.encode(newPassword));
-            userRepository.save(user);
-
-            // ✅ Send confirmation email after password reset
-            emailService.sendEmail(
-                    email,
-                    "Password Reset Successful",
-                    "Hi, your password has been successfully updated. If this wasn't you, please contact our support immediately."
-            );
-
-            // Clean up OTP record
-            otpVerificationRepository.delete(otpVerified.get());
-            return true;
+        if (otpVerified.isEmpty()) {
+            throw new RuntimeException("OTP record not found for email: " + email);
         }
 
-        return false;
+        if (!otpVerified.get().isVerified()) {
+            throw new RuntimeException("OTP not verified for email: " + email);
+        }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found for email: " + email));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        emailService.sendEmail(email, "Password Reset Successful", "Your password has been updated.");
+        otpVerificationRepository.delete(otpVerified.get());
+        return true;
     }
 
 }

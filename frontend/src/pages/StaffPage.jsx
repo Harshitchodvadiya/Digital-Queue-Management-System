@@ -79,7 +79,7 @@ const StaffPage = () => {
     const interval = setInterval(() => {
       fetchSummary();
       fetchPendingTokens();
-    }, 1000); // every 10 sec
+    }, 1000); // every sec
 
     return () => clearInterval(interval);
   }, []);

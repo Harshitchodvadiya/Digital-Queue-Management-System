@@ -14,21 +14,22 @@ const BASE_URL = "http://localhost:8081/api/v1/notifications";
       return parseInt(idPart, 10);
     };
   
-const extractUserIdFromJWT = () => {
-    try {
-      const token = localStorage.getItem("jwtToken");
-      if (!token) return null;
+// const extractUserIdFromJWT = () => {
+//     try {
+//       const token = localStorage.getItem("jwtToken");
+//       if (!token) return null;
   
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      const sub = payload.sub;
-      const userId = sub.split("/")[1].split(":")[0];
+//       const payload = JSON.parse(atob(token.split(".")[1]));
+//       const sub = payload.sub;
+//       const userId = sub.split("/")[1].split(":")[0];
   
-      return userId;
-    } catch (error) {
-      console.error("Failed to extract userId from JWT:", error);
-      return null;
-    }
-  };
+//       return userId;
+//     } catch (error) {
+//       console.error("Failed to extract userId from JWT:", error);
+//       return null;
+//     }
+//   };
+
 
 // ✅ Fetch past notification history from backend
 export const fetchNotificationHistory = async () => {
@@ -69,15 +70,15 @@ export const subscribeToNotifications = (userId, onMessage, onError) => {
   return eventSource; // ✅ return so caller can manually close if needed
 };
 
-// ⛔ Optional: markAsRead is only needed on frontend; here for reference
-export const markAsReadLocal = (notificationId) => {
-  const stored = localStorage.getItem("notifications");
-  if (!stored) return;
+// // ⛔ Optional: markAsRead is only needed on frontend; here for reference
+// export const markAsReadLocal = (notificationId) => {
+//   const stored = localStorage.getItem("notifications");
+//   if (!stored) return;
 
-  const parsed = JSON.parse(stored);
-  const updated = parsed.map((notif) =>
-    notif.id === notificationId ? { ...notif, isRead: true } : notif
-  );
+//   const parsed = JSON.parse(stored);
+//   const updated = parsed.map((notif) =>
+//     notif.id === notificationId ? { ...notif, isRead: true } : notif
+//   );
 
-  localStorage.setItem("notifications", JSON.stringify(updated));
-};
+//   localStorage.setItem("notifications", JSON.stringify(updated));
+// };

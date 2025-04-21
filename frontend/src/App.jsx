@@ -21,6 +21,8 @@ import AddServiceForm from "./components/Admin/AddServiceForm";
 import AdminPage from "./pages/AdminPage";
 import StaffPage from "./pages/StaffPage";
 import OtpVerification from "./components/auth/OtpVerification";
+import ForgotPassword from "./components/auth/ForgotPassword";
+import ResetPassword from "./components/auth/ResetPassword";
 
 
 function App() {
@@ -44,6 +46,10 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegistrationForm />} />
         <Route path="/verify-otp" element={<OtpVerification />} />
+
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
 
         {/* User Routes */}
         <Route path="/user" element={<UserPage /> }/>
