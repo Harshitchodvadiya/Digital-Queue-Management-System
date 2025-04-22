@@ -6,7 +6,9 @@ import {
   completeToken,
   skipToken,
   getPendingTokens
+  // optionally: getActiveToken
 } from "../components/services/TokenService";
+
 import CustomerQueue from "../components/Staff/CustomerQueue";
 import ActiveToken from "../components/Staff/ActiveToken";
 import StaffSummary from "../components/Staff/StaffSummary";
@@ -35,7 +37,7 @@ const StaffPage = () => {
       const res = await getPendingTokens();
       setTokens(res);
     } catch (err) {
-      console.error("Error fetching tokens:", err);
+      console.error("Error fetching pending tokens:", err);
     }
   };
 
@@ -51,9 +53,13 @@ const StaffPage = () => {
   const handleCallNext = async () => {
     try {
       const res = await callNextToken();
-      setActiveToken(res);
-      await fetchTokens();
-      await fetchSummary();
+      if (res) {
+        setActiveToken(res);
+        localStorage.setItem("activeToken", JSON.stringify(res)); // persist in localStorage
+        setTokens((prev) => prev.filter((t) => t.id !== res.id)); // remove from queue
+      }
+      fetchTokens(); // don't await
+      fetchSummary();
     } catch (err) {
       console.error("Error calling next token:", err);
     }
@@ -62,24 +68,34 @@ const StaffPage = () => {
   const handleAction = async (type) => {
     try {
       if (!activeToken) return;
+
       if (type === "complete") await completeToken(activeToken.id);
       if (type === "skip") await skipToken(activeToken.id);
+
       setActiveToken(null);
-      await fetchTokens();
-      await fetchSummary();
+      localStorage.removeItem("activeToken"); // clear from localStorage
+      fetchTokens();
+      fetchSummary();
+      fetchPendingTokens();
     } catch (err) {
       console.error(`Error on ${type}:`, err);
     }
   };
 
   useEffect(() => {
+    const storedActive = localStorage.getItem("activeToken");
+    if (storedActive) {
+      setActiveToken(JSON.parse(storedActive));
+    }
+
     fetchTokens();
     fetchSummary();
-    fetchPendingTokens()
+    fetchPendingTokens();
+
     const interval = setInterval(() => {
       fetchSummary();
       fetchPendingTokens();
-    }, 1000); // every sec
+    }, 1000); // update every second
 
     return () => clearInterval(interval);
   }, []);
@@ -97,29 +113,28 @@ const StaffPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Left Side */}
           <div className="md:col-span-2 space-y-6">
-            {/* ActiveToken */}
-              <ActiveToken activeToken={activeToken}
-                  handleCallNext={handleCallNext}
-                  handleAction={handleAction} />
+            {/* Active Token */}
+            <ActiveToken
+              activeToken={activeToken}
+              handleCallNext={handleCallNext}
+              handleAction={handleAction}
+            />
 
-            {/* Queue List */}
-              <CustomerQueue tokens={tokens} />
-           
+            {/* Queue List (excluding active token) */}
+            <CustomerQueue
+              tokens={tokens.filter((t) => t.id !== activeToken?.id)}
+            />
           </div>
 
           {/* Right Side */}
           <div className="space-y-6">
-            {/* Summary Card */}
-              <StaffSummary summary={summary} />
-          
-            {/* Completed/Skipped Tokens */}
-              <AllTokens
-                allTokens={tokensStatus}
-                currentPage={currentPage}
-                setCurrentPage={setCurrentPage}
-                itemsPerPage={itemsPerPage}
-              />
-           
+            <StaffSummary summary={summary} />
+            <AllTokens
+              allTokens={tokensStatus}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              itemsPerPage={itemsPerPage}
+            />
           </div>
         </div>
       </div>
