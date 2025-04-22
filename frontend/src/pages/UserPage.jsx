@@ -135,12 +135,6 @@ const UserPage = ({ user }) => {
 
       <ToastContainer />
 
-      {unreadCount > 0 && (
-        <div className="absolute top-5 right-5 bg-red-500 text-white rounded-full text-xs px-2 py-1">
-          {unreadCount}
-        </div>
-      )}
-
       <div className="flex flex-col md:flex-row md:items-start gap-6">
         <div className="w-full md:w-1/2">
           <div className="bg-white rounded-2xl shadow p-6 w-2/3">

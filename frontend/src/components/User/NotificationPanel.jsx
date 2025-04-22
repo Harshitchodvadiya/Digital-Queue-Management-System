@@ -225,26 +225,26 @@ const NotificationPanel = () => {
           
 
           // Save in local + state using functional updates
-          setNotifications((prevNotifications) => {
-            const newNotif = {
-              ...data,
-              id: Date.now(), // fallback ID if backend doesn't provide
-              isRead: false,
-            };
-            const updated = [newNotif, ...prevNotifications];
-            setUnreadCount(updated.filter((n) => !n.isRead).length);
-            localStorage.setItem("notifications", JSON.stringify(updated));
-            return updated;
-          });
+          // setNotifications((prevNotifications) => {
+          //   const newNotif = {
+          //     ...data,
+          //     id: Date.now(), // fallback ID if backend doesn't provide
+          //     isRead: false,
+          //   };
+          //   const updated = [newNotif, ...prevNotifications];
+          //   setUnreadCount(updated.filter((n) => !n.isRead).length);
+          //   localStorage.setItem("notifications", JSON.stringify(updated));
+          //   return updated;
+          // });
 
-          // Optional: update token status in UI if tokenId is included
-          // if (data.tokenId && data.status) {
-          //   setTokens((prevTokens) =>
-          //     prevTokens.map((t) =>
-          //       t.id === data.tokenId ? { ...t, status: data.status } : t
-          //     )
-          //   );
-          // }
+          const updated = [
+                          { ...data, id: Date.now(), isRead: false }, // Fallback ID if backend doesn't provide
+                          ...notifications,
+                        ];
+            
+                        setNotifications(updated);
+                        setUnreadCount((prev) => prev + 1);
+
         },
         (err) => {
           console.error("Notification SSE error:", err);
@@ -262,7 +262,7 @@ const NotificationPanel = () => {
     updated[index].isRead = true;
     setNotifications(updated);
     setUnreadCount(updated.filter((n) => !n.isRead).length);
-    localStorage.setItem("notifications", JSON.stringify(updated));
+    // localStorage.setItem("notifications", JSON.stringify(updated));
   };
 
   const markAllAsRead = () => {
