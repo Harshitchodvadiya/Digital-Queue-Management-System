@@ -71,7 +71,13 @@ const UserPage = ({ user }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const token = Cookies.get("token");
+  const token = Cookies.get("jwtToken");
+  let userId = null;
+
+  if (token) {
+    const decoded = jwtDecode(token);
+    userId = decoded?.sub?.split("/")[1]?.split(":")[0];
+  }
 
   const handleTokenCreated = (newToken) => {
     setTokenDetails(newToken);
@@ -81,8 +87,10 @@ const UserPage = ({ user }) => {
   const loadTokenDetails = async () => {
     setLoading(true);
     try {
-      const data = await fetchUserTokenDetails();
+      const data = await fetchUserTokenDetails(userId);
+      console.log("Updated token details",data);
       setTokenDetails(data);
+      setRefreshTrigger((prev) => prev + 1); //  trigger refresh
     } catch (error) {
       console.error("Error fetching token details:", error);
     }
@@ -94,40 +102,50 @@ const UserPage = ({ user }) => {
   }, []);
 
   useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        const userId = decoded.userId;
-
+    if (userId) {
         const source = subscribeToNotifications(
           userId,
           (data) => {
-            toast.info(data.message, {
-              position: "top-right",
-              autoClose: 5000,
-            });
-            setUnreadCount((prev) => prev + 1);
-          },
-          (err) => {
-            console.error("Notification SSE error:", err);
-          }
-        );
+            console.log("SSE Message Received:", data);
 
+            toast.info(data.message || "You have a new notification" );
+            console.log(toast);
+            
+
+            setUnreadCount((prev) => prev + 1);
+
+              // This ensures token details refresh when status changes
+              if (
+                /turn now|called|active|skipped|completed|cancelled|pending/i.test(data.message)
+              ) {
+                console.log("Refreshing token details..."); // Debug log here
+                setRefreshTrigger((prev) => prev + 1); // 🌀 This re-triggers TokenInfoCard
+                loadTokenDetails();
+              }
+          },
+          (err) => console.error("Notification SSE error:", err)
+        );
         return () => source?.close();
-      } catch (error) {
-        console.error("Error decoding token:", error);
       }
-    }
-  }, [token]);
+  }, [userId]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-black">
       <Navbar />
 
+      <ToastContainer />
+
+      {unreadCount > 0 && (
+        <div className="absolute top-5 right-5 bg-red-500 text-white rounded-full text-xs px-2 py-1">
+          {unreadCount}
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row md:items-start gap-6">
         <div className="w-full md:w-1/2">
           <div className="bg-white rounded-2xl shadow p-6 w-2/3">
             <TokenRequestForm
+       
               tokenDetails={tokenDetails}
               onRefresh={loadTokenDetails}
               onTokenCreated={handleTokenCreated}
@@ -136,7 +154,11 @@ const UserPage = ({ user }) => {
         </div>
 
         {tokenDetails && (
-          <TokenInfoCard tokenDetails={tokenDetails} refreshTrigger={refreshTrigger} />
+          <TokenInfoCard 
+          key={refreshTrigger} // 🔑 re-create on refresh
+          userId={userId} 
+          // tokenDetails={tokenDetails} 
+          refreshTrigger={refreshTrigger} />
         )}
       </div>
 
@@ -145,14 +167,7 @@ const UserPage = ({ user }) => {
           You have not requested a token yet.
         </div>
       )}
-
-      {unreadCount > 0 && (
-        <div className="absolute top-5 right-5 bg-red-500 text-white rounded-full text-xs px-2 py-1">
-          {unreadCount}
-        </div>
-      )}
-
-      <ToastContainer />
+ 
     </div>
   );
 };

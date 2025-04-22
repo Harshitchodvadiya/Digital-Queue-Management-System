@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useCallback  } from "react";
 import { fetchUserTokenDetails, cancelToken } from "../services/userTokenService";
 import { MdOutlineWatchLater } from "react-icons/md";
 import { BsPersonCheck } from "react-icons/bs";
@@ -15,9 +15,12 @@ const TokenInfoCard = ({ userId, refreshTrigger }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedToken, setSelectedToken] = useState(null);
 
-  const loadTokenInfo = async () => {
+  // const loadTokenInfo = async () => {
+    const loadTokenInfo = useCallback(async () => { //added
+    setLoading(true);
     try {
-      const data = await fetchUserTokenDetails();
+      const data = await fetchUserTokenDetails(userId);
+      console.log("Fetched token info:", data); 
       setTokens(data.tokens);
       setPeopleAheadMap(data.peopleAheadMap);
       setServiceActiveTokens(data.activeTokens);
@@ -27,11 +30,12 @@ const TokenInfoCard = ({ userId, refreshTrigger }) => {
     } finally {
       setLoading(false);
     }
-  };
+  },[userId]);
 
   useEffect(() => {
+    console.log("Triggered refresh for TokenInfoCard", refreshTrigger);
     loadTokenInfo();
-  }, [userId, refreshTrigger]); // 🔁 refresh on trigger change
+  }, [loadTokenInfo, refreshTrigger]); // 🔁 refresh on trigger change
 
   const openRescheduleModal = (token) => {
     setSelectedToken(token);

@@ -65,8 +65,6 @@ public class AuthenticationController {
         return resent ? ResponseEntity.ok("OTP resent.") : ResponseEntity.badRequest().body("Failed to resend OTP.");
     }
 
-
-
     /**
      * Authenticates a user and generates a JWT access token.
      *

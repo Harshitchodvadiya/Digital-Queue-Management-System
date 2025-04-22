@@ -134,6 +134,22 @@ public class TokenServiceImpl implements TokenService {
             token.setStatus(TokenStatus.COMPLETED);
             token.setCompletedTime(LocalDateTime.now());
             tokenRepository.save(token);
+
+            String subject = "Digital Queue Management System -🎉 It's your turn!";
+            String message1 = "Hi " + token.getUser().getFirstname() + ",\n\nYour token #" + token.getId() + " is completed.\n\n" +
+
+                    "Regards,\nDigital Queue Management System";
+
+            //log.info("📧 Sending email to: " + currentToken.getUser().getEmail());
+
+            emailService.sendEmail(token.getUser().getEmail(), subject, message1);
+
+            //  Send Notification to the user-in app
+            String message = "Your Token #" + token.getId() + "is completed";
+
+            notificationService.sendNotification(Long.valueOf(token.getUser().getId()), message);
+
+
             return token;
         } else {
             throw new RuntimeException("Token not found.");
@@ -147,7 +163,8 @@ public class TokenServiceImpl implements TokenService {
         if (tokenOptional.isPresent()) {
             Token token = tokenOptional.get();
             token.setStatus(TokenStatus.SKIPPED);
-            token.setCompletedTime(LocalDateTime.now());
+//            token.setCompletedTime(LocalDateTime.now());
+            token.setCompletedTime(null);
             tokenRepository.save(token);
 
             String subject = "Digital Queue Management System - Token Skipped ";

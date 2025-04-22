@@ -101,7 +101,11 @@ const Navbar = ({ title = "Digital Queue Management System" }) => {
    */
   useEffect(() => {
     const fetchUserName = () => {
-      const storedUserName = Cookies.get("firstname");
+      const userName = Cookies.get("firstname");
+      const storedUserName = userName.split(".")[0];
+
+    //  console.log(storedUserName);
+      
       if (storedUserName) {
         setUserName(storedUserName);
       }
@@ -110,7 +114,7 @@ const Navbar = ({ title = "Digital Queue Management System" }) => {
     fetchUserName();
 
     // Listen for changes
-    const interval = setInterval(fetchUserName, 1000);
+    const interval = setInterval(fetchUserName, 300);
     return () => clearInterval(interval); // Cleanup function to clear interval on unmount
   }, []);
 

@@ -52,9 +52,11 @@ export const subscribeToNotifications = (userId, onMessage, onError) => {
   const eventSource = new EventSource(`${BASE_URL}/subscribe/${userId}`);
 
   eventSource.onmessage = (event) => {
+    console.log("Received SSE event:", event); // ✅ Add this to see if data is coming through
     let data;
     try {
       data = JSON.parse(event.data);
+      
     } catch {
       data = { message: event.data, isRead: false };
     }
