@@ -135,7 +135,7 @@ public class TokenServiceImpl implements TokenService {
             token.setCompletedTime(LocalDateTime.now());
             tokenRepository.save(token);
 
-            String subject = "Digital Queue Management System -🎉 It's your turn!";
+            String subject = "Digital Queue Management System - Token completed";
             String message1 = "Hi " + token.getUser().getFirstname() + ",\n\nYour token #" + token.getId() + " is completed.\n\n" +
 
                     "Regards,\nDigital Queue Management System";
@@ -145,7 +145,7 @@ public class TokenServiceImpl implements TokenService {
             emailService.sendEmail(token.getUser().getEmail(), subject, message1);
 
             //  Send Notification to the user-in app
-            String message = "Your Token #" + token.getId() + "is completed";
+            String message = "Your Token #" + token.getId() + " is completed";
 
             notificationService.sendNotification(Long.valueOf(token.getUser().getId()), message);
 

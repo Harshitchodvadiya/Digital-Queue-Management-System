@@ -206,19 +206,21 @@ const NotificationPanel = () => {
         console.error("Failed to fetch notification history:", err);
       }
     };
-
     loadHistory();
   }, []);
 
+  let userId = null;
+
   // Subscribe to SSE
   useEffect(() => {
-    const token = Cookies.get("token");
-    if (!token) return;
+  const token = Cookies.get("jwtToken");
 
-    try {
+  if (token) {
       const decoded = jwtDecode(token);
-      const userId = decoded.userId;
-
+      userId = decoded?.sub?.split("/")[1]?.split(":")[0];
+    }
+    
+    try {
       const source = subscribeToNotifications(
         userId,
         (data) => {
@@ -237,13 +239,22 @@ const NotificationPanel = () => {
           //   return updated;
           // });
 
-          const updated = [
-                          { ...data, id: Date.now(), isRead: false }, // Fallback ID if backend doesn't provide
-                          ...notifications,
-                        ];
-            
-                        setNotifications(updated);
-                        setUnreadCount((prev) => prev + 1);
+          // const updated = [
+          //   { ...data, id: Date.now(), isRead: false }, // Fallback ID if backend doesn't provide
+          //   ...notifications,
+          // ];
+
+          // setNotifications(updated);
+          // setUnreadCount((prev) => prev + 1);
+
+          const newNotif = {
+            ...data,
+            id: Date.now(), // fallback ID if backend doesn't provide
+            isRead: false,
+          };
+          const updatedNotifications = [newNotif, ...notifications];
+          setNotifications(updatedNotifications);
+          setUnreadCount(updatedNotifications.filter((n) => !n.isRead).length);
 
         },
         (err) => {
@@ -255,7 +266,7 @@ const NotificationPanel = () => {
     } catch (error) {
       console.error("Error decoding token:", error);
     }
-  }, []);
+  }, [notifications]);
 
   const toggleRead = (index) => {
     const updated = [...notifications];
