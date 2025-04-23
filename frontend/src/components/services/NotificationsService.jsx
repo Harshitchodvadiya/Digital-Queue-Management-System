@@ -6,30 +6,12 @@ const BASE_URL = "http://localhost:8081/api/v1/notifications";
 
   const getToken = () => Cookies.get("jwtToken");
 
-
   const getUserId = () => {
       const token = getToken();
       const decoded = jwtDecode(token);
       const idPart = decoded.sub.split("/")[1].split(":")[0];
       return parseInt(idPart, 10);
     };
-  
-// const extractUserIdFromJWT = () => {
-//     try {
-//       const token = localStorage.getItem("jwtToken");
-//       if (!token) return null;
-  
-//       const payload = JSON.parse(atob(token.split(".")[1]));
-//       const sub = payload.sub;
-//       const userId = sub.split("/")[1].split(":")[0];
-  
-//       return userId;
-//     } catch (error) {
-//       console.error("Failed to extract userId from JWT:", error);
-//       return null;
-//     }
-//   };
-
 
 // ✅ Fetch past notification history from backend
 export const fetchNotificationHistory = async () => {
@@ -40,10 +22,8 @@ export const fetchNotificationHistory = async () => {
     headers: {
       Authorization: `Bearer ${token}`,
       withCredentials: true,
-
     },
   });
-  console.log(response.data);
   return response.data;
 };
 
@@ -52,7 +32,6 @@ export const subscribeToNotifications = (userId, onMessage, onError) => {
   const eventSource = new EventSource(`${BASE_URL}/subscribe/${userId}`);
 
   eventSource.onmessage = (event) => {
-    console.log("Received SSE event:", event); // ✅ Add this to see if data is coming through
     let data;
     try {
       data = JSON.parse(event.data);
@@ -72,15 +51,33 @@ export const subscribeToNotifications = (userId, onMessage, onError) => {
   return eventSource; // ✅ return so caller can manually close if needed
 };
 
-// // ⛔ Optional: markAsRead is only needed on frontend; here for reference
-// export const markAsReadLocal = (notificationId) => {
-//   const stored = localStorage.getItem("notifications");
-//   if (!stored) return;
+// mark one notification as read
+export const markNotificationAsRead = async (userId, notificationId) => {
+  const token = getToken();
+  await axios.put(
+    `${BASE_URL}/mark-read/${userId}/${notificationId}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        withCredentials: true, // Send cookies and authorization headers with the request, 
+      },
+    }
+  );
+};
 
-//   const parsed = JSON.parse(stored);
-//   const updated = parsed.map((notif) =>
-//     notif.id === notificationId ? { ...notif, isRead: true } : notif
-//   );
+//  mark all notifications as read
+export const markAllNotificationsAsRead = async (userId) => {
+  const token = getToken();
+  await axios.put(
+    `${BASE_URL}/mark-all-read/${userId}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        withCredentials: true,
+      },
+    }
+  );
+};
 
-//   localStorage.setItem("notifications", JSON.stringify(updated));
-// };

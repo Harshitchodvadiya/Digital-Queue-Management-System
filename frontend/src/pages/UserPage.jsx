@@ -54,7 +54,6 @@ const UserPage = ({ user }) => {
 
             toast.info(data.message || "You have a new notification" );
             console.log(toast);
-            
 
             setUnreadCount((prev) => prev + 1);
 
@@ -76,14 +75,12 @@ const UserPage = ({ user }) => {
   return (
     <div className="min-h-screen flex flex-col bg-white text-black">
       <Navbar />
-
       <ToastContainer />
 
       <div className="flex flex-col md:flex-row md:items-start gap-6">
         <div className="w-full md:w-1/2">
           <div className="bg-white rounded-2xl shadow p-6 w-2/3">
             <TokenRequestForm
-       
               tokenDetails={tokenDetails}
               onRefresh={loadTokenDetails}
               onTokenCreated={handleTokenCreated}

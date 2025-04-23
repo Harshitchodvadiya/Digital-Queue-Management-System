@@ -45,7 +45,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable) // it's required only when session is maintained
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("api/v1/auth/**").permitAll() // Public endpoints, accessible by anyone
                         .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name()) // Only accessible by ADMIN
@@ -54,7 +54,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/notifications/**").permitAll()  // Allow SSE
                         .anyRequest().authenticated() // All other requests require authentication
                 )
-                .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless authentication
+                .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless authentication , no session is  managed
                 .authenticationProvider(authenticationProvider()) // Sets up the authentication provider
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class // Adds JWT filter before processing authentication
                 );

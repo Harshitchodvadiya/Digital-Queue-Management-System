@@ -12,4 +12,9 @@ public interface NotificationService {
     List<Notification> getNotificationHistory(Long userId);
 
     SseEmitter subscribe(Long userId);
+
+    void markAllAsRead(Long userId);
+
+    void markNotificationAsRead(Long notificationId, Long userId);
+
 }

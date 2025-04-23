@@ -57,14 +57,15 @@ public class NotificationServiceImpl implements NotificationService {
                 .userId(userId)
                 .message(message)
                 .timestamp(LocalDateTime.now())
+                .isRead(false)
                 .build();
-        notificationRepository.save(notification);
+        Notification saved = notificationRepository.save(notification);
 
         // Send the notification in real-time using SSE
         if (userEmitters.containsKey(userId)) {
             for (SseEmitter emitter : userEmitters.get(userId)) {
                 try {
-                    emitter.send(SseEmitter.event().data(message));
+                    emitter.send(SseEmitter.event().data(saved));
                 } catch (IOException e) {
                     // Close the emitter if sending fails
                     emitter.complete();
@@ -82,5 +83,26 @@ public class NotificationServiceImpl implements NotificationService {
     public List<Notification> getNotificationHistory(Long userId) {
         return notificationRepository.findByUserIdOrderByTimestampDesc(userId);
     }
+
+    public void markAllAsRead(Long userId) {
+        List<Notification> userNotifications = notificationRepository.findByUserIdOrderByTimestampDesc(userId);
+        userNotifications.forEach(n -> n.setIsRead(true));
+        notificationRepository.saveAll(userNotifications);
+    }
+
+    public void markNotificationAsRead(Long notificationId, Long userId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+
+        // Optional check for user authorization
+        if (!notification.getUserId().equals(userId)) {
+            throw new RuntimeException("Unauthorized access to this notification");
+        }
+
+        // Mark this one as read
+        notification.setIsRead(true);
+        notificationRepository.save(notification);
+    }
+
 
 }

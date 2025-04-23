@@ -21,6 +21,8 @@ public class Notification {
 
     private String message; // Notification message
 
+    private Boolean isRead = false; // read or unread
+
     private LocalDateTime timestamp; // Time when the notification was sent
 }
 

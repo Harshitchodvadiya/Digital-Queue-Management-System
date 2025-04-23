@@ -73,4 +73,15 @@ public class NotificationController {
     public List<Notification> getUserNotificationHistory(@PathVariable Long userId) {
         return notificationService.getNotificationHistory(userId);
     }
+
+    @PutMapping("/mark-all-read/{userId}")
+    public void markAllAsRead(@PathVariable Long userId) {
+        notificationService.markAllAsRead(userId);
+    }
+
+    @PutMapping("/mark-read/{userId}/{notificationId}")
+    public void markNotificationAsRead(@PathVariable Long userId,@PathVariable Long notificationId) {
+        notificationService.markNotificationAsRead(notificationId, userId);
+    }
+
 }

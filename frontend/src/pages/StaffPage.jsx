@@ -6,7 +6,6 @@ import {
   completeToken,
   skipToken,
   getPendingTokens
-  // optionally: getActiveToken
 } from "../components/services/TokenService";
 
 import CustomerQueue from "../components/Staff/CustomerQueue";
