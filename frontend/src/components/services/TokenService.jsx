@@ -87,7 +87,6 @@ export const getTodaySummary = async () => {
   };
 };
 
-
 // ✅ Call next token
 export const callNextToken = async () => {
   const { token, staffId } = getTokenAndStaffId();
@@ -124,3 +123,6 @@ export const skipToken = async (tokenId) => {
     withCredentials: true,
   });
 };
+
+
+

@@ -116,6 +116,7 @@ const ServiceList = () => {
                 <SlSettings className="h-4 w-4" /> Add Service
               </button>
             </div>
+            
             <Table
               columns={columns}
               data={services.map(service => ({

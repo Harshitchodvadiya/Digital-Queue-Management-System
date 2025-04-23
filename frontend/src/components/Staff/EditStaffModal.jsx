@@ -1,12 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { updateStaff, fetchServices } from "../services/AdminService";
 
-const EditStaffModal = ({ editStaff, setEditStaff, handleUpdateStaff, services }) => {
+const EditStaffModal = ({ staff, onClose }) => {
+
+  const [editStaff, setEditStaff] = useState({ ...staff });
+  const [services, setServices] = useState([]);
+
+  useEffect(() => {
+    const loadServices = async () => {
+      try {
+        const res = await fetchServices();
+        setServices(res);
+      } catch (err) {
+        console.error("Failed to load services", err);
+      }
+    };
+    loadServices();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await updateStaff(editStaff);
+      onClose(); // Close modal and refresh parent
+    } catch (err) {
+      console.error("Failed to update staff", err);
+    }
+  };
+
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-300 bg-opacity-75">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-2xl font-semibold text-center mb-4">Edit Staff</h2>
         
-        <form onSubmit={handleUpdateStaff} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block font-medium">First Name</label>
             <input
