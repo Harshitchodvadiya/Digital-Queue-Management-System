@@ -19,12 +19,18 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
 
+    //   userEmitters: Stores active SSE connections per user.
+
     // Concurrent map to store SSE emitters for each user (userId -> List of emitters)
     private final ConcurrentHashMap<Long, CopyOnWriteArrayList<SseEmitter>> userEmitters = new ConcurrentHashMap<>();
 
-    //    This is a thread-safe map where each userId is associated with a list of active SSE emitters.
-    //    Purpose: Allows multiple active SSE connections per user.
 
+//CopyOnWriteArrayList: A thread-safe list where all add, remove create a new copy of the list.
+    //    This is a thread-safe map where each userId is associated with a list of active SSE emitters.
+    //    Allows concurrent read/writes without locking the whole map.
+    //    Purpose: Allows multiple active SSE connections per user.
+    //    Multiple threads (requests) might simultaneously access or modify
+    //    the emitters list for different users — this avoids data corruption.
 
     /**
      * Subscribes a user to receive Server-Sent Events (SSE) notifications.
@@ -80,6 +86,7 @@ public class NotificationServiceImpl implements NotificationService {
      * @param userId The ID of the user whose notifications are being retrieved.
      * @return A list of notifications sorted in descending order of timestamp.
      */
+
     public List<Notification> getNotificationHistory(Long userId) {
         return notificationRepository.findByUserIdOrderByTimestampDesc(userId);
     }

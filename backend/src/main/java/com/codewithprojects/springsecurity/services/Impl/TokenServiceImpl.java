@@ -140,8 +140,6 @@ public class TokenServiceImpl implements TokenService {
 
                     "Regards,\nDigital Queue Management System";
 
-            //log.info("📧 Sending email to: " + currentToken.getUser().getEmail());
-
             emailService.sendEmail(token.getUser().getEmail(), subject, message1);
 
             //  Send Notification to the user-in app
