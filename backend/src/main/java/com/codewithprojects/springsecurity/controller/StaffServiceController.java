@@ -40,7 +40,7 @@ public class StaffServiceController {
     /**
      * Updates an existing staff service by its ID.
      *
-     * @param id                  The ID of the staff service to be updated.
+     * @param id              The ID of the staff service to be updated.
      * @param updateServiceRequest The updated details of the staff service.
      * @return The updated staff service.
      */

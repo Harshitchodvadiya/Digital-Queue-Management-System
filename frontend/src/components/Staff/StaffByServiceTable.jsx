@@ -1,26 +1,52 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { fetchStaff } from "../services/AdminService";
+import Table from "../reusableComponents/Table";
 
-const StaffByServiceTable = ({ staffByService }) => {
+const StaffByServiceTable = () => {
+  const [staffByService, setStaffByService] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const loadStaffData = async () => {
+      try {
+        const staffList = await fetchStaff();
+
+        const countMap = staffList.reduce((acc, member) => {
+          const serviceName = member.service?.serviceName || "Unassigned";
+          acc[serviceName] = (acc[serviceName] || 0) + 1;
+          return acc;
+        }, {});
+
+        // Convert countMap to array of objects for your reusable table
+        const formattedData = Object.entries(countMap).map(([service, count]) => ({
+          serviceName: service,
+          totalStaff: count,
+        }));
+
+        setStaffByService(formattedData);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to fetch staff data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadStaffData();
+  }, []);
+
+  const columns = [
+    { title: "Service Name", field: "serviceName" },
+    { title: "Total Staff", field: "totalStaff" },
+  ];
+
   return (
     <div className="mt-6 overflow-x-auto">
       <h3 className="text-lg font-semibold mb-2">Staff Count by Service</h3>
-      <table className="min-w-full text-sm text-gray-700 border-separate border-spacing-y-2">
-        <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
-          <tr>
-            <th className="text-left px-6 py-3">Service Name</th>
-            <th className="text-left px-6 py-3">Total Staff</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-100">
-          {staffByService &&
-            Object.entries(staffByService).map(([service, count]) => (
-              <tr key={service} className="bg-white shadow-sm rounded-lg">
-                <td className="px-6 py-4 font-medium text-gray-800">{service}</td>
-                <td className="px-6 py-4 font-medium">{count}</td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
+      {loading && <p className="text-center text-gray-600">Loading...</p>}
+      {error && <p className="text-center text-red-500">{error}</p>}
+      {!loading && !error && <Table columns={columns} data={staffByService} />}
     </div>
   );
 };

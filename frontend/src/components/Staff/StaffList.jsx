@@ -5,9 +5,9 @@ import StaffTable from "./StaffTable";
 import StaffByServiceTable from "./StaffByServiceTable.jsx";
 
 const StaffList = () => {
-  const [staff, setStaff] = useState([]); 
 
   const navigate = useNavigate();
+  
   return (
     <div className="h-full w-full flex">
       <div className="flex-1 flex flex-col p-6">
@@ -23,14 +23,7 @@ const StaffList = () => {
   
         <StaffTable/>
   
-        {/* ✅ Compute and pass staffByService correctly */}
-        <StaffByServiceTable
-          staffByService={staff.reduce((acc, member) => {
-            const serviceName = member.service?.serviceName || "N/A";
-            acc[serviceName] = (acc[serviceName] || 0) + 1;
-            return acc;
-          }, {})}
-        />
+        <StaffByServiceTable/>
 
       </div>
     </div>
