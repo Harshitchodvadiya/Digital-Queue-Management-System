@@ -315,6 +315,32 @@ public class TokenServiceImpl implements TokenService {
     }
 
 
+    @Override
+    public Map<String, Long> getTokenStats(int days) {
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusDays(days - 1);
+        Map<String, Long> stats = new LinkedHashMap<>();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        for (int i = 0; i < days; i++) {
+            LocalDate date = startDate.plusDays(i);
+            stats.put(date.format(formatter), 0L);
+        }
+
+        List<Token> tokens = tokenRepository.findAllByIssuedTimeBetween(
+                startDate.atStartOfDay(),
+                today.atTime(LocalTime.MAX)
+        );
+
+        for (Token token : tokens) {
+            String dateKey = token.getIssuedTime().toLocalDate().format(formatter);
+            stats.computeIfPresent(dateKey, (k, v) -> v + 1);
+        }
+
+        return stats;
+    }
+
     /**
      * Adds a new token to the system, ensuring that the selected time slot is available.
      *
@@ -352,7 +378,9 @@ public class TokenServiceImpl implements TokenService {
         // Check if the new token's time slot overlaps with any existing active tokens.
         boolean isSlotTaken = existingTokens.stream().anyMatch(existingToken -> {
             LocalDateTime existingStartTime = existingToken.getIssuedTime();
-            LocalDateTime existingEndTime = existingStartTime.plusMinutes(existingToken.getStaffId().getService().getEstimatedTime());
+            LocalDateTime existingEndTime = (existingToken.getCompletedTime() != null)
+                    ? existingToken.getCompletedTime()
+                    : existingStartTime.plusMinutes(existingToken.getStaffId().getService().getEstimatedTime());
 
             return newTokenStartTime.isBefore(existingEndTime) && newTokenEndTime.isAfter(existingStartTime);
         });
@@ -364,32 +392,6 @@ public class TokenServiceImpl implements TokenService {
         // Save the token if no conflicts exist.
         Token savedToken = tokenRepository.save(token);
         return ResponseEntity.ok(savedToken);
-    }
-
-    @Override
-    public Map<String, Long> getTokenStats(int days) {
-        LocalDate today = LocalDate.now();
-        LocalDate startDate = today.minusDays(days - 1);
-        Map<String, Long> stats = new LinkedHashMap<>();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        for (int i = 0; i < days; i++) {
-            LocalDate date = startDate.plusDays(i);
-            stats.put(date.format(formatter), 0L);
-        }
-
-        List<Token> tokens = tokenRepository.findAllByIssuedTimeBetween(
-                startDate.atStartOfDay(),
-                today.atTime(LocalTime.MAX)
-        );
-
-        for (Token token : tokens) {
-            String dateKey = token.getIssuedTime().toLocalDate().format(formatter);
-            stats.computeIfPresent(dateKey, (k, v) -> v + 1);
-        }
-
-        return stats;
     }
 
 
