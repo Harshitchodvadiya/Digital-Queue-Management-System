@@ -76,29 +76,6 @@ public class SecurityConfiguration {
     }
 
     /**
-     * Configures Cross-Origin Resource Sharing (CORS) settings.
-     * - Allows requests from the frontend application.
-     * - Supports common HTTP methods (GET, POST, PUT, DELETE, OPTIONS).
-     * - Allows credentials such as authentication headers.
-     *
-     * @return Configured CorsFilter.
-     */
-    @Bean
-    public CorsFilter corsFilter() {
-        CorsConfiguration config = new CorsConfiguration();
-//        config.setAllowedOrigins(List.of("http://localhost:5173")); // Allow frontend origin
-        config.setAllowedOriginPatterns(List.of("*"));  // ✅ Allow specific frontend origin
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allowed HTTP methods
-        config.setAllowedHeaders(List.of("*")); // Allow all headers
-        config.setAllowCredentials(true);
-        config.addExposedHeader("Access-Control-Allow-Origin");
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
-
-    /**
      * Creates a CORS configuration source to be used by the security filter.
      *
      * @return Configured UrlBasedCorsConfigurationSource.
