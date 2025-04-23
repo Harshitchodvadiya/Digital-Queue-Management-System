@@ -1,22 +1,33 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { GoClock } from "react-icons/go";
+import Pagination from "../reusableComponents/Pagination"; // Make sure the path is correct
 
-const CustomerQueue = ({tokens}) => {
+const CustomerQueue = ({ tokens }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const tokensPerPage = 5;
+  const tokensPerPage = 4;
 
-  // Pagination logic
+  // Calculate token slices for pagination
   const indexOfLastToken = currentPage * tokensPerPage;
   const indexOfFirstToken = indexOfLastToken - tokensPerPage;
   const currentTokens = tokens.slice(indexOfFirstToken, indexOfLastToken);
+
+  // Total pages based on tokens per page
   const totalPages = Math.ceil(tokens.length / tokensPerPage);
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prevPage) => prevPage + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prevPage) => prevPage - 1);
+    }
   };
 
   return (
-    <div className="bg-white shadow-xl rounded-2xl p-6 mt-4">
+    <div className="bg-white shadow-xl rounded-2xl p-6 mt-4 h-115">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Customer Queue</h2>
         <span className="text-sm text-gray-500">{tokens.length} Waiting</span>
@@ -28,14 +39,20 @@ const CustomerQueue = ({tokens}) => {
         <>
           <ul className="divide-y">
             {currentTokens.map((token, index) => (
-              <li key={token.id} className="flex justify-between items-center py-4 gap-4 flex-wrap">
+              <li
+                key={token.id}
+                className="flex justify-between items-center py-4 gap-4 flex-wrap"
+              >
                 <div className="flex gap-4 items-center">
                   <span className="text-sm font-semibold bg-gray-200 px-3 py-1 rounded-full">
                     {(currentPage - 1) * tokensPerPage + index + 1}
                   </span>
                   <div>
                     <p className="font-medium text-gray-800">
-                      <span className="font-semibold">Token Number : {token.id}</span> - {token.user?.firstname}
+                      <span className="font-semibold">
+                        Token Number : {token.id}
+                      </span>{" "}
+                      - {token.user?.firstname}
                     </p>
                     <span className="text-blue-600 text-sm font-medium bg-blue-100 px-2 py-1 rounded-lg">
                       {token.staffId?.service?.serviceName}
@@ -51,23 +68,15 @@ const CustomerQueue = ({tokens}) => {
             ))}
           </ul>
 
-          {/* Pagination Controls */}
-          <div className="flex justify-center mt-4 gap-2">
-            {[...Array(totalPages)].map((_, idx) => {
-              const pageNum = idx + 1;
-              return (
-                <button
-                  key={pageNum}
-                  onClick={() => handlePageChange(pageNum)}
-                  className={`px-3 py-1 rounded-md text-sm font-medium hover:bg-gray-4  00 ${
-                    currentPage === pageNum ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
-                  }`}
-                >
-                  {pageNum}
-                </button>
-              );
-            })}
-          </div>
+          {/* Pagination Component */}
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onNext={handleNext}
+              onPrev={handlePrev}
+            />
+          )}
         </>
       )}
     </div>

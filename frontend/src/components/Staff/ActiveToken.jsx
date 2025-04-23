@@ -3,7 +3,7 @@ import { Users, CheckCircle, SkipForward } from "lucide-react";
 const ActiveToken = ({ activeToken, handleCallNext, handleAction }) => {
 
   return (
-    <div className="bg-white shadow-lg rounded-2xl p-6 w-full ">
+    <div className=" h-85 bg-white shadow-lg rounded-2xl p-6 w-full ">
       {!activeToken ? (
         <div className="text-center mt-8 items-center justify-center h-75">
           <Users className="h-20 w-20 text-gray-400 mx-auto" />
@@ -20,24 +20,31 @@ const ActiveToken = ({ activeToken, handleCallNext, handleAction }) => {
         </div>
       ) : (
         <>
-          <div className="flex justify-between items-center mb-2">
-            <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-sm">Now Serving</span>
-            <span className="text-gray-500">
+          <div className="flex justify-end items-end mb-2">
+            {/* <span className="bg-blue-500 text-white px-2 mt-4 py-1 rounded-full text-sm">Now Serving</span> */}
+            <h3 className="text-gray-500">
               Started {new Date(activeToken.appointedTime).toLocaleString()}
-            </span>
-          </div>
+            </h3> 
+            </div>
 
+            <div className="justify-end items-end flex mt-4">
+            <h3 className="text-blue-600 text-sm font-medium  bg-blue-100 px-2 py-1 rounded-lg">
+              Estimated service time: {activeToken.staffId?.service?.estimatedTime} mins
+            </h3>
+            </div>
+         
           <div className="h-35">
+          <span className="bg-blue-500 text-white px-2 mt-4 py-1 rounded-full text-sm">Now Serving</span>
 
-          <h2 className="text-3xl font-bold mb-1">{activeToken.id}</h2>
+          <h2 className="text-3xl font-bold mb-1 mt-7">{activeToken.id}</h2>
           <div className="flex justify-between items-center mb-4">
-            <p className="text-gray-700 font-medium">{activeToken.user?.firstname}</p>
+            <p className="text-gray-700 font-medium mt-2">{activeToken.user?.firstname}</p>
             <span className="text-blue-600 text-sm font-medium bg-blue-100 px-2 py-1 rounded-lg">
               {activeToken.staffId?.service?.serviceName || "Service"}
-            </span>
-          </div>
+            </span>           
+          </div>          
 
-          <div className="flex gap-4">
+          <div className="flex gap-4 mt-7">
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
               onClick={() => handleAction("complete")}

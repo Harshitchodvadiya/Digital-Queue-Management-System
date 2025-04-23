@@ -18,7 +18,7 @@ const Navbar = ({ title = "Digital Queue Management System" }) => {
   useEffect(() => {
     const fetchUserInfo = () => {
       const userName = Cookies.get("firstname");   
-      const storedUserName = userName.split(".")[0];
+      const storedUserName = userName.split(".")[0]; //"archie.koshti"     
 
       if (storedUserName) {
         setUserName(storedUserName);
