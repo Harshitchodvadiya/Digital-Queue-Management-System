@@ -11,8 +11,8 @@ function AddServiceForm() {
   const [formData, setFormData] = useState({
     serviceName: "",
     serviceDescription: "",
-    estimatedTime: "", // Added estimated time field
-    isActive: true, // Default to active
+    estimatedTime: "", 
+    isActive: true, 
   });
 
   const [loading, setLoading] = useState(false);
@@ -24,7 +24,7 @@ function AddServiceForm() {
    */
   useEffect(() => {
     const token = Cookies.get("jwtToken");
-    setAdminToken(token || null);
+    setAdminToken(token);
   }, []);
 
   /**
@@ -61,10 +61,9 @@ function AddServiceForm() {
         },
         {
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${adminToken}`,
+            withCredentials: true,
           },
-          withCredentials: true,
         }
       );
 

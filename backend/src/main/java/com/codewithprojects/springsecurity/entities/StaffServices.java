@@ -1,9 +1,8 @@
 package com.codewithprojects.springsecurity.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * Entity representing a service provided by staff members.
@@ -23,5 +22,21 @@ public class StaffServices {
     private String serviceName; // Name of the service provided by staff
     private String serviceDescription; // Detailed description of the service
     private int estimatedTime; // Estimated time (in minutes) required for the service
+
+    //using @Date the getter and setter will generate isISActive and i've already declared the
+    //getter and setter. so the below annotations won't generate getter and setter for isActive
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    @JsonProperty("isActive")
+    
     private boolean isActive; // Indicates if the service is currently active
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
 }
