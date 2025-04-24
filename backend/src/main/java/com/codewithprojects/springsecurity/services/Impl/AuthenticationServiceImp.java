@@ -8,6 +8,8 @@ import com.codewithprojects.springsecurity.entities.OtpVerification;
 import com.codewithprojects.springsecurity.entities.Role;
 import com.codewithprojects.springsecurity.entities.StaffServices;
 import com.codewithprojects.springsecurity.entities.User;
+import com.codewithprojects.springsecurity.exception.ServiceNotFoundException;
+import com.codewithprojects.springsecurity.exception.StaffNotFoundException;
 import com.codewithprojects.springsecurity.repository.OtpVerificationRepository;
 import com.codewithprojects.springsecurity.repository.StaffServicesRepository;
 import com.codewithprojects.springsecurity.repository.UserRepository;
@@ -238,8 +240,30 @@ public class AuthenticationServiceImp implements AuthenticationService {
      * @param updateRequest The request containing updated details.
      * @return The updated staff user.
      */
+//    public User updateStaff(Long id, SignUpRequest updateRequest) {
+//        User staff = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Staff not found"));
+//
+//        staff.setFirstname(updateRequest.getFirstname());
+//        staff.setMobileNumber(updateRequest.getMobileNumber());
+//        staff.setEmail(updateRequest.getEmail());
+//        staff.setPassword(updateRequest.getPassword());
+//
+//        if (updateRequest.getService_id() != null) {
+//            Optional<StaffServices> optionalService = staffServicesRepository.findById(Long.valueOf(updateRequest.getService_id()));
+//            if (optionalService.isPresent()) {
+//                StaffServices service = optionalService.get();
+//                staff.setService(service);
+//            } else {
+//                throw new RuntimeException("Service not found for ID: " + updateRequest.getService_id());
+//            }
+//        }
+//
+//        return userRepository.save(staff);
+//    }
+
     public User updateStaff(Long id, SignUpRequest updateRequest) {
-        User staff = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Staff not found"));
+        User staff = userRepository.findById(id)
+                .orElseThrow(() -> new StaffNotFoundException(id));
 
         staff.setFirstname(updateRequest.getFirstname());
         staff.setMobileNumber(updateRequest.getMobileNumber());
@@ -247,13 +271,10 @@ public class AuthenticationServiceImp implements AuthenticationService {
         staff.setPassword(updateRequest.getPassword());
 
         if (updateRequest.getService_id() != null) {
-            Optional<StaffServices> optionalService = staffServicesRepository.findById(Long.valueOf(updateRequest.getService_id()));
-            if (optionalService.isPresent()) {
-                StaffServices service = optionalService.get();
-                staff.setService(service);
-            } else {
-                throw new RuntimeException("Service not found for ID: " + updateRequest.getService_id());
-            }
+            Long serviceId = Long.valueOf(updateRequest.getService_id());
+            StaffServices service = staffServicesRepository.findById(serviceId)
+                    .orElseThrow(() -> new ServiceNotFoundException(serviceId));
+            staff.setService(service);
         }
 
         return userRepository.save(staff);

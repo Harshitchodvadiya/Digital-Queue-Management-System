@@ -1,7 +1,7 @@
 package com.codewithprojects.springsecurity.exception;
 
 public class OtpException extends RuntimeException {
-  public OtpException(String message) {
-    super(message);
-  }
+    public OtpException(String message) {
+        super(message);
+    }
 }
