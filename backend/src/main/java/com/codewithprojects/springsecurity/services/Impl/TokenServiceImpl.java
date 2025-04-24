@@ -5,6 +5,9 @@ import com.codewithprojects.springsecurity.entities.StaffServices;
 import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.entities.TokenStatus;
 import com.codewithprojects.springsecurity.entities.User;
+import com.codewithprojects.springsecurity.exception.InactiveServiceException;
+import com.codewithprojects.springsecurity.exception.InvalidTokenException;
+import com.codewithprojects.springsecurity.exception.TimeSlotConflictException;
 import com.codewithprojects.springsecurity.repository.StaffServicesRepository;
 import com.codewithprojects.springsecurity.repository.TokenRepository;
 import com.codewithprojects.springsecurity.repository.UserRepository;
@@ -17,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -349,49 +354,90 @@ public class TokenServiceImpl implements TokenService {
      */
 
 
-    public ResponseEntity<?> addToken(Token token) {
+//    public ResponseEntity<?> addToken(Token token) {
+//        if (token == null || token.getStaffId() == null || token.getStaffId().getId() == null) {
+//            return ResponseEntity.badRequest().body("Invalid token or staff ID.");
+//        }
+//
+//        User staff = token.getStaffId();
+//        StaffServices service = staff.getService();
+//
+//        // 🚨 Prevent token creation if service is inactive
+//        if (service == null || !service.isActive()) {
+//            return ResponseEntity.badRequest().body("Error: Cannot book a token for an inactive service.");
+//        }
+//
+//        // Fetch all active (non-canceled) tokens for the same staff member
+//        List<Token> existingTokens = tokenRepository.findAll().stream()
+//                .filter(e -> e.getStaffId() != null
+//                        && e.getStaffId().getId().equals(staff.getId())
+//                        && !TokenStatus.CANCELLED.equals(e.getStatus())) // Ignore canceled tokens
+//                .collect(Collectors.toList());
+//
+//        int estimatedTime = service.getEstimatedTime();
+//
+//        // Calculate the start and end time for the new token.
+//        LocalDateTime newTokenStartTime = token.getIssuedTime();
+//        LocalDateTime newTokenEndTime = newTokenStartTime.plusMinutes(estimatedTime);
+//
+//        // Check if the new token's time slot overlaps with any existing active tokens.
+//        boolean isSlotTaken = existingTokens.stream().anyMatch(existingToken -> {
+//            LocalDateTime existingStartTime = existingToken.getIssuedTime();
+//            LocalDateTime existingEndTime = (existingToken.getCompletedTime() != null)
+//                    ? existingToken.getCompletedTime()
+//                    : existingStartTime.plusMinutes(existingToken.getStaffId().getService().getEstimatedTime());
+//
+//            return newTokenStartTime.isBefore(existingEndTime) && newTokenEndTime.isAfter(existingStartTime);
+//        });
+//
+//        if (isSlotTaken) {
+//            return ResponseEntity.badRequest().body("Error: The selected time slot is already booked.");
+//        }
+//
+//        // Save the token if no conflicts exist.
+//        Token savedToken = tokenRepository.save(token);
+//        return ResponseEntity.ok(savedToken);
+//    }
+
+    @PostMapping
+    public ResponseEntity<Token> addToken(@RequestBody Token token) {
         if (token == null || token.getStaffId() == null || token.getStaffId().getId() == null) {
-            return ResponseEntity.badRequest().body("Invalid token or staff ID.");
+            throw new InvalidTokenException("Invalid token or staff ID.");
         }
 
         User staff = token.getStaffId();
         StaffServices service = staff.getService();
 
-        // 🚨 Prevent token creation if service is inactive
+        // Prevent token creation if service is inactive
         if (service == null || !service.isActive()) {
-            return ResponseEntity.badRequest().body("Error: Cannot book a token for an inactive service.");
+            throw new InactiveServiceException("Cannot book a token for an inactive service.");
         }
 
-        // Fetch all active (non-canceled) tokens for the same staff member
         List<Token> existingTokens = tokenRepository.findAll().stream()
                 .filter(e -> e.getStaffId() != null
                         && e.getStaffId().getId().equals(staff.getId())
-                        && !TokenStatus.CANCELLED.equals(e.getStatus())) // Ignore canceled tokens
+                        && !TokenStatus.CANCELLED.equals(e.getStatus()))
                 .collect(Collectors.toList());
 
         int estimatedTime = service.getEstimatedTime();
+        LocalDateTime newStart = token.getIssuedTime();
+        LocalDateTime newEnd = newStart.plusMinutes(estimatedTime);
 
-        // Calculate the start and end time for the new token.
-        LocalDateTime newTokenStartTime = token.getIssuedTime();
-        LocalDateTime newTokenEndTime = newTokenStartTime.plusMinutes(estimatedTime);
+        boolean isSlotTaken = existingTokens.stream().anyMatch(existing -> {
+            LocalDateTime existingStart = existing.getIssuedTime();
+            LocalDateTime existingEnd = existing.getCompletedTime() != null
+                    ? existing.getCompletedTime()
+                    : existingStart.plusMinutes(existing.getStaffId().getService().getEstimatedTime());
 
-        // Check if the new token's time slot overlaps with any existing active tokens.
-        boolean isSlotTaken = existingTokens.stream().anyMatch(existingToken -> {
-            LocalDateTime existingStartTime = existingToken.getIssuedTime();
-            LocalDateTime existingEndTime = (existingToken.getCompletedTime() != null)
-                    ? existingToken.getCompletedTime()
-                    : existingStartTime.plusMinutes(existingToken.getStaffId().getService().getEstimatedTime());
-
-            return newTokenStartTime.isBefore(existingEndTime) && newTokenEndTime.isAfter(existingStartTime);
+            return newStart.isBefore(existingEnd) && newEnd.isAfter(existingStart);
         });
 
         if (isSlotTaken) {
-            return ResponseEntity.badRequest().body("Error: The selected time slot is already booked.");
+            throw new TimeSlotConflictException("The selected time slot is already booked.");
         }
 
-        // Save the token if no conflicts exist.
-        Token savedToken = tokenRepository.save(token);
-        return ResponseEntity.ok(savedToken);
+        Token saved = tokenRepository.save(token);
+        return ResponseEntity.ok(saved);
     }
 
 
