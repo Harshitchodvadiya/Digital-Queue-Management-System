@@ -124,5 +124,16 @@ export const skipToken = async (tokenId) => {
   });
 };
 
+export const getAllTokens = async() =>{
+  const {token,staffId} = getTokenAndStaffId();
+  
+  const response = await axios.get(`${API_BASE_URL}/getRequestedTokenByStaffId/${staffId}`,{
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  console.log(response);
+  
+  return response.data;
+}
 
 

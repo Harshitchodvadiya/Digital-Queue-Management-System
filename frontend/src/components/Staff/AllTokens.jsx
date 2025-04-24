@@ -1,4 +1,4 @@
-import Pagination from "../reusableComponents/Pagination"; // Ensure the path is correct
+import Pagination from "../reusableComponents/Pagination"; 
 
 const AllTokens = ({ allTokens, currentPage, setCurrentPage, itemsPerPage }) => {
   const filtered = allTokens.filter((token) =>
@@ -25,7 +25,7 @@ const AllTokens = ({ allTokens, currentPage, setCurrentPage, itemsPerPage }) => 
   };
 
   return (
-    <div className="bg-white shadow-xl rounded-lg p-6 w-full h-115 flex flex-col mt-32">
+    <div className="bg-white shadow-xl rounded-lg p-6 w-full h-115 flex flex-col mt-4">
       <h2 className="text-lg font-semibold border-b pb-2">Today's Tokens</h2>
       <div className="mt-3 flex-1 overflow-y-auto">
         {currentTokens.length === 0 ? (

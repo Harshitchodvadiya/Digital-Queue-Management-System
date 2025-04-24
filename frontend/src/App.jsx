@@ -23,6 +23,7 @@ import StaffPage from "./pages/StaffPage";
 import OtpVerification from "./components/auth/OtpVerification";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import ResetPassword from "./components/auth/ResetPassword";
+import StaffTokenHistory from "./components/Staff/StaffTokenHistory";
 
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
         {/* Staff Routes */}
         <Route path="/staff" element={<StaffPage />} />
         <Route path="/staff-list"  element={<StaffList />}  />
+        <Route path="/staff-token-history" element={<StaffTokenHistory />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminPage />}  />

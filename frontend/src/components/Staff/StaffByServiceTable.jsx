@@ -23,7 +23,6 @@ const StaffByServiceTable = () => {
           serviceName: service,
           totalStaff: count,
         }));
-
         setStaffByService(formattedData);
       } catch (err) {
         console.error(err);
