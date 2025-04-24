@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar";
 import Pagination from "../reusableComponents/Pagination";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import Filter from "../reusableComponents/Filter";
 
 const TokenHistory = () => {
   const [tokenHistory, setTokenHistory] = useState([]);
@@ -127,7 +128,7 @@ const TokenHistory = () => {
 
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Token History</h2>
-          <div className="flex gap-4">
+          {/* <div className="flex gap-4">
             <input
               type="date"
               className="border p-2 rounded-md"
@@ -142,6 +143,7 @@ const TokenHistory = () => {
               <option value="">All Status</option>
               <option value="COMPLETED">Completed</option>
               <option value="SKIPPED">Skipped</option>
+              <option value="CANCELLED">Cancelled</option>
             </select>
             <input
               type="text"
@@ -150,7 +152,17 @@ const TokenHistory = () => {
               value={selectedService}
               onChange={(e) => setSelectedService(e.target.value)}
             />
-          </div>
+          </div> */}
+          <Filter
+            selectedDate={selectedDate}
+            selectedStatus={selectedStatus}
+            selectedService={selectedService}
+            onDateChange={setSelectedDate}
+            onStatusChange={setSelectedStatus}
+            onServiceChange={setSelectedService}
+            showServiceFilter={true}
+          />
+
         </div>
 
         {loading ? (
