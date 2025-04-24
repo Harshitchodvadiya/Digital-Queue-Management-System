@@ -28,7 +28,7 @@ public class StaffServices {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     @JsonProperty("isActive")
-    
+
     private boolean isActive; // Indicates if the service is currently active
 
     public boolean isActive() {
