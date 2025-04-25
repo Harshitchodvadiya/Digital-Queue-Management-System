@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { fetchUserTokenDetails } from "../components/services/userTokenService";
+import { fetchUserTokenDetails } from "../components/services/UserTokenService";
 import TokenRequestForm from "../components/User/TokenRequestForm";
 import TokenInfoCard from "../components/User/TokenInfoCard";
 import Navbar from "../components/Navbar";
@@ -59,7 +59,7 @@ const UserPage = ({ user }) => {
 
               // This ensures token details refresh when status changes
               if (
-                /turn now|called|active|skipped|completed|cancelled|pending/i.test(data.message)
+                /|active|skipped|completed|cancelled|pending/i.test(data.message)
               ) {
                 console.log("Refreshing token details..."); // Debug log here
                 setRefreshTrigger((prev) => prev + 1); // 🌀 This re-triggers TokenInfoCard

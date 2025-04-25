@@ -27,6 +27,7 @@ const Filter = ({
         <option value="">All Status</option>
         <option value="COMPLETED">Completed</option>
         <option value="SKIPPED">Skipped</option>
+        <option value="CANCELLED">Cancelled</option>
       </select>
 
 
