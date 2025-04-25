@@ -16,17 +16,6 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final AuthenticationService authenticationService;
-
-    /**
-     * Endpoint to check if an admin is authenticated.
-     *
-     * @return A greeting message indicating admin access.
-     */
-    @GetMapping
-    public ResponseEntity<String> sayHello() {
-        return ResponseEntity.ok("Hii, Admin this side ");
-    }
-
     /**
      * Adds a new staff member with the role of STAFF.
      *
