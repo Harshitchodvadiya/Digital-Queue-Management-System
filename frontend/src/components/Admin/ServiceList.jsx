@@ -14,7 +14,7 @@ const ServiceList = () => {
     serviceName: "",
     serviceDescription: "",
     estimatedTime: "",
-    active: false,
+    active: true,
   });
 
   const adminToken = Cookies.get("jwtToken");
