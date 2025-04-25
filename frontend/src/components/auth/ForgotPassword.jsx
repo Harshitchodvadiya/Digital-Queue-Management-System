@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -21,9 +22,10 @@ const ForgotPassword = () => {
       toast.success("OTP sent to your email.");
       setTimeout(() => {
         navigate("/verify-otp", {
-          state: { email: email, mode: "reset" },
+          state: { email: email, mode: "reset" }, // mode: this is part of the reset password.
         });
-      }, 1500);
+      }, 1500); //Waits for 1.5 seconds
+
     } catch (error) {
       console.error("Error sending reset OTP:", error);
       toast.error(

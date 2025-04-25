@@ -50,7 +50,7 @@ const UserPage = ({ user }) => {
         const source = subscribeToNotifications(
           userId,
           (data) => {
-            console.log("SSE Message Received:", data);
+            console.log("SSE Message Received:", data); //got object of notification
 
             toast.info(data.message || "You have a new notification" );
             console.log(toast);
