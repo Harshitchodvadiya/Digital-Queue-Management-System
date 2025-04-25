@@ -3,48 +3,51 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
 function RegistrationForm() {
-  // State variables for form fields
-  const [firstname, setName] = useState("");
-  const [lastname, setLastName] = useState("");
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    mobileNumber: "", 
+    email: "",
+    password : "" 
+  });
   
   const navigate = useNavigate();
 
   /**
    * Handles form submission.
    * Prevents default form submission, gathers user input, 
-   * sends a POST request to the API, and navigates to the login page upon success.
    */
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Validate mobile number length
-  if (mobileNumber.length !== 10) {
+   // Validate mobile number length
+   if (formData.mobileNumber.length !== 10) {
     alert("Mobile number must be exactly 10 digits.");
-    return; // Stop the function execution
+    return;
   }
-    
-    const user = {
-      firstname: firstname,
-      lastname: lastname,
-      mobileNumber: mobileNumber,
-      email: email,
-      password: password,
-    };
-
       // After successful signup, navigate to OTP page
       axios
-      .post("http://localhost:8081/api/v1/auth/signup", user)
+      .post("http://localhost:8081/api/v1/auth/signup", formData)
       .then((response) => {
         console.log("Registration successful:", response.data);
-        navigate("/verify-otp", { state: { email: user.email } });
+        navigate("/verify-otp", { state: { email: formData.email } });
       })
 
       .catch((error) => {
         console.error("Registration failed:", error);
       });
+  };
+
+   /**
+   * Handles input field changes and updates the form state.
+   */
+   const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
   };
 
   return (
@@ -73,8 +76,9 @@ function RegistrationForm() {
               <input
                 type="text"
                 placeholder="Enter your first name"
-                value={firstname}
-                onChange={(e) => setName(e.target.value)}
+                value={formData.firstname}
+                name="firstname"
+                onChange={handleChange}
                 required
                 className="w-full mb-1 p-1 border rounded-md bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none transition"
               />
@@ -85,8 +89,9 @@ function RegistrationForm() {
               <input
                 type="text"
                 placeholder="Enter your last name"
-                value={lastname}
-                onChange={(e) => setLastName(e.target.value)}
+                name="lastname"
+                value={formData.lastname}
+                onChange={handleChange}
                 required
                 className="w-full mb-1 p-1 border rounded-md bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none transition"
               />
@@ -97,10 +102,11 @@ function RegistrationForm() {
               <input
                 type="number"
                 placeholder="Enter your phone no."
+                name="mobileNumber"
                 minLength={10}
                 maxLength={10}
-                value={mobileNumber}
-                onChange={(e) => setMobileNumber(e.target.value)} 
+                value={formData.mobileNumber}
+                onChange={handleChange} 
                 required
                 className="w-full mb-1 p-1 border rounded-md bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none transition"
               />
@@ -111,8 +117,9 @@ function RegistrationForm() {
               <input
                 type="email"
                 placeholder="name@yourmail.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                 name="email"
+                value={formData.email}
+                onChange={handleChange}
                 required
                 className="w-full mb-1 p-1 border rounded-md bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none transition"
               />
@@ -123,8 +130,9 @@ function RegistrationForm() {
               <input
                 type="password"
                 placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
                 required
                 className="w-full mb-1 p-1 border rounded-md bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none transition"
               />

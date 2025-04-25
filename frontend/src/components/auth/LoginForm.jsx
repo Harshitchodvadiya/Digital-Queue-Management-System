@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode"; //extracting and analyzing the info contained in JWT
 import Cookies from "js-cookie"; // Import Cookies
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -19,6 +21,7 @@ const Login = () => {
       })
       .then((response) => {
         console.log("Login successful:", response.data);
+        
         const token = response.data.token;
 
         // Decode JWT token to get user details
@@ -38,13 +41,18 @@ const Login = () => {
         Cookies.set("role", userRole, { expires: 1 });
 
         // Redirect based on role
-        if (userRole === "ADMIN") {
-          navigate("/admin");
-        } else if (userRole === "STAFF") {
-          navigate("/staff");
-        } else {
-          navigate("/user");
-        }
+        toast.success("Login successful");
+
+        setTimeout(() => {
+          if (userRole === "ADMIN") {
+            navigate("/admin");
+          } else if (userRole === "STAFF") {
+            navigate("/staff");
+          } else {
+            navigate("/user");
+          }
+        }, 1000); // 1 second delay
+
       })
       .catch((error) => {
         console.error("Login failed:", error);
@@ -53,6 +61,8 @@ const Login = () => {
 
   return (
     <div className="bg-gray-100 flex h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
+      <ToastContainer/>
+
       {/* Left Side - Full Width Image */}
       <div className="w-1/2">
         <img
