@@ -20,10 +20,12 @@ const ServiceList = () => {
   const adminToken = Cookies.get("jwtToken");
   const navigate = useNavigate();
 
+  // Without useCallback, every render creates a new fetchService function. 
+  // Since useEffect depends on fetchService, it will run again every render this can cause:
+  // Infinite loop,Multiple network requests, Performance issues
+  
   const fetchService = useCallback(async () => {
     setLoading(true);
-    setError("");
-
     try {
       const response = await axios.get("http://localhost:8081/api/v1/admin/getAllService", {
         withCredentials: true,
@@ -32,7 +34,7 @@ const ServiceList = () => {
 
       setServices(response.data);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch services.");
+      setError("Failed to fetch services.");
     } finally {
       setLoading(false);
     }
@@ -69,7 +71,6 @@ const ServiceList = () => {
           headers: { Authorization: `Bearer ${adminToken}` },
         }
       );
-
       setEditService(null); 
       fetchService(); 
     } catch (error) {

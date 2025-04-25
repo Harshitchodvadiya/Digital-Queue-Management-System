@@ -32,8 +32,11 @@ function AdminPage() {
 
       const fetchedTokens = response.data;
       setTokens(fetchedTokens);
+
+      //Total tokens Count
       setTotalTokens(fetchedTokens.length);
 
+       // Calculate average waiting time (only for tokens completed in under 2 hours)
       const completedTokens = fetchedTokens.filter(token =>
         token.status === "COMPLETED" &&
         token.completedTime &&
@@ -52,6 +55,7 @@ function AdminPage() {
         });
       }
 
+       // Filter tokens issued today
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const tomorrow = new Date(today);

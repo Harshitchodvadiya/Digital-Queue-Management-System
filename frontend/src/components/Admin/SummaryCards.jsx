@@ -1,5 +1,5 @@
 import React from "react";
-import SummaryCard from "./SummaryCard";
+import SummaryCard from "../reusableComponents/SummaryCard";
 import { GoClock } from "react-icons/go";
 import { LuTimer } from "react-icons/lu";
 import { Users } from "lucide-react";
