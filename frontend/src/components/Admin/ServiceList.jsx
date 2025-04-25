@@ -100,6 +100,17 @@ const ServiceList = () => {
   return (
     <div className="h-full w-full flex">
       <div className="flex-1 flex flex-col p-6">
+
+      <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-700">Total Services</h3>
+          <button
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow flex items-center gap-2"
+            onClick={() => navigate("/add-service")}
+          >
+            <SlSettings className="h-5 w-5" /> Add Service
+          </button>
+        </div>
+  
         {loading ? (
           <p className="text-center text-gray-600">Loading...</p>
         ) : error ? (
@@ -110,12 +121,6 @@ const ServiceList = () => {
           <div className="bg-white rounded-xl p-4">
             <div className="flex justify-between items-center px-4 pb-2">
               <h2 className="text-lg font-semibold text-gray-700">Total Services</h2>
-              <button
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow flex items-center gap-2"
-                onClick={() => navigate("/add-service")}
-              >
-                <SlSettings className="h-4 w-4" /> Add Service
-              </button>
             </div>
             
             <Table
