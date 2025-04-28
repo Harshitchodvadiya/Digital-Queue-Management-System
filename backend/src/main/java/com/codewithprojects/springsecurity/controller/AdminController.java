@@ -3,7 +3,6 @@ package com.codewithprojects.springsecurity.controller;
 import com.codewithprojects.springsecurity.dto.SignUpRequest;
 import com.codewithprojects.springsecurity.entities.Role;
 import com.codewithprojects.springsecurity.services.AuthenticationService;
-import com.codewithprojects.springsecurity.services.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

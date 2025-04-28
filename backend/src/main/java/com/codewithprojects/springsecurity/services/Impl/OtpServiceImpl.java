@@ -50,8 +50,6 @@ public class OtpServiceImpl implements OtpService {
 
         // Send the OTP via email
         emailService.sendEmail(email, "Your OTP Code", "Your OTP is: " + otp);
-
-
     }
 
     @Override

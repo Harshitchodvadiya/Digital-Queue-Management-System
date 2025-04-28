@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function RegistrationForm() {
 
@@ -20,6 +22,13 @@ function RegistrationForm() {
    */
   const handleSubmit = (event) => {
     event.preventDefault();
+    
+    // Check if any field is empty
+        const { firstname, lastname, mobileNumber, email, password } = formData;
+        if (!firstname || !lastname || !mobileNumber || !email || !password) {
+          toast.error("All fields are required!");
+          return;
+        }
 
    // Validate mobile number length
    if (formData.mobileNumber.length !== 10) {
@@ -52,7 +61,10 @@ function RegistrationForm() {
 
   return (
     <div className="bg-gray-100 flex h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
+
+      <ToastContainer/>
       {/* Left Side - Full Width Image */}
+
       <div className="w-1/2">
         <img
           src="https://images.unsplash.com/photo-1513128034602-7814ccaddd4e?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -78,8 +90,7 @@ function RegistrationForm() {
                 placeholder="Enter your first name"
                 value={formData.firstname}
                 name="firstname"
-                onChange={handleChange}
-                required
+                onChange={handleChange}            
                 className="w-full mb-1 p-1 border rounded-md bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none transition"
               />
             </div>
@@ -92,7 +103,6 @@ function RegistrationForm() {
                 name="lastname"
                 value={formData.lastname}
                 onChange={handleChange}
-                required
                 className="w-full mb-1 p-1 border rounded-md bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none transition"
               />
             </div>
@@ -106,8 +116,7 @@ function RegistrationForm() {
                 minLength={10}
                 maxLength={10}
                 value={formData.mobileNumber}
-                onChange={handleChange} 
-                required
+                onChange={handleChange}                 
                 className="w-full mb-1 p-1 border rounded-md bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none transition"
               />
             </div>
@@ -119,8 +128,7 @@ function RegistrationForm() {
                 placeholder="name@yourmail.com"
                  name="email"
                 value={formData.email}
-                onChange={handleChange}
-                required
+                onChange={handleChange}               
                 className="w-full mb-1 p-1 border rounded-md bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none transition"
               />
             </div>
@@ -132,8 +140,7 @@ function RegistrationForm() {
                 placeholder="Enter your password"
                 name="password"
                 value={formData.password}
-                onChange={handleChange}
-                required
+                onChange={handleChange}                
                 className="w-full mb-1 p-1 border rounded-md bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none transition"
               />
             </div>

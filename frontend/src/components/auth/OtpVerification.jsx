@@ -5,13 +5,13 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function OtpVerificationForm() {
-  const [otp, setOtp] = useState(new Array(6).fill(""));
+  const [otp, setOtp] = useState(new Array(6).fill("")); // Creates a usable array of 6 inputs
   const [error, setError] = useState("");
   const [timeLeft, setTimeLeft] = useState(300); // 5 mins expiry time of otp
-  const [resendDisabled, setResendDisabled] = useState(false);
+  const [resendDisabled, setResendDisabled] = useState(false); //to enable/disable "Resend OTP"
   const [resendCooldown, setResendCooldown] = useState(0); //to prevent clicking on "Resend OTP" button for 5 mins
   const inputRefs = useRef([]); //Holds refs to all OTP input boxes for focus control.
-  const location = useLocation(); // to read data passed via navigate() (like email, mode)
+  const location = useLocation(); // to read/access data passed via navigate() (like email, mode)
   const navigate = useNavigate();
 
   const email = location.state?.email;
@@ -22,7 +22,7 @@ function OtpVerificationForm() {
     const updatedOtp = [...otp];
     updatedOtp[index] = element.value;
     setOtp(updatedOtp);
-    if (element.value && index < 5) {   //Moves to next input if a digit is entered.
+    if (element.value && index < 5) {   //Moves to next input if a digit is entered (till 5th box).
       inputRefs.current[index + 1].focus();
     }
   };
@@ -45,7 +45,6 @@ function OtpVerificationForm() {
   }, [timeLeft]);
 
   //Disables the "Resend OTP" button for 5 minutes once clicked. Updates countdown on the button.
-
   useEffect(() => {
     let cooldownTimer;
     if (resendDisabled && resendCooldown > 0) {
@@ -67,8 +66,8 @@ function OtpVerificationForm() {
   };
 
   const handleVerify = async (e) => {
-    e.preventDefault();
-    const joinedOtp = otp.join("");
+    e?.preventDefault?.()
+    const joinedOtp = otp.join(""); //Joins the array into a single string
     if (joinedOtp.length < 6) {
       setError("Please enter all 6 digits of the OTP.");
       return;
@@ -119,7 +118,7 @@ function OtpVerificationForm() {
   // Auto-submit when all digits are filled
   useEffect(() => {
     if (otp.every((digit) => digit !== "") && timeLeft > 0) {
-      handleVerify(new Event("submit"));
+      handleVerify();
     }
   }, [otp]);
 

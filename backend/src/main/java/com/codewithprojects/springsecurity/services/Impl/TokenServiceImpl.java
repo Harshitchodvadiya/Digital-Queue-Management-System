@@ -142,16 +142,12 @@ public class TokenServiceImpl implements TokenService {
 
             String subject = "Digital Queue Management System - Token completed";
             String message1 = "Hi " + token.getUser().getFirstname() + ",\n\nYour token #" + token.getId() + " is completed.\n\n" +
-
                     "Regards,\nDigital Queue Management System";
-
             emailService.sendEmail(token.getUser().getEmail(), subject, message1);
 
             //  Send Notification to the user-in app
             String message = "Your Token #" + token.getId() + " is completed";
-
             notificationService.sendNotification(Long.valueOf(token.getUser().getId()), message);
-
 
             return token;
         } else {

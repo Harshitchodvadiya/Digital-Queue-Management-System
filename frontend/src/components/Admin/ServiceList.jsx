@@ -119,10 +119,7 @@ const ServiceList = () => {
           <p className="text-center text-gray-500">No services found.</p>
         ) : (
           <div className="bg-white rounded-xl p-4">
-            <div className="flex justify-between items-center px-4 pb-2">
-              <h2 className="text-lg font-semibold text-gray-700">Total Services</h2>
-            </div>
-            
+                    
             <Table
               columns={columns}
               data={services.map(service => ({

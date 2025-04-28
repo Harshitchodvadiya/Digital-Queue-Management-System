@@ -17,7 +17,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user")
+//@Table(name = "user")
+@Table(name = "users") //for postgres as user is a reserved keyword
 @Getter
 @Setter
 public class User implements UserDetails {

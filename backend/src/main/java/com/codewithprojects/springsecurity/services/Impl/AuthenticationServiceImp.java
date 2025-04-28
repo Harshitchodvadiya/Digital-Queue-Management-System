@@ -154,13 +154,12 @@ public class AuthenticationServiceImp implements AuthenticationService {
     }
 
 
-
-
     /**
      * Authenticates a user and generates JWT and refresh tokens.
      * @param signinRequest The sign-in request containing user credentials.
      * @return ResponseEntity containing JWT authentication response with tokens.
      */
+
     public ResponseEntity<JwtAuthenticationResponse> signin(SigninRequest signinRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(signinRequest.getEmail(), signinRequest.getPassword())
