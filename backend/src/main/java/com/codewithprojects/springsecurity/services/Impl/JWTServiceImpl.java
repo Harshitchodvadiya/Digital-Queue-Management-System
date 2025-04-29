@@ -8,6 +8,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,6 +27,7 @@ import java.util.function.Function;
  * Implementation of JWTService.
  * Handles JWT token generation, validation, and extraction of claims.
  */
+@Slf4j
 @Service
 public class JWTServiceImpl implements JWTService {
 
@@ -86,7 +88,8 @@ public class JWTServiceImpl implements JWTService {
      */
     public String generateToken(UserDetails userDetails) {
         Optional<User> user = userRepository.findByEmail(userDetails.getUsername());
-        System.out.println(user);
+//        System.out.println(user);
+        log.info(String.valueOf(user));
 
         // Default to "USER" role if no roles are assigned
         String role = userDetails.getAuthorities().isEmpty() ? "USER" :
@@ -94,6 +97,7 @@ public class JWTServiceImpl implements JWTService {
 
         return Jwts.builder()
                 .setSubject(userDetails.getUsername() + "/" + user.get().getId() + ":" + role) // Format: username/userId:role
+                // eg: archie@gmail.com/7:USER
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // Token valid for 24 hours
                 .signWith(signingKey, SignatureAlgorithm.HS256)
@@ -122,7 +126,6 @@ public class JWTServiceImpl implements JWTService {
                 .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }
-
     /**
      * Extracts the username from a JWT token.
      *

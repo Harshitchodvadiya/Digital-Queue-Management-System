@@ -6,6 +6,7 @@ import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.repository.StaffServicesRepository;
 import com.codewithprojects.springsecurity.services.StaffService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
  * Implementation of the StaffService interface.
  * Provides methods to manage staff services and handle tokens.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StaffServiceImpl implements StaffService {
@@ -83,7 +85,8 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public List<Token> getRequestedToken(Integer user_id) {
         List<Token> tokens = tokenServiceImpl.getAllRequestedToken();
-        System.out.println(tokens);
+        log.info("Requested Token is: "+tokens);
+//        System.out.println(tokens);
 
         // Filter tokens for the given staff ID
         return tokens.stream()

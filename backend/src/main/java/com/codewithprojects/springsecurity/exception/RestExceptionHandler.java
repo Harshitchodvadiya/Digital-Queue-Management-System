@@ -56,9 +56,6 @@
 
 
 
-
-
-
 package com.codewithprojects.springsecurity.exception;
 
 import org.slf4j.Logger;
@@ -67,6 +64,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.security.authentication.BadCredentialsException;
 
 @RestControllerAdvice
 public class RestExceptionHandler {
@@ -113,12 +111,24 @@ public class RestExceptionHandler {
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<?> handleUserNotFound(UserNotFoundException ex) {
+        return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<String> handleBadCredentials(BadCredentialsException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password.");
+    }
+
     // Fallback for all other unchecked exceptions
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleGeneric(RuntimeException ex) {
         log.error("Unhandled exception caught:", ex);
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.");
     }
+
+
 
     private ResponseEntity<String> buildResponse(HttpStatus status, String body) {
         return ResponseEntity.status(status).body(body);

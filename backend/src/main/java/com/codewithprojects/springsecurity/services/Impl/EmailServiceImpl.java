@@ -2,12 +2,14 @@ package com.codewithprojects.springsecurity.services.Impl;
 
 import com.codewithprojects.springsecurity.services.EmailService;
 import jakarta.mail.MessagingException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.javamail.JavaMailSender;
 
+@Slf4j
 @Service
 public class EmailServiceImpl implements EmailService {
 
@@ -25,7 +27,8 @@ public class EmailServiceImpl implements EmailService {
             mailSender.send(message);
         } catch (Exception e) {
             // ✅ Handle error, don't crash SSE
-            System.err.println("Email failed: " + e.getMessage());
+            log.error("Email failed: " + e.getMessage());
+//            System.err.println("Email failed: " + e.getMessage());
         }
 
     }

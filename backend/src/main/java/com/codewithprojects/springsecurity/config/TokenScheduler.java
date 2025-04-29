@@ -1,12 +1,13 @@
 package com.codewithprojects.springsecurity.config;
 
 import com.codewithprojects.springsecurity.services.TokenService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-
+@Slf4j
 @Component
 public class TokenScheduler {
 
@@ -19,7 +20,8 @@ public class TokenScheduler {
      */
     @Scheduled(fixedRate = 300000)
     public void updateWaitingTimes() {
-        System.out.println("🟢 Scheduler triggered at: " + LocalDateTime.now());
+//        System.out.println("🟢 Scheduler triggered at: " + LocalDateTime.now());
+        log.info("🟢 Scheduler triggered at: " + LocalDateTime.now());
         tokenService.updateWaitTimes();
     }
 

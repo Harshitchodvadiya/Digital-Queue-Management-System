@@ -53,11 +53,15 @@ const Login = () => {
           }
         }, 1000); // 1 second delay
 
-      })
+      })  
       .catch((error) => {
-        console.error("Login failed:", error);
+        console.error("Full error response:", error.response); // Optional debug log
+      
+        const errorMsg = error.response?.data || "Login failed. Please check your credentials.";
+        toast.error(errorMsg);
       });
-  };
+
+    };
 
   return (
     <div className="bg-gray-100 flex h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
@@ -66,7 +70,7 @@ const Login = () => {
       {/* Left Side - Full Width Image */}
       <div className="w-1/2">
         <img
-          src="https://images.unsplash.com/photo-1535957998253-26ae1ef29506?q=80&w=1472&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          src="src/assets/sign_in.png"
           alt="ogin"
           className="h-full w-full object-cover"
         />

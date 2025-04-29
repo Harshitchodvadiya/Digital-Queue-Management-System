@@ -32,6 +32,8 @@ public class User implements UserDetails {
     private String email; // Email address (used as username)
     private String password; // Encrypted password
     private String mobileNumber; // Contact number of the user
+
+    @Enumerated(EnumType.STRING)
     private Role role; // Role assigned to the user (e.g., ADMIN, STAFF, USER)
 
     @ManyToOne

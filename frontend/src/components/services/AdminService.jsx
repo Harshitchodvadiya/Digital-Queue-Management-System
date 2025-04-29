@@ -4,8 +4,8 @@ const adminToken = Cookies.get("jwtToken");
 
 export const fetchStaff = async () => {
     const response = await axios.get("http://localhost:8081/api/v1/admin/userList", {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${adminToken}` },
+      headers: { Authorization: `Bearer ${adminToken}` },  
+      withCredentials: true,
       });
 
     const staff = response.data.filter((member) => member.role === "STAFF");
@@ -15,8 +15,8 @@ export const fetchStaff = async () => {
   
   export const fetchServices = async () => {
     const response = await axios.get("http://localhost:8081/api/v1/admin/getAllService", {
+       headers: { Authorization: `Bearer ${adminToken}` },
         withCredentials: true,
-        headers: { Authorization: `Bearer ${adminToken}` },
     });
 
     return response.data;
@@ -31,7 +31,6 @@ export const fetchStaff = async () => {
           mobileNumber: editStaff.mobileNumber,
           password: editStaff.password || "",
           service_id: editStaff.service_id,
-          //formData
         },
         { headers: { Authorization: `Bearer ${adminToken}` } }
       );

@@ -27,6 +27,7 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserService userService;
 
@@ -47,7 +48,11 @@ public class SecurityConfiguration {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable) // it's required only when session is maintained
                 .authorizeHttpRequests(request -> request
+                        //authorization is done below
                         .requestMatchers("api/v1/auth/**").permitAll() // Public endpoints, accessible by anyone
+
+                        //has authority is used as we have saved role like "ADMIN" and if  use has role it'll search for ROLE_ADMIN
+
                         .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name()) // Only accessible by ADMIN
                         .requestMatchers("api/v1/user/**").hasAuthority(Role.USER.name())   // Only accessible by USER
                         .requestMatchers("api/v1/token/**").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name(), Role.STAFF.name()) // Accessible by USER, ADMIN, and STAFF

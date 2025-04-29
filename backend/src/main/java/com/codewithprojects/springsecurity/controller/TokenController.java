@@ -9,6 +9,7 @@ import com.codewithprojects.springsecurity.services.StaffService;
 import com.codewithprojects.springsecurity.services.TokenService;
 import com.codewithprojects.springsecurity.services.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,7 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/token")
@@ -79,13 +81,15 @@ public class TokenController {
      */
     @GetMapping("/getRequestedTokenByStaffId/{id}")
     public List<Token> getRequestedTokenByStaffId(@PathVariable Integer id) {
-        System.out.println("Received Staff ID: " + id);
+//        System.out.println("Received Staff ID: " + id);
+        log.info("Received Staff ID: " + id);
         return staffService.getRequestedToken(id);
     }
 
     @GetMapping("/getRequestedTokenByUserId/{id}")
     public TokenResponseDto getRequestedTokenByUserId(@PathVariable Integer id) {
-        System.out.println("Received User ID: " + id);
+//        System.out.println("Received User ID: " + id);
+        log.info("Received User ID: " + id);
         return userService.getRequestedToken(id);
     }
 
@@ -154,7 +158,9 @@ public class TokenController {
 
     @GetMapping("/tokenHistory/{id}")
     public List<Token> tokenHistory(@PathVariable Integer id) {
-        System.out.println("Received User ID: " + id);
+
+        log.info("Received User ID: " + id);
+//        System.out.println("Received User ID: " + id);
         return userService.tokenHistory(id);
     }
 

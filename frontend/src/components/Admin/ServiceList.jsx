@@ -28,8 +28,8 @@ const ServiceList = () => {
     setLoading(true);
     try {
       const response = await axios.get("http://localhost:8081/api/v1/admin/getAllService", {
-        withCredentials: true,
         headers: { Authorization: `Bearer ${adminToken}` },
+        withCredentials: true,
       });
 
       setServices(response.data);

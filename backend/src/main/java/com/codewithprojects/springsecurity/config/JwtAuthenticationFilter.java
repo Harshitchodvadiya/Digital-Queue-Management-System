@@ -20,6 +20,8 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+
+//OncePerRequestFilter : any filter should run only once
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;

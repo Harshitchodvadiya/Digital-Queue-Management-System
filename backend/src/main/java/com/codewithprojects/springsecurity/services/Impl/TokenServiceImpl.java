@@ -104,7 +104,8 @@ public class TokenServiceImpl implements TokenService {
 
         // Fetch staff service details
         StaffServices staffServices = staffServicesRepository.findById(currentToken.getStaffId().getService().getServiceId()).get();
-        System.out.println(staffServices.getEstimatedTime());
+        log.info(String.valueOf(staffServices.getEstimatedTime()));
+//        System.out.println(staffServices.getEstimatedTime());
 
         // Activate the next token and assign appointed time
         currentToken.setStatus(TokenStatus.ACTIVE);

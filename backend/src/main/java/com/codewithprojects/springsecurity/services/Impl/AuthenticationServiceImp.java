@@ -8,8 +8,10 @@ import com.codewithprojects.springsecurity.entities.OtpVerification;
 import com.codewithprojects.springsecurity.entities.Role;
 import com.codewithprojects.springsecurity.entities.StaffServices;
 import com.codewithprojects.springsecurity.entities.User;
+import com.codewithprojects.springsecurity.exception.BadCredentialsException;
 import com.codewithprojects.springsecurity.exception.ServiceNotFoundException;
 import com.codewithprojects.springsecurity.exception.StaffNotFoundException;
+import com.codewithprojects.springsecurity.exception.UserNotFoundException;
 import com.codewithprojects.springsecurity.repository.OtpVerificationRepository;
 import com.codewithprojects.springsecurity.repository.StaffServicesRepository;
 import com.codewithprojects.springsecurity.repository.UserRepository;
@@ -37,7 +39,8 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationServiceImp implements AuthenticationService {
+public class AuthenticationServiceImp implements AuthenticationService
+{
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -160,47 +163,109 @@ public class AuthenticationServiceImp implements AuthenticationService {
      * @return ResponseEntity containing JWT authentication response with tokens.
      */
 
+//    public ResponseEntity<JwtAuthenticationResponse> signin(SigninRequest signinRequest) {
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(signinRequest.getEmail(), signinRequest.getPassword())
+//        );
+//
+//        if (authentication.isAuthenticated()) {
+//            var user = userRepository.findByEmail(signinRequest.getEmail())
+//                    .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+//
+//            String jwtToken = jwtService.generateToken(user);
+//            String refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
+//
+//            // Create HttpOnly Cookie for JWT
+//            ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", jwtToken)
+//                    .httpOnly(false)
+//                    .secure(false) // sent over http and https
+//                    .path("/") //cookie available for all the paths
+//                    .maxAge(86400)  // 1 day expiration
+//                    .sameSite("Lax")
+//                    .build();
+//
+//            // Create HttpOnly Cookie for Refresh Token
+//            ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
+//                    .httpOnly(false)
+//                    .secure(false)
+//                    .path("/")
+//                    .maxAge(604800)  // 7 days expiration
+//                    .sameSite("Lax")
+//                    .build();
+//
+//            // Add cookies to response
+//            httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+//            httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+//
+//            // Return response with JWT and refresh token
+//            JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
+//            jwtAuthenticationResponse.setToken(jwtToken);
+//            jwtAuthenticationResponse.setRefreshToken(refreshToken);
+//
+//            return ResponseEntity.ok(jwtAuthenticationResponse);
+//        }
+//
+//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+//    }
+
     public ResponseEntity<JwtAuthenticationResponse> signin(SigninRequest signinRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(signinRequest.getEmail(), signinRequest.getPassword())
-        );
+        Optional<User> optionalUser = userRepository.findByEmail(signinRequest.getEmail());
 
-        if (authentication.isAuthenticated()) {
-            var user = userRepository.findByEmail(signinRequest.getEmail())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
-
-            String jwtToken = jwtService.generateToken(user);
-            String refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
-
-            // Create HttpOnly Cookie for JWT
-            ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", jwtToken)
-                    .httpOnly(false)
-                    .secure(false)
-                    .path("/")
-                    .maxAge(86400)  // 1 day expiration
-                    .sameSite("Lax")
-                    .build();
-
-            // Create HttpOnly Cookie for Refresh Token
-            ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
-                    .httpOnly(false)
-                    .secure(false)
-                    .path("/")
-                    .maxAge(604800)  // 7 days expiration
-                    .sameSite("Lax")
-                    .build();
-
-            // Add cookies to response
-            httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
-            httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-
-            // Return response with JWT and refresh token
-            JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
-            jwtAuthenticationResponse.setToken(jwtToken);
-            jwtAuthenticationResponse.setRefreshToken(refreshToken);
-
-            return ResponseEntity.ok(jwtAuthenticationResponse);
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException("User not registered. Please register first.");
         }
+
+        User user = optionalUser.get();
+
+        if (!user.isEnabled()) {
+            // User has not verified OTP
+            throw new RuntimeException("Account not verified. Please register or verify your OTP.");
+        }
+//
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(signinRequest.getEmail(), signinRequest.getPassword())
+//        );
+
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(signinRequest.getEmail(), signinRequest.getPassword())
+            );
+            if (authentication.isAuthenticated()) {
+                String jwtToken = jwtService.generateToken(user);
+                String refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
+
+                ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", jwtToken)
+                        .httpOnly(false)
+                        .secure(false)
+                        .path("/")
+                        .maxAge(86400)
+                        .sameSite("Lax")
+                        .build();
+
+                ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
+                        .httpOnly(false)
+                        .secure(false)
+                        .path("/")
+                        .maxAge(604800)
+                        .sameSite("Lax")
+                        .build();
+
+                httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+                httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+
+                JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
+                jwtAuthenticationResponse.setToken(jwtToken);
+                jwtAuthenticationResponse.setRefreshToken(refreshToken);
+
+                return ResponseEntity.ok(jwtAuthenticationResponse);
+            }
+
+        } catch (BadCredentialsException e) {
+            System.out.println("Bad credentials detected");
+            throw e;  // Rethrow the exception to be caught by the handler
+        }
+
+
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }

@@ -31,19 +31,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     User findByRole(Role role);
 
-    /**
-     * Retrieves all users with a specific role.
-     *
-     * @param role The role to filter users by.
-     * @return A list of users with the given role.
-     */
-    List<User> findAllByRole(Role role);
-
-    /**
-     * Finds a user by their mobile number.
-     *
-     * @param mobileNumber The mobile number of the user.
-     * @return An Optional containing the user if found, otherwise empty.
-     */
-    Optional<User> findByMobileNumber(String mobileNumber);
+//    /**
+//     * Retrieves all users with a specific role.
+//     *
+//     * @param role The role to filter users by.
+//     * @return A list of users with the given role.
+//     */
+//    List<User> findAllByRole(Role role);
+//
+//    /**
+//     * Finds a user by their mobile number.
+//     *
+//     * @param mobileNumber The mobile number of the user.
+//     * @return An Optional containing the user if found, otherwise empty.
+//     */
+//    Optional<User> findByMobileNumber(String mobileNumber);
 }
