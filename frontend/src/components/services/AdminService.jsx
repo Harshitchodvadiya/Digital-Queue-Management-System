@@ -6,7 +6,6 @@ const getAuthHeader = () => {
   return { Authorization: `Bearer ${token}` };
 };
 
-
 export const fetchStaff = async () => {
   const response = await axios.get("http://localhost:8081/api/v1/admin/userList", {
     headers: getAuthHeader(),

@@ -10,7 +10,7 @@ function OtpVerificationForm() {
   const [timeLeft, setTimeLeft] = useState(300); // 5 mins expiry time of otp
   const [resendDisabled, setResendDisabled] = useState(false); //to enable/disable "Resend OTP"
   const [resendCooldown, setResendCooldown] = useState(0); //to prevent clicking on "Resend OTP" button for 5 mins
-  const inputRefs = useRef([]); //Holds refs to all OTP input boxes for focus control.
+  const inputRefs = useRef([]); // Holds refs to all OTP input boxes for focus control.
   const location = useLocation(); // to read/access data passed via navigate() (like email, mode)
   const navigate = useNavigate();
 
@@ -59,6 +59,7 @@ function OtpVerificationForm() {
   }, [resendDisabled, resendCooldown]);
 
   //Converts time from seconds to "MM:SS" format.
+  
   const formatTime = (seconds) => {
     const m = String(Math.floor(seconds / 60)).padStart(2, "0");
     const s = String(seconds % 60).padStart(2, "0");
@@ -85,6 +86,7 @@ function OtpVerificationForm() {
       });
 
       toast.success("OTP Verified Successfully!");
+      
       setTimeout(() => {
         if (mode === "signup") {
           navigate("/login");

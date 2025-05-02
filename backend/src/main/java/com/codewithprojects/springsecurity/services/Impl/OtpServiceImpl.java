@@ -99,6 +99,7 @@ public class OtpServiceImpl implements OtpService {
 //        return true;
 //    }
 
+    @Transactional
     @Override
     public boolean resetPassword(String email, String newPassword, String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {

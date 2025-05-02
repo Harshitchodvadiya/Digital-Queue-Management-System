@@ -22,6 +22,7 @@ function AddServiceForm() {
    * Fetches the admin token from cookies and retrieves the list of services.
    * Runs once when the component mounts.//component is first added to the DOM.
    */
+  
   useEffect(() => {
     const token = Cookies.get("jwtToken");
     setAdminToken(token);
@@ -42,6 +43,7 @@ function AddServiceForm() {
    * Handles form submission by sending a POST request to add a new service.
    * Prevents submission if adminToken is not available.
    */
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -66,7 +68,6 @@ function AddServiceForm() {
           },
         }
       );
-
       alert("Service added successfully!");
       navigate("/admin");
     } catch (error) {

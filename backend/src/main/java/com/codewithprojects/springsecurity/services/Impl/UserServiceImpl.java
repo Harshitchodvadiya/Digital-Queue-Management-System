@@ -8,6 +8,7 @@ import com.codewithprojects.springsecurity.entities.User;
 import com.codewithprojects.springsecurity.repository.TokenRepository;
 import com.codewithprojects.springsecurity.repository.UserRepository;
 import com.codewithprojects.springsecurity.services.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -55,11 +56,11 @@ public class UserServiceImpl implements UserService {
      * @param name The name of the user.
      * @return The user entity if found.
      */
-    @Override
-    public User findByName(String name) {
-        return userRepository.findByEmail(name) // Assuming "findByEmail" was meant instead of recursive call
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with name: " + name));
-    }
+//    @Override
+//    public User findByName(String name) {
+//        return userRepository.findByEmail(name) // Assuming "findByEmail" was meant instead of recursive call
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found with name: " + name));
+//    }
 
 
     @Override
@@ -139,26 +140,20 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
-//    public User updateUser(Long id, UserDto updatedUser) {
-//        User existingUser = getUserById(id);
-//        existingUser.setFirstname(updatedUser.getFirstName());
-//        existingUser.setSecondname(updatedUser.getSecondName());
-//        existingUser.setMobileNumber(updatedUser.getMobileNumber());
-//        return userRepository.save(existingUser);
-//    }
-
+    @Transactional
+    @Override
     public User updateUser(Long id, UserDto updatedUserDto) {
+
         User existingUser = getUserById(id);
         existingUser.setFirstname(updatedUserDto.getFirstName());
         existingUser.setSecondname(updatedUserDto.getSecondName());
         existingUser.setMobileNumber(updatedUserDto.getMobileNumber());
+
         return userRepository.save(existingUser);
     }
-
 
     @Override
     public List<Token> tokenHistory(Integer id) {
         return tokenRepository.findByUserId(id);
-
     }
 }

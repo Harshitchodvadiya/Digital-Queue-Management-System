@@ -115,6 +115,7 @@
 //   };
   
 // export default StaffTokenHistory;
+
 import { useState, useEffect } from "react";
 import { getAllTokens } from "../services/TokenService";
 import Navbar from "../Navbar";
@@ -213,6 +214,7 @@ const StaffTokenHistory = () => {
               setCurrentPage(1);
             }}
             showServiceFilter={false}
+            isUserSide={false}
           />
         </div>
 

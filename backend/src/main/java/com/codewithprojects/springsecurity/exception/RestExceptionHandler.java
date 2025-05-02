@@ -128,8 +128,6 @@ public class RestExceptionHandler {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.");
     }
 
-
-
     private ResponseEntity<String> buildResponse(HttpStatus status, String body) {
         return ResponseEntity.status(status).body(body);
     }

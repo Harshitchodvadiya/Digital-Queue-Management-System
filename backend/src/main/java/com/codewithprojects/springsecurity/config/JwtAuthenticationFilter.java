@@ -70,7 +70,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Create a new security context
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 
-                // Create authentication token
+                // Create authentication token/ get role
                 UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );
@@ -78,7 +78,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Associate authentication token with the request details
                 token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // Set the authentication in the security context
+                // Set the authentication in the security context,
+                // At this point, the user's roles/authorities are in memory.
                 securityContext.setAuthentication(token);
                 SecurityContextHolder.setContext(securityContext);
             }

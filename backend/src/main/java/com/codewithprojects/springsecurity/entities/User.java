@@ -2,6 +2,7 @@ package com.codewithprojects.springsecurity.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +14,7 @@ import java.util.List;
  * Entity class representing a user in the system.
  * Implements UserDetails for Spring Security authentication.
  */
+@Slf4j
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -52,6 +54,8 @@ public class User implements UserDetails {
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+//        log.info(String.valueOf(role));
+        //role("ADMIN") is returned
         return role != null ? List.of(new SimpleGrantedAuthority(role.name())) : List.of();
     }
 

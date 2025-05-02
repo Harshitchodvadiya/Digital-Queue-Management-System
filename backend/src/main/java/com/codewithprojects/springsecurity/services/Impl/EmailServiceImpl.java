@@ -1,7 +1,6 @@
 package com.codewithprojects.springsecurity.services.Impl;
 
 import com.codewithprojects.springsecurity.services.EmailService;
-import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -28,7 +27,6 @@ public class EmailServiceImpl implements EmailService {
         } catch (Exception e) {
             // ✅ Handle error, don't crash SSE
             log.error("Email failed: " + e.getMessage());
-//            System.err.println("Email failed: " + e.getMessage());
         }
 
     }

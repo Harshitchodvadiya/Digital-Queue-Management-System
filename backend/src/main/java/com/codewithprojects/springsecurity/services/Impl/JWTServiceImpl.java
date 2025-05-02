@@ -88,7 +88,7 @@ public class JWTServiceImpl implements JWTService {
      */
     public String generateToken(UserDetails userDetails) {
         Optional<User> user = userRepository.findByEmail(userDetails.getUsername());
-//        System.out.println(user);
+
         log.info(String.valueOf(user));
 
         // Default to "USER" role if no roles are assigned
@@ -128,7 +128,6 @@ public class JWTServiceImpl implements JWTService {
     }
     /**
      * Extracts the username from a JWT token.
-     *
      * @param token The JWT token.
      * @return The extracted username.
      */

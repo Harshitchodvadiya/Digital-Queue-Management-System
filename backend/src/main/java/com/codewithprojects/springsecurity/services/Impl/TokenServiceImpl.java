@@ -1,6 +1,5 @@
 package com.codewithprojects.springsecurity.services.Impl;
 
-import com.codewithprojects.springsecurity.controller.NotificationController;
 import com.codewithprojects.springsecurity.entities.StaffServices;
 import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.entities.TokenStatus;
@@ -34,6 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Service implementation for handling token-related operations.
  */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -53,6 +53,7 @@ public class TokenServiceImpl implements TokenService {
         return tokenRepository.findAll();
     }
 
+    @Transactional
     @Override
     public Token updateToken(Long id, Token token) {
         Optional<Token> existingToken = tokenRepository.findById(id);
@@ -87,13 +88,14 @@ public class TokenServiceImpl implements TokenService {
                     tokenRepository.save(nextToken);
                 }
             }
-
             return updatedToken;
         } else {
             throw new RuntimeException("Token not found with ID: " + id);
         }
     }
 
+    @Override
+    @Transactional
     public Token activateNextToken(Long currentTokenId) {
         // Fetch the current token
         Optional<Token> currentTokenOpt = tokenRepository.findById(currentTokenId);
@@ -113,7 +115,6 @@ public class TokenServiceImpl implements TokenService {
 
         tokenRepository.save(currentToken);
 
-
         String subject = "Digital Queue Management System -🎉 It's your turn!";
         String message1 = "Hi " + currentToken.getUser().getFirstname() + ",\n\nYour token #" + currentToken.getId() + " is now active. Please proceed to the counter.\n\n" +
 
@@ -131,7 +132,8 @@ public class TokenServiceImpl implements TokenService {
         return currentToken;
     }
 
-
+    @Override
+    @Transactional
     public Token completeToken(Long tokenId) {
         Optional<Token> tokenOptional = tokenRepository.findById(tokenId);
 
@@ -156,6 +158,7 @@ public class TokenServiceImpl implements TokenService {
         }
     }
 
+    @Transactional
     @Override
     public Token skipToken(Long tokenId) {
         Optional<Token> tokenOptional = tokenRepository.findById(tokenId);
@@ -163,7 +166,7 @@ public class TokenServiceImpl implements TokenService {
         if (tokenOptional.isPresent()) {
             Token token = tokenOptional.get();
             token.setStatus(TokenStatus.SKIPPED);
-//            token.setCompletedTime(LocalDateTime.now());
+            // token.setCompletedTime(LocalDateTime.now());
             token.setCompletedTime(null);
             tokenRepository.save(token);
 
@@ -192,25 +195,26 @@ public class TokenServiceImpl implements TokenService {
     @Override
     @Transactional
     public void updateWaitTimes() {
+
+        //fetching tokens that were issued today,from the start to the end of the day.
         LocalDate today = LocalDate.now();
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
 
-
-        // Fetch all tokens of the day to find the last completed one
+        // Fetch all tokens of the day to find the last completed one,earliest issued tokens first
         List<Token> pendingTokens = tokenRepository.findAllByIssuedTimeBetweenOrderByIssuedTimeAsc(
                 startOfDay, endOfDay
         );
 
-
+        //current time
         LocalDateTime currentTime = LocalDateTime.now();
 
-
+        //loops through each token in the pendingTokens list.
         for (int i = 0; i < pendingTokens.size(); i++) {
             Token currentToken = pendingTokens.get(i);
 
             if(currentToken.getStatus() == TokenStatus.PENDING && currentToken.getIssuedTime().isBefore(LocalDateTime.now())) {
-
+                //update wait time by 5 mins
                 currentToken.setAdditionalWaitTime(currentToken.getAdditionalWaitTime() + 5);
                 tokenRepository.save(currentToken);
             }
@@ -263,6 +267,7 @@ public class TokenServiceImpl implements TokenService {
         return null;
     }
 
+    @Transactional
     @Override
     public Token cancelToken(Long id) {
         Token token = tokenRepository.findById(id).get();
@@ -281,7 +286,7 @@ public class TokenServiceImpl implements TokenService {
         }
     }
 
-
+    @Transactional
     @Override
     public Token rescheduleToken(Long tokenId, LocalDateTime newIssuedTime) {
         Token token = tokenRepository.findById(tokenId)
@@ -315,7 +320,6 @@ public class TokenServiceImpl implements TokenService {
         token.setStatus(TokenStatus.PENDING);
         return tokenRepository.save(token);
     }
-
 
     @Override
     public Map<String, Long> getTokenStats(int days) {
@@ -396,7 +400,8 @@ public class TokenServiceImpl implements TokenService {
 //        return ResponseEntity.ok(savedToken);
 //    }
 
-    @PostMapping
+    @Transactional
+    @Override
     public ResponseEntity<Token> addToken(@RequestBody Token token) {
         if (token == null || token.getStaffId() == null || token.getStaffId().getId() == null) {
             throw new InvalidTokenException("Invalid token or staff ID.");

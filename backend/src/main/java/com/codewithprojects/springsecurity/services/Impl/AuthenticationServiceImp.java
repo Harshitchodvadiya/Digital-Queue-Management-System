@@ -19,6 +19,7 @@ import com.codewithprojects.springsecurity.services.AuthenticationService;
 import com.codewithprojects.springsecurity.services.EmailService;
 import com.codewithprojects.springsecurity.services.JWTService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -60,25 +61,8 @@ public class AuthenticationServiceImp implements AuthenticationService
      * @param service_id The service ID assigned to the user (nullable for non-staff users).
      * @return The saved user entity.
      */
-//    public User signup(SignUpRequest signUpRequest, Role role, Integer service_id) {
-//        User user = new User();
-//        user.setEmail(signUpRequest.getEmail());
-//        user.setFirstname(signUpRequest.getFirstname());
-//        user.setSecondname(signUpRequest.getLastname());
-//        user.setMobileNumber(signUpRequest.getMobileNumber());
-//        user.setRole(role);
-//        user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-//
-//        // If service_id is 0, set `null`, else fetch the service entity
-//        StaffServices service = (service_id == 0) ? null :
-//                staffServicesRepository.findById(Long.valueOf(service_id))
-//                        .orElseThrow(() -> new IllegalArgumentException("Service not found"));
-//
-//        user.setService(service);
-//
-//        return userRepository.save(user);
-//    }
-
+    @Override
+    @Transactional
     public User signup(SignUpRequest signUpRequest, Role role, Integer service_id) {
         User user = new User();
         user.setEmail(signUpRequest.getEmail());
@@ -96,7 +80,7 @@ public class AuthenticationServiceImp implements AuthenticationService
         user.setService(service);
         userRepository.save(user);
 
-        // 🔐 Generate OTP and store it
+        // Generate OTP and store it
         String otp = String.valueOf(new Random().nextInt(900000) + 100000);
         OtpVerification otpVerification = new OtpVerification();
         otpVerification.setEmail(user.getEmail());
@@ -105,35 +89,38 @@ public class AuthenticationServiceImp implements AuthenticationService
         otpVerification.setVerified(false);
         otpVerificationRepository.save(otpVerification);
 
-        // 📧 Send OTP email
+        // Send OTP email
         emailService.sendEmail(
                 user.getEmail(),
                 "Verify your account - OTP",
                 "Your OTP for account verification is: " + otp
         );
-
         return user;
     }
 
+    @Transactional
     public boolean verifySignupOtp(String email, String otp) {
         Optional<OtpVerification> record = otpVerificationRepository.findByEmailAndOtp(email, otp);
-        if (record.isPresent() && record.get().getExpiryTime().isAfter(LocalDateTime.now())) {
-            record.get().setVerified(true);
-            otpVerificationRepository.save(record.get());
 
-            // ✅ Activate user
+        //OTP hasn't expired and is present move next
+
+        if (record.isPresent() && record.get().getExpiryTime().isAfter(LocalDateTime.now())) {
+
+            record.get().setVerified(true);
+            otpVerificationRepository.save(record.get());//saves the updated OTP record to db.
+
+            // Activate user acc
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("User not found"));
             user.setEnabled(true);
             userRepository.save(user);
 
-            // ✉️ Send welcome email
+            //  Send welcome email
             emailService.sendEmail(
                     email,
                     "Account Verified",
                     "Welcome! Your account has been successfully verified."
             );
-
             return true;
         }
         return false;
@@ -156,58 +143,13 @@ public class AuthenticationServiceImp implements AuthenticationService
         return true;
     }
 
-
     /**
      * Authenticates a user and generates JWT and refresh tokens.
      * @param signinRequest The sign-in request containing user credentials.
      * @return ResponseEntity containing JWT authentication response with tokens.
      */
 
-//    public ResponseEntity<JwtAuthenticationResponse> signin(SigninRequest signinRequest) {
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(signinRequest.getEmail(), signinRequest.getPassword())
-//        );
-//
-//        if (authentication.isAuthenticated()) {
-//            var user = userRepository.findByEmail(signinRequest.getEmail())
-//                    .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
-//
-//            String jwtToken = jwtService.generateToken(user);
-//            String refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
-//
-//            // Create HttpOnly Cookie for JWT
-//            ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", jwtToken)
-//                    .httpOnly(false)
-//                    .secure(false) // sent over http and https
-//                    .path("/") //cookie available for all the paths
-//                    .maxAge(86400)  // 1 day expiration
-//                    .sameSite("Lax")
-//                    .build();
-//
-//            // Create HttpOnly Cookie for Refresh Token
-//            ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
-//                    .httpOnly(false)
-//                    .secure(false)
-//                    .path("/")
-//                    .maxAge(604800)  // 7 days expiration
-//                    .sameSite("Lax")
-//                    .build();
-//
-//            // Add cookies to response
-//            httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
-//            httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-//
-//            // Return response with JWT and refresh token
-//            JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
-//            jwtAuthenticationResponse.setToken(jwtToken);
-//            jwtAuthenticationResponse.setRefreshToken(refreshToken);
-//
-//            return ResponseEntity.ok(jwtAuthenticationResponse);
-//        }
-//
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-//    }
-
+    @Override
     public ResponseEntity<JwtAuthenticationResponse> signin(SigninRequest signinRequest) {
         Optional<User> optionalUser = userRepository.findByEmail(signinRequest.getEmail());
 
@@ -221,7 +163,7 @@ public class AuthenticationServiceImp implements AuthenticationService
             // User has not verified OTP
             throw new RuntimeException("Account not verified. Please register or verify your OTP.");
         }
-//
+
 //        Authentication authentication = authenticationManager.authenticate(
 //                new UsernamePasswordAuthenticationToken(signinRequest.getEmail(), signinRequest.getPassword())
 //        );
@@ -259,14 +201,10 @@ public class AuthenticationServiceImp implements AuthenticationService
 
                 return ResponseEntity.ok(jwtAuthenticationResponse);
             }
-
         } catch (BadCredentialsException e) {
             System.out.println("Bad credentials detected");
             throw e;  // Rethrow the exception to be caught by the handler
         }
-
-
-
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
@@ -275,6 +213,8 @@ public class AuthenticationServiceImp implements AuthenticationService
      * @param refreshTokenRequest The refresh token request containing the old token.
      * @return A new JWT authentication response with a refreshed token.
      */
+
+    @Override
     public JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
         String userEmail = jwtService.extractUserName(refreshTokenRequest.getToken());
         User user = userRepository.findByEmail(userEmail).orElseThrow();
@@ -294,6 +234,7 @@ public class AuthenticationServiceImp implements AuthenticationService
      * Retrieves a list of all staff members.
      * @return List of all staff users.
      */
+    @Override
     public List<User> getAllStaff() {
         return userRepository.findAll();
     }
@@ -304,6 +245,7 @@ public class AuthenticationServiceImp implements AuthenticationService
      * @param updateRequest The request containing updated details.
      * @return The updated staff user.
      */
+
 //    public User updateStaff(Long id, SignUpRequest updateRequest) {
 //        User staff = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Staff not found"));
 //
@@ -325,6 +267,8 @@ public class AuthenticationServiceImp implements AuthenticationService
 //        return userRepository.save(staff);
 //    }
 
+    @Override
+    @Transactional
     public User updateStaff(Long id, SignUpRequest updateRequest) {
         User staff = userRepository.findById(id)
                 .orElseThrow(() -> new StaffNotFoundException(id));
@@ -348,6 +292,8 @@ public class AuthenticationServiceImp implements AuthenticationService
      * Deletes a staff member by ID.
      * @param id The ID of the staff member to delete.
      */
+    @Override
+    @Transactional
     public void deleteStaff(Long id) {
         User staff = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Staff not found"));
         userRepository.delete(staff);

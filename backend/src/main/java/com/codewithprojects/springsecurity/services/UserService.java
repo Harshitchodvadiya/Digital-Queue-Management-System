@@ -34,7 +34,7 @@ public interface UserService {
      * @param name The name of the user.
      * @return The User entity if found.
      */
-    User findByName(String name);
+//    User findByName(String name);
 
     TokenResponseDto getRequestedToken(Integer id);
 

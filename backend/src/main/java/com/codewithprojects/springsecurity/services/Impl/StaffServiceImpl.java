@@ -5,6 +5,7 @@ import com.codewithprojects.springsecurity.entities.StaffServices;
 import com.codewithprojects.springsecurity.entities.Token;
 import com.codewithprojects.springsecurity.repository.StaffServicesRepository;
 import com.codewithprojects.springsecurity.services.StaffService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class StaffServiceImpl implements StaffService {
      * @param staffService The staff service to be added.
      * @return The saved StaffServices entity.
      */
+    @Transactional
     @Override
     public StaffServices addStaffService(StaffServices staffService) {
         return staffServicesRepository.save(staffService);
@@ -63,6 +65,8 @@ public class StaffServiceImpl implements StaffService {
      * @return The updated StaffServices entity.
      * @throws RuntimeException if the service is not found.
      */
+    @Override
+    @Transactional
     public StaffServices updateServiceById(Long id, UpdateServiceRequest updateServiceRequest) {
         StaffServices services = staffServicesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Service not found"));
@@ -86,7 +90,6 @@ public class StaffServiceImpl implements StaffService {
     public List<Token> getRequestedToken(Integer user_id) {
         List<Token> tokens = tokenServiceImpl.getAllRequestedToken();
         log.info("Requested Token is: "+tokens);
-//        System.out.println(tokens);
 
         // Filter tokens for the given staff ID
         return tokens.stream()

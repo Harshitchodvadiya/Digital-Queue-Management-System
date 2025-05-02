@@ -5,9 +5,8 @@ import {
   callNextToken,
   completeToken,
   skipToken,
-  getPendingTokens
+  getPendingTokens,
 } from "../components/services/TokenService";
-
 import CustomerQueue from "../components/Staff/CustomerQueue";
 import ActiveToken from "../components/Staff/ActiveToken";
 import StaffSummary from "../components/Staff/StaffSummary";
@@ -86,7 +85,6 @@ const StaffPage = () => {
     if (storedActive) {
       setActiveToken(JSON.parse(storedActive));
     }
-
     fetchTokens();
     fetchSummary();
     fetchPendingTokens();

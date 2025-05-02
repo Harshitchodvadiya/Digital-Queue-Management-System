@@ -9,6 +9,7 @@ const Filter = ({
   onStatusChange,
   onServiceChange,
   showServiceFilter = false, 
+  isUserSide = true,
 }) => {
   return (
     <div className="flex gap-4">
@@ -27,7 +28,7 @@ const Filter = ({
         <option value="">All Status</option>
         <option value="COMPLETED">Completed</option>
         <option value="SKIPPED">Skipped</option>
-        <option value="CANCELLED">Cancelled</option>
+        {isUserSide && <option value="CANCELLED">Cancelled</option>}
       </select>
 
 
@@ -40,8 +41,6 @@ const Filter = ({
         onChange={(e) => onServiceChange(e.target.value)}
       />)}
 
-
-      
     </div>
   );
 };

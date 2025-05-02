@@ -128,31 +128,6 @@ const TokenHistory = () => {
 
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Token History</h2>
-          {/* <div className="flex gap-4">
-            <input
-              type="date"
-              className="border p-2 rounded-md"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-            />
-            <select
-              className="border p-2 rounded-md"
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-            >
-              <option value="">All Status</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="SKIPPED">Skipped</option>
-              <option value="CANCELLED">Cancelled</option>
-            </select>
-            <input
-              type="text"
-              className="border p-2 rounded-md"
-              placeholder="Search by Service Name"
-              value={selectedService}
-              onChange={(e) => setSelectedService(e.target.value)}
-            />
-          </div> */}
           <Filter
             selectedDate={selectedDate}
             selectedStatus={selectedStatus}
@@ -162,7 +137,6 @@ const TokenHistory = () => {
             onServiceChange={setSelectedService}
             showServiceFilter={true}
           />
-
         </div>
 
         {loading ? (

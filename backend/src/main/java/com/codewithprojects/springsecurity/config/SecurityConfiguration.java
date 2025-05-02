@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -52,7 +53,7 @@ public class SecurityConfiguration {
                         .requestMatchers("api/v1/auth/**").permitAll() // Public endpoints, accessible by anyone
 
                         //has authority is used as we have saved role like "ADMIN" and if  use has role it'll search for ROLE_ADMIN
-
+                        //Role.ADMIN.name(): role is enum,and name returns string
                         .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name()) // Only accessible by ADMIN
                         .requestMatchers("api/v1/user/**").hasAuthority(Role.USER.name())   // Only accessible by USER
                         .requestMatchers("api/v1/token/**").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name(), Role.STAFF.name()) // Accessible by USER, ADMIN, and STAFF

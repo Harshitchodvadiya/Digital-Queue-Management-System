@@ -46,4 +46,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 //     * @return An Optional containing the user if found, otherwise empty.
 //     */
 //    Optional<User> findByMobileNumber(String mobileNumber);
+
 }

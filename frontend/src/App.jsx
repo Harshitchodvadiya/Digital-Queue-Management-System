@@ -13,8 +13,7 @@ import ProfilePage from "./components/User/ProfilePage";
 import AddStaffForm from "../src/components/Admin/AddStaffForm";
 import Layout from "./components/LandingPage/Layout";
 import Home from "./components/LandingPage/Home";
-import About from "./components/LandingPage/About";
-import Contact from "./components/LandingPage/ContactUs";
+
 import StaffList from "./components/Staff/StaffList";
 import ServiceList from "./components/Admin/ServiceList";
 import AddServiceForm from "./components/Admin/AddServiceForm";
@@ -39,8 +38,8 @@ function App() {
 
       <Route path='/' element={<Layout/>}>
           <Route path='' element={<Home/>}/>
-          <Route path='/about' element={<About/>}/>
-          <Route path='/contact' element={<Contact/>}/>
+          {/* <Route path='/about' element={<About/>}/>
+          <Route path='/contact' element={<Contact/>}/> */}
       </Route>
 
         {/* Authentication Routes */}
@@ -49,7 +48,6 @@ function App() {
         <Route path="/verify-otp" element={<OtpVerification />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-
 
         {/* User Routes */}
         <Route path="/user" element={<UserPage /> }/>
